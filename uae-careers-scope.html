@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UAE Careers — Full Project Scope</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #1a1a2e; }
+  .cover {
+    background: linear-gradient(135deg, #1A3C6E 0%, #0d2444 100%);
+    color: white; padding: 80px 60px; min-height: 300px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .cover h1 { font-size: 48px; font-weight: 800; letter-spacing: -1px; }
+  .cover h2 { font-size: 22px; font-weight: 300; margin-top: 10px; opacity: 0.85; }
+  .cover .meta { margin-top: 30px; display: flex; gap: 40px; flex-wrap: wrap; }
+  .cover .meta div { font-size: 14px; opacity: 0.75; }
+  .cover .meta span { display: block; font-size: 16px; font-weight: 600; opacity: 1; margin-top: 4px; }
+  .badge { display: inline-block; background: #FF6B35; color: white; padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; margin-top: 20px; }
+
+  .container { max-width: 960px; margin: 0 auto; padding: 40px 30px; }
+
+  .toc { background: white; border-radius: 12px; padding: 30px; margin-bottom: 40px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .toc h3 { color: #1A3C6E; font-size: 18px; margin-bottom: 16px; border-bottom: 2px solid #FF6B35; padding-bottom: 8px; display: inline-block; }
+  .toc ol { padding-left: 20px; }
+  .toc li { padding: 5px 0; font-size: 14px; color: #444; }
+
+  .section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); page-break-inside: avoid; }
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 14px; }
+  .section-icon { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #1A3C6E, #2d5da6); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; flex-shrink: 0; }
+  .section h2 { font-size: 20px; color: #1A3C6E; font-weight: 700; }
+  .section h3 { font-size: 15px; color: #FF6B35; font-weight: 700; margin: 18px 0 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  ul { padding-left: 0; list-style: none; }
+  ul li { padding: 6px 0 6px 24px; position: relative; font-size: 14px; color: #444; border-bottom: 1px solid #f8f8f8; line-height: 1.5; }
+  ul li:before { content: "✓"; position: absolute; left: 0; color: #FF6B35; font-weight: 700; }
+  ul li .tag { display: inline-block; background: #fff3ee; color: #FF6B35; border: 1px solid #ffd5c2; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; margin-left: 8px; }
+  ul li .tag.blue { background: #eef3ff; color: #1A3C6E; border-color: #c2d0ff; }
+  ul li .tag.green { background: #eefff3; color: #1a6e3c; border-color: #c2ffd5; }
+  ul li .tag.grey { background: #f5f5f5; color: #666; border-color: #ddd; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+  th { background: #1A3C6E; color: white; padding: 10px 14px; text-align: left; font-weight: 600; }
+  td { padding: 9px 14px; border-bottom: 1px solid #eee; color: #444; vertical-align: top; }
+  tr:nth-child(even) td { background: #f9fafb; }
+  td:first-child { font-weight: 600; color: #1A3C6E; }
+
+  .color-swatches { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+  .swatch { border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 140px; }
+  .swatch-color { height: 60px; }
+  .swatch-info { padding: 8px 10px; background: white; }
+  .swatch-info .name { font-weight: 700; font-size: 13px; }
+  .swatch-info .hex { font-size: 11px; color: #888; }
+  .swatch-info .role { font-size: 11px; color: #555; margin-top: 2px; }
+
+  .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .toggle-item { background: #f9fafb; border: 1px solid #eee; border-radius: 8px; padding: 12px 14px; }
+  .toggle-item .toggle-name { font-weight: 700; font-size: 13px; color: #1A3C6E; }
+  .toggle-item .toggle-default { font-size: 11px; margin-top: 4px; }
+  .toggle-item .toggle-default span { background: #eefff3; color: #1a6e3c; border-radius: 10px; padding: 2px 8px; font-weight: 600; font-size: 11px; }
+  .toggle-item .toggle-default span.off { background: #fff0f0; color: #c0392b; }
+
+  .timeline { margin-top: 14px; }
+  .timeline-item { display: flex; gap: 16px; margin-bottom: 16px; }
+  .timeline-dot { width: 36px; height: 36px; border-radius: 50%; background: #1A3C6E; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; margin-top: 2px; }
+  .timeline-content { flex: 1; }
+  .timeline-content .phase { font-weight: 700; color: #1A3C6E; font-size: 14px; }
+  .timeline-content .phase-time { display: inline-block; background: #fff3ee; color: #FF6B35; border-radius: 10px; padding: 1px 10px; font-size: 12px; font-weight: 700; margin-left: 10px; }
+  .timeline-content .phase-items { font-size: 13px; color: #666; margin-top: 4px; line-height: 1.6; }
+
+  .footer-doc { background: #1A3C6E; color: white; padding: 30px 60px; text-align: center; margin-top: 40px; }
+  .footer-doc p { font-size: 13px; opacity: 0.7; }
+  .footer-doc .domain { font-size: 18px; font-weight: 700; margin-bottom: 6px; color: #FF6B35; }
+
+  @media print {
+    body { background: white; }
+    .container { padding: 20px; }
+    .section { box-shadow: none; border: 1px solid #eee; }
+    .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .timeline-dot { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="badge">FULL PROJECT SCOPE v1.0</div>
+  <h1>UAE Careers</h1>
+  <h2>Job Portal — Web App + Mobile Apps (iOS & Android)</h2>
+  <div class="meta">
+    <div>Domain <span>uaecareer.ae</span></div>
+    <div>Prepared <span>June 2026</span></div>
+    <div>Version <span>Full v1.0</span></div>
+    <div>Coverage <span>GCC Region</span></div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- TABLE OF CONTENTS -->
+  <div class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li>Landing Page & Ad System</li>
+      <li>Job Seeker Features</li>
+      <li>Employer / Recruiter Features</li>
+      <li>Admin Panel — Full Control</li>
+      <li>Product Banner System</li>
+      <li>Payment System</li>
+      <li>CV & Media Management</li>
+      <li>Candidate Database</li>
+      <li>Mobile Apps (iOS & Android)</li>
+      <li>Monetization Strategy</li>
+      <li>Tech Stack</li>
+      <li>UI Color Theme</li>
+      <li>Global Toggle Settings</li>
+      <li>Development Timeline</li>
+    </ol>
+  </div>
+
+  <!-- 1. LANDING PAGE -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🏠</div>
+      <h2>1. Landing Page & Ad System</h2>
+    </div>
+    <h3>Hero & Search</h3>
+    <ul>
+      <li>Prominent job search bar (keyword + location)</li>
+      <li>Country & category quick filters (GCC, admin can add countries)</li>
+      <li>Featured job slots (sponsored, paid placement)</li>
+      <li>Latest jobs grid with timestamp</li>
+      <li>Walk-in interview section</li>
+      <li>Salary guide links per country</li>
+      <li>WhatsApp group/channel join button</li>
+    </ul>
+
+    <h3>Landing Page Ad Type — Admin Configurable</h3>
+    <ul>
+      <li>Admin sets landing page ad type from 3 options: <span class="tag">Google AdSense</span> <span class="tag blue">Product Banner</span> <span class="tag green">WhatsApp Channel Link</span></li>
+      <li>Can switch ad type anytime from admin panel</li>
+      <li>Can enable/disable each type independently</li>
+    </ul>
+
+    <h3>Rewarded Ad to Unlock More Jobs</h3>
+    <ul>
+      <li>Guest users see limited job preview (e.g. 5 jobs)</li>
+      <li>"Watch Ad to unlock more" prompt appears</li>
+      <li>Google Rewarded Ad plays → user can skip after 5s → more jobs unlock</li>
+      <li>Admin can enable/disable this feature globally <span class="tag grey">Toggle</span></li>
+      <li>Admin sets how many free jobs show before ad gate</li>
+      <li>Logged-in users bypass ad gate</li>
+    </ul>
+
+    <h3>Category-wise Ad Control</h3>
+    <ul>
+      <li>Admin can enable/disable ads per category <span class="tag">Category-wise</span></li>
+      <li>If ads disabled for a category, UI auto-adjusts layout to fill space</li>
+    </ul>
+  </div>
+
+  <!-- 2. JOB SEEKER -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">👤</div>
+      <h2>2. Job Seeker Features</h2>
+    </div>
+    <h3>Registration & Login</h3>
+    <ul>
+      <li>Email + Password registration</li>
+      <li>Google OAuth login</li>
+      <li>LinkedIn OAuth login</li>
+      <li>Mobile phone OTP login (SMS verification) <span class="tag green">New</span></li>
+      <li>User approval flow — Admin can set: Auto-approve / Manual approval / Rejection <span class="tag green">New</span></li>
+    </ul>
+
+    <h3>Profile & CV</h3>
+    <ul>
+      <li>Profile builder (photo, name, nationality, location, skills, languages)</li>
+      <li>Work experience & education sections</li>
+      <li>CV upload (can be globally disabled by admin to save storage) <span class="tag grey">Toggle</span></li>
+      <li>In-platform CV builder (can be enabled/disabled) <span class="tag grey">Toggle</span></li>
+      <li>Profile completion percentage indicator</li>
+    </ul>
+
+    <h3>Job Search & Discovery</h3>
+    <ul>
+      <li>Search by keyword, country, city, category, industry</li>
+      <li>Filter by experience level, job type, salary range</li>
+      <li>Save/bookmark jobs</li>
+      <li>Recommended jobs based on profile</li>
+      <li>Job alerts via email + push notifications</li>
+    </ul>
+
+    <h3>Applications</h3>
+    <ul>
+      <li>Apply based on employer/admin setting (email, URL, in-app, WhatsApp)</li>
+      <li>Track applications: Applied → Viewed → Shortlisted</li>
+      <li>Application history dashboard</li>
+    </ul>
+
+    <h3>Premium Candidate <span class="tag grey">Disabled at Launch</span></h3>
+    <ul>
+      <li>Free users: limited to 5 job views (configurable by admin)</li>
+      <li>Premium users: unlimited job views + priority profile visibility</li>
+      <li>Admin can enable/disable premium gate anytime <span class="tag grey">Toggle</span></li>
+      <li>Payment via Stripe or PayPal</li>
+    </ul>
+  </div>
+
+  <!-- 3. EMPLOYER -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🏢</div>
+      <h2>3. Employer / Recruiter Features</h2>
+    </div>
+    <h3>Registration & Login</h3>
+    <ul>
+      <li>Company registration with profile (logo, description, industry, size, location)</li>
+      <li>Email / Google / LinkedIn login</li>
+      <li>Mobile OTP login option</li>
+      <li>Admin approval: Auto / Manual / Reject <span class="tag green">New</span></li>
+      <li>Banner ads shown on employer login/dashboard page (admin configurable) <span class="tag green">New</span></li>
+    </ul>
+
+    <h3>Job Posting</h3>
+    <ul>
+      <li>Post jobs with full details (title, description, requirements, salary, location, category)</li>
+      <li>Set apply method per job: Email / External URL / In-app / WhatsApp/Phone</li>
+      <li>Free job post limit set by admin (e.g. 3 free posts/month) <span class="tag green">New</span></li>
+      <li>Additional posts require payment (Stripe / PayPal) <span class="tag green">New</span></li>
+      <li>Job post expiry management</li>
+      <li>Boost/sponsor job post for top placement (paid)</li>
+    </ul>
+
+    <h3>Dashboard</h3>
+    <ul>
+      <li>View applicants per job post</li>
+      <li>Application pipeline (Applied, Viewed, Shortlisted, Rejected)</li>
+      <li>Analytics: job views, clicks, application count</li>
+      <li>Manage active/expired job posts</li>
+      <li>Billing & payment history</li>
+    </ul>
+  </div>
+
+  <!-- 4. ADMIN PANEL -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">⚙️</div>
+      <h2>4. Admin Panel — Full Control</h2>
+    </div>
+    <h3>User Management</h3>
+    <ul>
+      <li>View all job seekers and employers</li>
+      <li>Approval system: Auto-approve / Manual approve / Reject per user type <span class="tag green">New</span></li>
+      <li>Suspend, ban, or delete accounts</li>
+      <li>View full candidate profile and application history</li>
+      <li>Export candidate database (CSV/Excel)</li>
+    </ul>
+
+    <h3>Job & Category Management</h3>
+    <ul>
+      <li>Approve / reject / delete job posts</li>
+      <li>Add, edit, remove job categories</li>
+      <li>Enable/disable any category entirely <span class="tag green">New</span></li>
+      <li>Category-wise settings for ads, banners, apply method</li>
+    </ul>
+
+    <h3>Apply Method Settings</h3>
+    <ul>
+      <li>Set global default apply method (Email / URL / In-app / WhatsApp)</li>
+      <li>Override apply method per category (e.g. Accounting = Email, IT = In-app)</li>
+      <li>Enable/disable each apply method anytime</li>
+      <li>Employer can further set their own apply method (within admin allowed options)</li>
+    </ul>
+
+    <h3>Country & Location Management</h3>
+    <ul>
+      <li>Add/remove countries (GCC by default)</li>
+      <li>Add/remove cities per country</li>
+      <li>Enable/disable any country from listings</li>
+    </ul>
+
+    <h3>Ad & Banner Management</h3>
+    <ul>
+      <li>Google AdSense placement control (header, sidebar, between listings)</li>
+      <li>Enable/disable ads globally or per category</li>
+      <li>Rewarded ad toggle (on/off)</li>
+      <li>Set free job preview count before ad gate triggers</li>
+      <li>Landing page ad type selector: Google Ad / Product Banner / WhatsApp Link</li>
+      <li>Employer login page banner management <span class="tag green">New</span></li>
+      <li>UI auto-adjusts when banners/ads are disabled</li>
+    </ul>
+
+    <h3>Employer Limits & Billing</h3>
+    <ul>
+      <li>Set free job post limit per employer (global or per company)</li>
+      <li>Configure pricing for additional posts</li>
+      <li>Configure Stripe and PayPal credentials from admin panel</li>
+      <li>View all transactions and revenue</li>
+    </ul>
+
+    <h3>Premium Candidate Settings <span class="tag grey">Disabled at Launch</span></h3>
+    <ul>
+      <li>Enable/disable premium candidate feature</li>
+      <li>Set free job view limit for non-premium users</li>
+      <li>Set premium pricing plans</li>
+    </ul>
+
+    <h3>CV & Media Settings</h3>
+    <ul>
+      <li>Enable/disable CV upload globally <span class="tag green">New</span></li>
+      <li>Enable/disable profile photo upload</li>
+      <li>If CV upload disabled: apply redirects to email automatically</li>
+      <li>Storage usage monitor in admin dashboard</li>
+    </ul>
+
+    <h3>Platform Analytics</h3>
+    <ul>
+      <li>Total users, jobs, applications, employers</li>
+      <li>Daily/weekly/monthly traffic stats</li>
+      <li>Revenue dashboard (ads + payments)</li>
+      <li>Top performing job categories</li>
+      <li>Most searched keywords</li>
+    </ul>
+  </div>
+
+  <!-- 5. PRODUCT BANNER SYSTEM -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🛍️</div>
+      <h2>5. Product Banner System</h2>
+    </div>
+    <ul>
+      <li>2–3 product banner slots on every job detail page</li>
+      <li>Each banner: image + product title + short description + link to product detail page</li>
+      <li>Global banners: show on all job posts regardless of category</li>
+      <li>Category-wise banners: IT jobs → tech product banners, HR jobs → HR software banners, etc.</li>
+      <li>Admin can add, edit, remove products from panel</li>
+      <li>Admin can assign products globally or per specific category</li>
+      <li>Admin can enable/disable banners per category anytime <span class="tag green">New</span></li>
+      <li>When banners disabled for a category, UI auto-adjusts (no empty space)</li>
+      <li>Product detail page: full description, price, external purchase link</li>
+      <li>Banner click tracking (impressions + clicks analytics in admin)</li>
+    </ul>
+  </div>
+
+  <!-- 6. PAYMENT SYSTEM -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">💳</div>
+      <h2>6. Payment System</h2>
+    </div>
+    <table>
+      <tr><th>Method</th><th>Used For</th><th>Status</th></tr>
+      <tr><td>Stripe</td><td>Employer extra job posts, premium candidates, featured listings</td><td>Configurable from admin panel</td></tr>
+      <tr><td>PayPal</td><td>Same as Stripe — alternative option</td><td>Configurable from admin panel</td></tr>
+      <tr><td>Manual/Invoice</td><td>Enterprise employers — offline payment</td><td>Admin can record manually</td></tr>
+    </table>
+    <ul style="margin-top:16px">
+      <li>Admin enters Stripe/PayPal API keys directly from admin panel — no code change needed</li>
+      <li>Can enable Stripe only, PayPal only, or both</li>
+      <li>All transactions logged with receipt generation</li>
+      <li>Premium candidate payment gate: disabled at launch, enable anytime</li>
+    </ul>
+  </div>
+
+  <!-- 7. CV & MEDIA -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">📄</div>
+      <h2>7. CV & Media Management</h2>
+    </div>
+    <ul>
+      <li>CV upload: globally enabled/disabled from admin panel <span class="tag green">New</span></li>
+      <li>Profile photo upload: enabled/disabled separately</li>
+      <li>Company logo upload: enabled/disabled separately</li>
+      <li>When CV upload disabled: "Apply via Email" auto-activates as fallback</li>
+      <li>Email apply redirects candidate to send CV via their email client automatically</li>
+      <li>Storage usage displayed in admin dashboard</li>
+      <li>At launch: CV upload DISABLED, email apply ENABLED <span class="tag grey">Default</span></li>
+      <li>Can be enabled later when storage budget allows</li>
+    </ul>
+  </div>
+
+  <!-- 8. CANDIDATE DATABASE -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🗄️</div>
+      <h2>8. Candidate Database</h2>
+    </div>
+    <h3>Core Data Captured Per Candidate</h3>
+    <table>
+      <tr><th>Field</th><th>Detail</th></tr>
+      <tr><td>Full Name</td><td>First + Last name</td></tr>
+      <tr><td>Email</td><td>Primary contact</td></tr>
+      <tr><td>Mobile Number</td><td>With country code (used for OTP also)</td></tr>
+      <tr><td>Nationality</td><td>Country of origin</td></tr>
+      <tr><td>Current Location</td><td>Country + City</td></tr>
+      <tr><td>Date of Birth</td><td>Age calculation</td></tr>
+      <tr><td>Gender</td><td>Optional</td></tr>
+      <tr><td>Current Job Title</td><td>Latest role</td></tr>
+      <tr><td>Industry</td><td>Sector they work in</td></tr>
+      <tr><td>Experience (Years)</td><td>Total years</td></tr>
+      <tr><td>Education Level</td><td>Degree, field of study</td></tr>
+      <tr><td>Skills</td><td>Multi-select tags</td></tr>
+      <tr><td>Languages</td><td>With proficiency level</td></tr>
+      <tr><td>Expected Salary</td><td>Range + currency</td></tr>
+      <tr><td>Job Type Preference</td><td>Full-time, part-time, remote, etc.</td></tr>
+      <tr><td>Countries Open To</td><td>GCC preferences</td></tr>
+      <tr><td>Registration Date</td><td>Timestamp</td></tr>
+      <tr><td>Last Active</td><td>Engagement tracking</td></tr>
+      <tr><td>Application Count</td><td>How many jobs applied</td></tr>
+      <tr><td>Source</td><td>How they registered (Google, OTP, email, LinkedIn)</td></tr>
+    </table>
+    <ul style="margin-top:14px">
+      <li>Full search and filter of candidate database from admin panel</li>
+      <li>Export to CSV / Excel for business use</li>
+      <li>Segment candidates by nationality, skill, location, experience</li>
+      <li>Future use: sell insights, targeted job alerts, B2B recruitment data</li>
+    </ul>
+  </div>
+
+  <!-- 9. MOBILE APPS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">📱</div>
+      <h2>9. Mobile Apps (iOS & Android)</h2>
+    </div>
+    <ul>
+      <li>Full feature parity with web app</li>
+      <li>Google AdMob: banner ads + rewarded interstitial ads</li>
+      <li>Product banners on job detail screen</li>
+      <li>Push notifications: job alerts, application status updates</li>
+      <li>Mobile OTP login (SMS)</li>
+      <li>Biometric login (fingerprint / Face ID)</li>
+      <li>Offline saved/bookmarked jobs</li>
+      <li>Share job via WhatsApp, social media</li>
+      <li>CV upload from phone gallery/files (when enabled)</li>
+      <li>In-app employer dashboard (post jobs, view applicants)</li>
+      <li>Stripe/PayPal in-app payment</li>
+    </ul>
+  </div>
+
+  <!-- 10. MONETIZATION -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">💰</div>
+      <h2>10. Monetization Strategy</h2>
+    </div>
+    <table>
+      <tr><th>Revenue Stream</th><th>Detail</th><th>Status</th></tr>
+      <tr><td>Google AdSense (Web)</td><td>Auto banner ads across site</td><td>Enabled at launch</td></tr>
+      <tr><td>Google AdMob (Mobile)</td><td>Banner + rewarded ads</td><td>Enabled at launch</td></tr>
+      <tr><td>Rewarded Ad Gate</td><td>Watch ad to unlock more jobs</td><td>Enabled at launch</td></tr>
+      <tr><td>Sponsored Job Listings</td><td>Employers pay for top placement</td><td>Enabled at launch</td></tr>
+      <tr><td>Employer Extra Job Posts</td><td>Charge after free limit exceeded</td><td>Enabled at launch</td></tr>
+      <tr><td>Featured Company Profiles</td><td>Paid company spotlight</td><td>Enabled at launch</td></tr>
+      <tr><td>Product Banners</td><td>Affiliate / direct ad revenue per category</td><td>Enabled at launch</td></tr>
+      <tr><td>Employer Login Banners</td><td>Sell products/services to employers</td><td>Enabled at launch</td></tr>
+      <tr><td>Premium Candidate</td><td>Unlock unlimited job views</td><td>Disabled at launch</td></tr>
+      <tr><td>CV Database Access</td><td>Sell recruiter access to candidate DB</td><td>Future phase</td></tr>
+    </table>
+  </div>
+
+  <!-- 11. TECH STACK -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🛠️</div>
+      <h2>11. Tech Stack</h2>
+    </div>
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Reason</th></tr>
+      <tr><td>Web Frontend</td><td>Next.js + Tailwind CSS</td><td>Fast, SEO-friendly, same as gocareer</td></tr>
+      <tr><td>Backend API</td><td>Node.js + Express</td><td>Scalable, fast</td></tr>
+      <tr><td>Database</td><td>PostgreSQL (Supabase)</td><td>Structured, powerful queries</td></tr>
+      <tr><td>Mobile</td><td>React Native (Expo)</td><td>iOS + Android from one codebase</td></tr>
+      <tr><td>Authentication</td><td>JWT + Google + LinkedIn + SMS OTP</td><td>Multiple login options</td></tr>
+      <tr><td>OTP SMS</td><td>Twilio / Firebase Auth</td><td>Mobile number verification</td></tr>
+      <tr><td>Search</td><td>PostgreSQL full-text search</td><td>No extra cost at start</td></tr>
+      <tr><td>Payments</td><td>Stripe + PayPal</td><td>Global payment coverage</td></tr>
+      <tr><td>Web Ads</td><td>Google AdSense</td><td>Auto-monetization</td></tr>
+      <tr><td>Mobile Ads</td><td>Google AdMob</td><td>In-app monetization</td></tr>
+      <tr><td>Storage</td><td>Cloudinary (when enabled)</td><td>Images, logos, CVs</td></tr>
+      <tr><td>Web Hosting</td><td>Vercel</td><td>Optimized for Next.js</td></tr>
+      <tr><td>DB Hosting</td><td>Supabase / Railway</td><td>Free tier available</td></tr>
+      <tr><td>Domain</td><td>uaecareer.ae (GoDaddy → Vercel)</td><td>Already owned</td></tr>
+      <tr><td>Email</td><td>Resend / SendGrid</td><td>Job alerts, notifications</td></tr>
+    </table>
+  </div>
+
+  <!-- 12. UI COLOR THEME -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🎨</div>
+      <h2>12. UI Color Theme</h2>
+    </div>
+    <p style="font-size:14px;color:#555;margin-bottom:8px;">Selected based on color psychology for trust, engagement, and action in a professional job portal context.</p>
+    <div class="color-swatches">
+      <div class="swatch">
+        <div class="swatch-color" style="background:#1A3C6E;"></div>
+        <div class="swatch-info">
+          <div class="name">Deep Blue</div>
+          <div class="hex">#1A3C6E</div>
+          <div class="role">Primary / Trust</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#FF6B35;"></div>
+        <div class="swatch-info">
+          <div class="name">Vibrant Orange</div>
+          <div class="hex">#FF6B35</div>
+          <div class="role">CTA / Action</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#FFFFFF; border:1px solid #eee;"></div>
+        <div class="swatch-info">
+          <div class="name">Clean White</div>
+          <div class="hex">#FFFFFF</div>
+          <div class="role">Background</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#F5F7FA;"></div>
+        <div class="swatch-info">
+          <div class="name">Light Grey</div>
+          <div class="hex">#F5F7FA</div>
+          <div class="role">Cards / Sections</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#FFB400;"></div>
+        <div class="swatch-info">
+          <div class="name">Gold</div>
+          <div class="hex">#FFB400</div>
+          <div class="role">Premium / Featured</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 13. GLOBAL TOGGLES -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🔘</div>
+      <h2>13. Global Admin Toggle Settings</h2>
+    </div>
+    <p style="font-size:13px;color:#666;margin-bottom:14px;">All settings below are controllable from admin panel — no code changes required.</p>
+    <div class="toggle-grid">
+      <div class="toggle-item">
+        <div class="toggle-name">CV Upload</div>
+        <div class="toggle-default">Launch default: <span class="off">OFF</span></div>
+      </div>
+      <div class="toggle-item">
+        <div class="toggle-name">Profile Photo Upload</div>
+        <div class="toggle-default">Launch default: <span class="off">OFF</span></div>
+      </div>
+      <div class="toggle-item">
+        <div class="toggle-name">Premium Candidate Gate</div>
+        <div class="toggle-default">Launch default: <span class="off">OFF</span></div>
+      </div>
+      <div class="toggle-item">
+        <div class="toggle-name">Rewarded Ad Gate</div>
+        <div class="toggle-default">Launch default: <span>ON</span></div>
+      </div>
+      <div class="toggle-item">
+        <div class="toggle-name">Google AdSense (Web)</div>
+        <div class="toggle-default">Launch default: <span>ON</span></div>
+      </div>
+      <div class="toggle-item">
+        <div class="toggle-name">Google AdMob (Mobile)</div>
+        <div class="toggle-default">Launch default: <span>ON</span></div>
+      </div>
+      <div class="toggle-item">
+        <div class="toggle-name">Product Banners</div>
+        <div class="toggle-default">Launch default: <span>ON</span></div>
+      </div>
+      <div class="toggle-item">
+        <div class="toggle-name">Employer Login Banner</div>
+        <div class="toggle-default">Launch default: <span>ON</span></div>
+      </div>
+      <div class="toggle-item">
+        <div class="toggle-name">Stripe Payments</div>
+        <div class="toggle-default">Launch default: <span>ON</span></div>
+      </div>
+      <div class="toggle-item">
+        <div class="toggle-name">PayPal Payments</div>
+        <div class="toggle-default">Launch default: <span>ON</span></div>
+      </div>
+      <div class="toggle-item">
+        <div class="toggle-name">User Auto-Approval</div>
+        <div class="toggle-default">Launch default: <span>ON</span></div>
+      </div>
+      <div class="toggle-item">
+        <div class="toggle-name">Employer Auto-Approval</div>
+        <div class="toggle-default">Launch default: <span class="off">OFF</span> (Manual)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 14. TIMELINE -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">⏱️</div>
+      <h2>14. Development Timeline (AI-Assisted)</h2>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot">1</div>
+        <div class="timeline-content">
+          <div class="phase">Phase 1 — Foundation <span class="phase-time">3–4 hrs</span></div>
+          <div class="phase-items">Project setup, database schema, auth system (email + Google + LinkedIn + OTP), core API</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot">2</div>
+        <div class="timeline-content">
+          <div class="phase">Phase 2 — Web App Core <span class="phase-time">4–5 hrs</span></div>
+          <div class="phase-items">Landing page, job listings, job detail page, search & filters, apply system, product banners, ad placements</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot">3</div>
+        <div class="timeline-content">
+          <div class="phase">Phase 3 — Dashboards <span class="phase-time">3–4 hrs</span></div>
+          <div class="phase-items">Job seeker dashboard, employer dashboard, job posting flow, application tracking, billing</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot">4</div>
+        <div class="timeline-content">
+          <div class="phase">Phase 4 — Admin Panel <span class="phase-time">3–4 hrs</span></div>
+          <div class="phase-items">Full admin panel, all toggles, user management, approval system, ad/banner management, analytics</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot">5</div>
+        <div class="timeline-content">
+          <div class="phase">Phase 5 — Mobile Apps <span class="phase-time">4–6 hrs</span></div>
+          <div class="phase-items">React Native iOS + Android, full feature parity, AdMob, push notifications, biometric login</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot">6</div>
+        <div class="timeline-content">
+          <div class="phase">Phase 6 — Testing & Deployment <span class="phase-time">2–3 hrs</span></div>
+          <div class="phase-items">Vercel deployment, domain setup (uaecareer.ae), Supabase DB, app store submission prep</div>
+        </div>
+      </div>
+    </div>
+    <table style="margin-top:20px">
+      <tr><th>Total Web App</th><th>Total Mobile Apps</th><th>Grand Total</th></tr>
+      <tr><td>~14–18 hours (Day 1)</td><td>~6–8 hours (Day 2)</td><td>~20–26 hours (2 Days)</td></tr>
+    </table>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer-doc">
+  <div class="domain">uaecareer.ae</div>
+  <p>UAE Careers — Full Project Scope Document | Prepared June 2026</p>
+  <p style="margin-top:6px">To save as PDF: File → Print → Save as PDF (in browser)</p>
+</div>
+
+</body>
+</html>
