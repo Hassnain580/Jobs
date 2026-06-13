@@ -39,7 +39,8 @@
           "color": "#1A3C6E"
         }
       ],
-      "expo-local-authentication"
+      "expo-local-authentication",
+      "expo-splash-screen"
     ],
     "experiments": {
       "typedRoutes": true
