@@ -132,10 +132,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </button>
             <h1 className="text-lg font-semibold text-[#1A3C6E]">{pageTitle}</h1>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="hidden sm:block text-sm text-gray-600">
-              Welcome, <strong className="text-[#1A3C6E]">{adminName}</strong>
-            </span>
+          <div className="flex items-center gap-3">
+            <Link href="/admin/profile" className="hidden sm:flex items-center gap-2 text-sm text-gray-600 hover:text-[#1A3C6E] transition-colors">
+              <div className="w-7 h-7 rounded-full bg-[#1A3C6E] text-white flex items-center justify-center text-xs font-bold">
+                {adminName.charAt(0).toUpperCase()}
+              </div>
+              <span className="font-medium">{adminName}</span>
+            </Link>
             <button
               onClick={handleLogout}
               className="rounded-lg bg-red-50 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-100 transition-colors"

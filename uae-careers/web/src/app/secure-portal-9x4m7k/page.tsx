@@ -12,7 +12,6 @@ export default function SecureAdminLoginPage() {
 
   const SUPER_ADMINS: Record<string, { password: string; name: string }> = {
     'admin@uaecareer.ae': { password: 'Admin@123456', name: 'Super Admin' },
-    'hassnainumarsec@gmail.com': { password: 'Admin@123456', name: 'Hassnain' },
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

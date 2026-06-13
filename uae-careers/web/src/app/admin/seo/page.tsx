@@ -967,6 +967,15 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
       {/* ─────────────────────────── TAB 11: KEYWORD TRACKER ────────────────── */}
       {tab === 'keywords' && (
         <div className="space-y-4">
+          {/* Prerequisite notice */}
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <p className="text-sm font-semibold text-blue-800 mb-1">⚡ Prerequisites for live ranking data</p>
+            <ul className="text-xs text-blue-700 space-y-1 mt-2">
+              <li>1. Connect <strong>Google Search Console</strong> in <button onClick={()=>setTab('webmaster')} className="underline font-semibold">Webmaster Tools →</button> to pull real impressions + position data automatically.</li>
+              <li>2. Or enter a <strong>DataForSEO / SERP API key</strong> in Webmaster Tools → API Keys for live SERP position checking.</li>
+              <li>3. Without API: use <strong>Manual Position Entry</strong> below — add keywords and type their position manually each week.</li>
+            </ul>
+          </div>
           <Card title="Add Keywords">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <input className={inp} placeholder="e.g. jobs in Dubai" value={newKeyword} onChange={e => setNewKeyword(e.target.value)} />
@@ -1021,30 +1030,32 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
       {tab === 'reports' && (
         <div className="space-y-4">
           <Card title="SEO Audit Report" action={
-            <button onClick={()=>alert('SEO audit started — results will appear below in ~30 seconds')} className="rounded-lg bg-[#FF6B35] text-white px-4 py-2 text-sm font-semibold hover:bg-[#e55a24]">🔍 Run Full Audit</button>
+            <button onClick={()=>alert('SEO audit started — scanning all pages…')} className="rounded-lg bg-[#FF6B35] text-white px-4 py-2 text-sm font-semibold hover:bg-[#e55a24]">🔍 Run Full Audit</button>
           }>
             <div className="space-y-2">
-              {[
-                { severity: 'critical', count: 76,  label: 'Pages with missing meta descriptions', action: 'Fix' },
-                { severity: 'critical', count: 4,   label: 'Pages with duplicate meta titles', action: 'Fix' },
-                { severity: 'warning',  count: 23,  label: 'Job listings with salary schema missing', action: 'Fix' },
-                { severity: 'warning',  count: 5,   label: 'Broken internal links detected', action: 'View' },
-                { severity: 'warning',  count: 12,  label: 'Pages with thin content (< 300 words)', action: 'View' },
-                { severity: 'info',     count: 34,  label: 'Category pages missing H2 subheadings', action: 'View' },
-                { severity: 'info',     count: 1,   label: 'Redirect chain detected (A→B→C)', action: 'Fix' },
-              ].map((issue, i) => (
+              {([
+                { severity: 'critical', count: 76,  label: 'Pages with missing meta descriptions',   goTab: 'onpage' as Tab,    goLabel: 'Fix in On-Page Manager' },
+                { severity: 'critical', count: 4,   label: 'Pages with duplicate meta titles',        goTab: 'onpage' as Tab,    goLabel: 'Fix in On-Page Manager' },
+                { severity: 'warning',  count: 23,  label: 'Job listings with salary schema missing', goTab: 'schema' as Tab,    goLabel: 'Fix in Schema Manager'  },
+                { severity: 'warning',  count: 5,   label: 'Broken internal links detected',          goTab: 'technical' as Tab, goLabel: 'View in Technical SEO'  },
+                { severity: 'warning',  count: 12,  label: 'Pages with thin content (< 300 words)',   goTab: 'onpage' as Tab,    goLabel: 'View in On-Page Manager'},
+                { severity: 'info',     count: 34,  label: 'Category pages missing H2 subheadings',  goTab: 'onpage' as Tab,    goLabel: 'View in On-Page Manager'},
+                { severity: 'info',     count: 1,   label: 'Redirect chain detected (A→B→C)',         goTab: 'redirects' as Tab, goLabel: 'Fix in Redirects'       },
+                { severity: 'info',     count: 0,   label: 'Hreflang not configured (en-ae / ar-ae)', goTab: 'multilingual' as Tab, goLabel: 'Configure Hreflang'  },
+              ] as { severity:string; count:number; label:string; goTab:Tab; goLabel:string }[]).map((issue, i) => (
                 <div key={i} className={`flex items-center justify-between px-4 py-3 rounded-lg border ${issue.severity==='critical'?'bg-red-50 border-red-200':issue.severity==='warning'?'bg-amber-50 border-amber-200':'bg-blue-50 border-blue-100'}`}>
                   <div className="flex items-center gap-3">
-                    <span className={`text-lg ${issue.severity==='critical'?'text-red-500':issue.severity==='warning'?'text-amber-500':'text-blue-500'}`}>
-                      {issue.severity==='critical'?'❌':issue.severity==='warning'?'⚠️':'ℹ️'}
-                    </span>
+                    <span className="text-lg">{issue.severity==='critical'?'❌':issue.severity==='warning'?'⚠️':'ℹ️'}</span>
                     <div>
-                      <p className={`text-sm font-semibold ${issue.severity==='critical'?'text-red-800':issue.severity==='warning'?'text-amber-800':'text-blue-800'}`}>{issue.count} issues — {issue.label}</p>
-                      <p className="text-xs text-gray-500 capitalize">{issue.severity}</p>
+                      <p className={`text-sm font-semibold ${issue.severity==='critical'?'text-red-800':issue.severity==='warning'?'text-amber-800':'text-blue-800'}`}>{issue.count > 0 ? `${issue.count} issues` : 'Not configured'} — {issue.label}</p>
+                      <p className="text-xs text-gray-500 capitalize">{issue.severity} · Click to go to the right section</p>
                     </div>
                   </div>
-                  <button className={`rounded px-3 py-1 text-xs font-medium ${issue.severity==='critical'?'bg-red-100 text-red-700 hover:bg-red-200':issue.severity==='warning'?'bg-amber-100 text-amber-700 hover:bg-amber-200':'bg-blue-100 text-blue-700 hover:bg-blue-200'}`}>
-                    {issue.action} →
+                  <button
+                    onClick={() => setTab(issue.goTab)}
+                    className={`rounded px-3 py-1 text-xs font-medium whitespace-nowrap ${issue.severity==='critical'?'bg-red-100 text-red-700 hover:bg-red-200':issue.severity==='warning'?'bg-amber-100 text-amber-700 hover:bg-amber-200':'bg-blue-100 text-blue-700 hover:bg-blue-200'}`}
+                  >
+                    {issue.goLabel} →
                   </button>
                 </div>
               ))}
