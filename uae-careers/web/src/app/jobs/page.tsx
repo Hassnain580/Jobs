@@ -104,7 +104,7 @@ export default function JobsPage() {
                 placeholder="Job title, keyword or company"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm text-gray-900 focus:outline-none"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm text-gray-900 bg-white border-2 border-[#FF6B35] focus:outline-none focus:ring-2 focus:ring-[#FF6B35] placeholder-gray-400"
               />
             </div>
             <button className="bg-[#FF6B35] hover:bg-[#e55a24] text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
