@@ -5,17 +5,18 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 
 const NAV_LINKS = [
-  { href: '/admin', label: 'Dashboard', icon: '⊞' },
-  { href: '/admin/jobs', label: 'Jobs', icon: '💼' },
-  { href: '/admin/users', label: 'Users', icon: '👥' },
-  { href: '/admin/employers', label: 'Employers', icon: '🏢' },
-  { href: '/admin/categories', label: 'Categories', icon: '🗂' },
-  { href: '/admin/countries', label: 'Countries', icon: '🌍' },
-  { href: '/admin/products', label: 'Products / Banners', icon: '🖼' },
-  { href: '/admin/cms', label: 'CMS Content', icon: '📝' },
-  { href: '/admin/settings', label: 'Settings', icon: '⚙' },
-  { href: '/admin/analytics', label: 'Analytics', icon: '📊' },
-  { href: '/admin/admins', label: 'Admin Users', icon: '🔐' },
+  { href: '/admin',            label: 'Dashboard',       icon: '⊞' },
+  { href: '/admin/jobs',       label: 'Jobs',            icon: '💼' },
+  { href: '/admin/users',      label: 'Users',           icon: '👥' },
+  { href: '/admin/employers',  label: 'Employers',       icon: '🏢' },
+  { href: '/admin/categories', label: 'Categories',      icon: '🗂' },
+  { href: '/admin/countries',  label: 'Countries',       icon: '🌍' },
+  { href: '/admin/products',   label: 'Products / Banners', icon: '🖼' },
+  { href: '/admin/cms',        label: 'CMS Content',     icon: '📝' },
+  { href: '/admin/seo',        label: 'SEO',             icon: '🔍' },
+  { href: '/admin/settings',   label: 'Settings',        icon: '⚙' },
+  { href: '/admin/analytics',  label: 'Analytics',       icon: '📊' },
+  { href: '/admin/admins',     label: 'Admin Users',     icon: '🔐' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
