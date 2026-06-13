@@ -4,6 +4,19 @@ const nextConfig: NextConfig = {
   // Remove X-Powered-By: Next.js header
   poweredByHeader: false,
 
+  // Serve static assets from /_s/ instead of /_next/ — hides Next.js pattern from page source
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/_s' : '',
+
+  async rewrites() {
+    return [
+      // Proxy /_s/* → /_next/* so the server can still find the files
+      {
+        source: '/_s/:path*',
+        destination: '/_next/:path*',
+      },
+    ];
+  },
+
   async headers() {
     return [
       {
