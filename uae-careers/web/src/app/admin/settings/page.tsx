@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 // ── Tab types ──────────────────────────────────────────────────────────────────
 type Tab =
+  | 'branding'
   | 'general'
   | 'apply'
   | 'ads'
@@ -15,15 +16,16 @@ type Tab =
   | 'llm';
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: 'general',  label: 'General' },
-  { id: 'apply',    label: 'Apply Methods' },
-  { id: 'ads',      label: 'Ad Settings' },
-  { id: 'media',    label: 'CV & Media' },
-  { id: 'approval', label: 'User Approval' },
-  { id: 'employer', label: 'Employer Limits' },
-  { id: 'premium',  label: 'Premium' },
-  { id: 'payments', label: 'Payments' },
-  { id: 'llm',      label: 'LLM / AI' },
+  { id: 'branding',  label: '🎨 Branding' },
+  { id: 'general',   label: 'General' },
+  { id: 'apply',     label: 'Apply Methods' },
+  { id: 'ads',       label: 'Ad Settings' },
+  { id: 'media',     label: 'CV & Media' },
+  { id: 'approval',  label: 'User Approval' },
+  { id: 'employer',  label: 'Employer Limits' },
+  { id: 'premium',   label: 'Premium' },
+  { id: 'payments',  label: 'Payments' },
+  { id: 'llm',       label: 'LLM / AI' },
 ];
 
 // ── Shared UI helpers ──────────────────────────────────────────────────────────
@@ -110,7 +112,7 @@ const CATEGORIES = ['IT', 'Marketing', 'Finance', 'HR', 'Sales', 'Engineering', 
 const APPLY_OPTIONS = ['Platform', 'Email', 'Phone', 'WhatsApp', 'External'];
 
 export default function AdminSettingsPage() {
-  const [tab, setTab] = useState<Tab>('general');
+  const [tab, setTab] = useState<Tab>('branding');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState<Tab | null>(null);
 
@@ -159,6 +161,32 @@ export default function AdminSettingsPage() {
   const [paypalClientId, setPaypalClientId] = useState('');
   const [paypalSecret, setPaypalSecret] = useState('');
 
+  // ── Branding ──────────────────────────────────────────────────────────────────
+  const [logoUrl, setLogoUrl] = useState(() => (typeof window !== 'undefined' ? localStorage.getItem('site_logo') || '' : ''));
+  const [faviconUrl, setFaviconUrl] = useState(() => (typeof window !== 'undefined' ? localStorage.getItem('site_favicon') || '' : ''));
+  const [brandSiteName, setBrandSiteName] = useState(() => (typeof window !== 'undefined' ? localStorage.getItem('site_name') || 'UAE Careers' : 'UAE Careers'));
+  const [primaryColor, setPrimaryColor] = useState(() => (typeof window !== 'undefined' ? localStorage.getItem('site_primary') || '#1A3C6E' : '#1A3C6E'));
+  const [accentColor, setAccentColor] = useState(() => (typeof window !== 'undefined' ? localStorage.getItem('site_accent') || '#FF6B35' : '#FF6B35'));
+
+  const saveBranding = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('site_logo', logoUrl);
+      localStorage.setItem('site_favicon', faviconUrl);
+      localStorage.setItem('site_name', brandSiteName);
+      localStorage.setItem('site_primary', primaryColor);
+      localStorage.setItem('site_accent', accentColor);
+      // Update favicon live
+      if (faviconUrl) {
+        const link = (document.querySelector("link[rel='icon']") as HTMLLinkElement) || document.createElement('link');
+        link.rel = 'icon';
+        link.href = faviconUrl;
+        document.head.appendChild(link);
+      }
+    }
+    setSaving(true);
+    setTimeout(() => { setSaving(false); setSaved(tab); setTimeout(() => setSaved(null), 2500); }, 400);
+  };
+
   // ── LLM ───────────────────────────────────────────────────────────────────────
   const [llmEnabled, setLlmEnabled] = useState(true);
   const [llmProvider, setLlmProvider] = useState('OpenAI');
@@ -198,6 +226,67 @@ export default function AdminSettingsPage() {
         {saved === tab && (
           <div className="mb-4 rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-2.5 text-sm text-emerald-700 font-medium">
             Settings saved successfully.
+          </div>
+        )}
+
+        {/* ── Branding ── */}
+        {tab === 'branding' && (
+          <div>
+            <h3 className="text-base font-semibold text-gray-800 mb-1">Branding & Appearance</h3>
+            <p className="text-sm text-gray-500 mb-5">Changes are saved to your browser and reflected on the public site immediately.</p>
+
+            <Field label="Site Name" hint="Displayed in header and browser tab">
+              <TextInput value={brandSiteName} onChange={setBrandSiteName} placeholder="UAE Careers" />
+            </Field>
+
+            <Field label="Logo URL" hint="Paste a direct image URL (PNG/SVG, transparent background recommended)">
+              <TextInput value={logoUrl} onChange={setLogoUrl} placeholder="https://your-cdn.com/logo.png" />
+              {logoUrl && (
+                <div className="mt-3 p-3 border border-dashed border-gray-200 rounded-lg inline-flex items-center gap-3 bg-gray-50">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={logoUrl} alt="Logo preview" className="h-10 object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                  <span className="text-xs text-gray-500">Logo preview</span>
+                </div>
+              )}
+            </Field>
+
+            <Field label="Favicon URL" hint="Square image, 32×32 or 64×64 px (PNG or ICO)">
+              <TextInput value={faviconUrl} onChange={setFaviconUrl} placeholder="https://your-cdn.com/favicon.png" />
+              {faviconUrl && (
+                <div className="mt-3 p-3 border border-dashed border-gray-200 rounded-lg inline-flex items-center gap-3 bg-gray-50">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={faviconUrl} alt="Favicon preview" className="h-8 w-8 object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                  <span className="text-xs text-gray-500">Favicon preview</span>
+                </div>
+              )}
+            </Field>
+
+            <Field label="Primary Color" hint="Used for header, buttons, and accents">
+              <div className="flex items-center gap-3">
+                <input type="color" value={primaryColor} onChange={(e) => setPrimaryColor(e.target.value)} className="h-9 w-14 rounded border border-gray-300 cursor-pointer" />
+                <TextInput value={primaryColor} onChange={setPrimaryColor} placeholder="#1A3C6E" />
+              </div>
+            </Field>
+
+            <Field label="Accent Color" hint="Used for CTA buttons and highlights">
+              <div className="flex items-center gap-3">
+                <input type="color" value={accentColor} onChange={(e) => setAccentColor(e.target.value)} className="h-9 w-14 rounded border border-gray-300 cursor-pointer" />
+                <TextInput value={accentColor} onChange={setAccentColor} placeholder="#FF6B35" />
+              </div>
+            </Field>
+
+            <div className="mt-6 pt-4 border-t border-gray-100">
+              <p className="text-xs text-gray-400 mb-3">
+                💡 Tip: To use your own logo/favicon file, upload it to Cloudinary, ImgBB, or any image host and paste the URL above.
+              </p>
+              <button
+                onClick={saveBranding}
+                disabled={saving}
+                className="rounded-lg bg-[#FF6B35] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#e55a24] disabled:opacity-50 transition-colors"
+              >
+                {saving ? 'Saving…' : 'Save Branding'}
+              </button>
+            </div>
           </div>
         )}
 

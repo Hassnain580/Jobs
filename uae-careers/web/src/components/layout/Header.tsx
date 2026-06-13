@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -39,7 +39,14 @@ function getInitials(first: string, last: string) {
 export default function Header({ user }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [customLogo, setCustomLogo] = useState('');
+  const [customName, setCustomName] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    setCustomLogo(localStorage.getItem('site_logo') || '');
+    setCustomName(localStorage.getItem('site_name') || '');
+  }, []);
 
   function handleLogout() {
     if (typeof window !== 'undefined') {
@@ -55,8 +62,15 @@ export default function Header({ user }: HeaderProps) {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-            <Briefcase className="w-6 h-6 text-[#FF6B35]" />
-            <span className="text-xl font-bold text-[#1A3C6E]">UAE Careers</span>
+            {customLogo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={customLogo} alt={customName || 'UAE Careers'} className="h-9 w-auto object-contain" />
+            ) : (
+              <>
+                <Briefcase className="w-6 h-6 text-[#FF6B35]" />
+                <span className="text-xl font-bold text-[#1A3C6E]">{customName || 'UAE Careers'}</span>
+              </>
+            )}
           </Link>
 
           {/* Desktop nav */}
