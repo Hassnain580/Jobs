@@ -93,12 +93,12 @@ export default function HomePage() {
                 <input
                   type="text"
                   placeholder="Job title, keyword or company"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B35]"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl text-gray-900 bg-white text-sm border-2 border-[#FF6B35] focus:outline-none focus:ring-2 focus:ring-[#FF6B35] placeholder-gray-400"
                 />
               </div>
               <div className="relative">
                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                <select className="pl-10 pr-8 py-3 rounded-xl text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B35] appearance-none bg-white w-full sm:w-44">
+                <select className="pl-10 pr-8 py-3 rounded-xl text-gray-900 bg-white text-sm border-2 border-[#FF6B35] focus:outline-none focus:ring-2 focus:ring-[#FF6B35] appearance-none w-full sm:w-44">
                   <option value="">All Countries</option>
                   {COUNTRIES.map((c) => (
                     <option key={c.code} value={c.code}>
@@ -114,8 +114,14 @@ export default function HomePage() {
                 Search Jobs
               </button>
             </form>
-            <p className="text-blue-300 text-sm mt-4">
-              Popular: Software Engineer, Civil Engineer, Nurse, Accountant, Driver
+            <p className="text-white/70 text-sm mt-4">
+              Popular:{' '}
+              {['Software Engineer', 'Civil Engineer', 'Nurse', 'Accountant', 'Driver'].map((t, i) => (
+                <span key={t}>
+                  <a href={`/jobs?q=${encodeURIComponent(t)}`} className="text-[#FF6B35] hover:underline">{t}</a>
+                  {i < 4 && ', '}
+                </span>
+              ))}
             </p>
           </div>
         </section>
