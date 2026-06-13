@@ -2,12 +2,20 @@
   "name": "uae-careers",
   "version": "1.0.0",
   "private": true,
-  "workspaces": ["api", "web", "mobile"],
+  "workspaces": [
+    "api",
+    "web",
+    "mobile"
+  ],
   "scripts": {
     "dev:api": "npm run dev --workspace=api",
     "dev:web": "npm run dev --workspace=web",
     "build:web": "npm run build --workspace=web",
     "db:migrate": "npm run db:migrate --workspace=api",
     "db:seed": "npm run db:seed --workspace=api"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.10.0",
+    "zod": "^3.24.0"
   }
 }
