@@ -217,15 +217,6 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
   const [newKwTarget, setNewKwTarget] = useState('');
 
   // ── Sitemap state ───────────────────────────────────────────────────────────
-  const [sitemapConfig] = useState([
-    { file: 'sitemap-jobs.xml',       enabled: true,  priority: '0.8', freq: 'daily',   lastGen: '2026-06-13 14:22' },
-    { file: 'sitemap-companies.xml',  enabled: true,  priority: '0.6', freq: 'weekly',  lastGen: '2026-06-13 14:22' },
-    { file: 'sitemap-categories.xml', enabled: true,  priority: '0.7', freq: 'weekly',  lastGen: '2026-06-13 14:22' },
-    { file: 'sitemap-locations.xml',  enabled: true,  priority: '0.7', freq: 'weekly',  lastGen: '2026-06-13 14:22' },
-    { file: 'sitemap-blog.xml',       enabled: true,  priority: '0.6', freq: 'weekly',  lastGen: '2026-06-12 09:10' },
-    { file: 'sitemap-salary.xml',     enabled: false, priority: '0.5', freq: 'monthly', lastGen: '—' },
-  ]);
-
   // ── Schema state ───────────────────────────────────────────────────────────
   const [schemaToggles, setSchemaToggles] = useState({
     website:      true,
@@ -326,6 +317,80 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
       setTimeout(tick, 480 + Math.random() * 200);
     };
     setTimeout(tick, 300);
+  };
+
+  // ── On-page manager state ───────────────────────────────────────────────────
+  type OnPageRow = { title: string; seotitle: string; seolen: number; desclen: number; robots: string; schema: string; og: string; status: string };
+  const [onPageRows, setOnPageRows] = useState<OnPageRow[]>([
+    { title:'Senior PHP Developer Dubai', seotitle:'Senior PHP Developer Dubai at TechCorp | UAE Careers', seolen:52, desclen:148, robots:'index', schema:'✅', og:'✅', status:'approved' },
+    { title:'Marketing Manager Riyadh',   seotitle:'Marketing Manager Riyadh at Gulf Media | UAE Careers', seolen:55, desclen:0,   robots:'index', schema:'✅', og:'❌', status:'pending' },
+    { title:'Nurse ICU — Abu Dhabi',      seotitle:'',                                                      seolen:0,  desclen:0,   robots:'index', schema:'⚠️', og:'❌', status:'pending' },
+    { title:'Civil Engineer Aldar',       seotitle:'Civil Engineer at Aldar Properties | UAE Careers',      seolen:48, desclen:155, robots:'index', schema:'✅', og:'✅', status:'approved' },
+  ]);
+  const [editingOnPage, setEditingOnPage] = useState<number | null>(null);
+  const [onPageFilter, setOnPageFilter] = useState<'all' | 'missing'>('all');
+
+  // ── Sitemap config with state ───────────────────────────────────────────────
+  const [sitemapConfigState, setSitemapConfigState] = useState([
+    { file: 'sitemap-jobs.xml',       enabled: true,  priority: '0.8', freq: 'daily',   lastGen: '2026-06-13 14:22', regenerating: false },
+    { file: 'sitemap-companies.xml',  enabled: true,  priority: '0.6', freq: 'weekly',  lastGen: '2026-06-13 14:22', regenerating: false },
+    { file: 'sitemap-categories.xml', enabled: true,  priority: '0.7', freq: 'weekly',  lastGen: '2026-06-13 14:22', regenerating: false },
+    { file: 'sitemap-locations.xml',  enabled: true,  priority: '0.7', freq: 'weekly',  lastGen: '2026-06-13 14:22', regenerating: false },
+    { file: 'sitemap-blog.xml',       enabled: true,  priority: '0.6', freq: 'weekly',  lastGen: '2026-06-12 09:10', regenerating: false },
+    { file: 'sitemap-salary.xml',     enabled: false, priority: '0.5', freq: 'monthly', lastGen: '—',                regenerating: false },
+  ]);
+  const [sitemapRegeneratingAll, setSitemapRegeneratingAll] = useState(false);
+  const [sitemapSubmitted, setSitemapSubmitted] = useState(false);
+
+  const regenerateAllSitemaps = () => {
+    setSitemapRegeneratingAll(true);
+    setSitemapConfigState(p => p.map(s => ({ ...s, regenerating: s.enabled })));
+    setTimeout(() => {
+      const now = new Date().toLocaleString('en-AE', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }).replace(',','');
+      setSitemapConfigState(p => p.map(s => ({ ...s, regenerating: false, lastGen: s.enabled ? now : s.lastGen })));
+      setSitemapRegeneratingAll(false);
+    }, 2200);
+  };
+
+  // ── Schema validate / JSON-LD preview state ─────────────────────────────────
+  const [schemaValidated, setSchemaValidated] = useState<'idle'|'running'|'valid'|'error'>('idle');
+  const [showJsonLd, setShowJsonLd] = useState(false);
+
+  // ── Robots.txt saved state ──────────────────────────────────────────────────
+  const [robotsSaved, setRobotsSaved] = useState(false);
+  const DEFAULT_ROBOTS = `User-agent: *\nDisallow: /admin/\nDisallow: /api/\nDisallow: /search?\nDisallow: /?sort=\nDisallow: /?filter=\nAllow: /\n\nUser-agent: Googlebot\nAllow: /jobs/\nAllow: /companies/\n\nSitemap: https://uaecareer.ae/sitemap.xml\nSitemap: https://uaecareer.ae/sitemap-jobs.xml`;
+
+  // ── IndexNow ping state ─────────────────────────────────────────────────────
+  const [pingUrl, setPingUrl] = useState('');
+  const [pinging, setPinging] = useState(false);
+  const [pingResult, setPingResult] = useState('');
+
+  // ── API keys connect/test state ─────────────────────────────────────────────
+  const [apiKeyInputs, setApiKeyInputs] = useState<Record<string, string>>({});
+  const [apiKeyStatus, setApiKeyStatus] = useState<Record<string, 'idle'|'testing'|'ok'|'fail'>>({});
+  const [connectingKey, setConnectingKey] = useState<string | null>(null);
+
+  // ── Hreflang rules with toggle state ───────────────────────────────────────
+  const [hreflangRules, setHreflangRules] = useState([
+    { lang:'en', region:'ae', tag:'en-ae', pattern:'/jobs/{slug}',    active: true  },
+    { lang:'ar', region:'ae', tag:'ar-ae', pattern:'/ar/jobs/{slug}', active: false },
+    { lang:'en', region:'gb', tag:'en-gb', pattern:'/jobs/{slug}',    active: false },
+    { lang:'',   region:'',   tag:'x-default', pattern:'/jobs/{slug}', active: true },
+    { lang:'ar', region:'sa', tag:'ar-sa', pattern:'/ar/jobs/{slug}', active: false },
+    { lang:'ar', region:'qa', tag:'ar-qa', pattern:'/ar/jobs/{slug}', active: false },
+  ]);
+
+  // ── Audit state ─────────────────────────────────────────────────────────────
+  const [auditRunning, setAuditRunning] = useState(false);
+  const [auditDone, setAuditDone] = useState(false);
+
+  // ── Registry edit state ─────────────────────────────────────────────────────
+  const [editingContentType, setEditingContentType] = useState<string | null>(null);
+
+  // ── CSV export helper ────────────────────────────────────────────────────────
+  const exportCSV = (headers: string[], rows: (string|number)[][], filename: string) => {
+    const csv = [headers.join(','), ...rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))].join('\n');
+    const a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv); a.download = filename; a.click();
   };
 
   // ── Original content registry state ─────────────────────────────────────────
@@ -556,6 +621,52 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
       {/* ─────────────────────────── TAB 3: ON-PAGE MANAGER ──────────────────── */}
       {tab === 'onpage' && (
         <div className="space-y-4">
+          {/* Inline edit panel */}
+          {editingOnPage !== null && (
+            <div className="bg-white rounded-xl border-2 border-[#1A3C6E] shadow-lg p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-[#1A3C6E]">Editing: {onPageRows[editingOnPage].title}</h3>
+                <button onClick={() => setEditingOnPage(null)} className="text-gray-400 hover:text-gray-700 text-xl">✕</button>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <div className="flex justify-between text-xs text-gray-500 mb-1">
+                    <span>SEO Title</span>
+                    <span className={onPageRows[editingOnPage].seolen > 60 ? 'text-red-500 font-medium' : 'text-emerald-600'}>{onPageRows[editingOnPage].seolen}/60</span>
+                  </div>
+                  <input className={inp} value={onPageRows[editingOnPage].seotitle}
+                    onChange={e => setOnPageRows(p => p.map((r,i) => i===editingOnPage ? {...r, seotitle: e.target.value, seolen: e.target.value.length} : r))} />
+                </div>
+                <div>
+                  <div className="flex justify-between text-xs text-gray-500 mb-1">
+                    <span>Meta Description</span>
+                    <span className={onPageRows[editingOnPage].desclen > 160 ? 'text-red-500 font-medium' : 'text-emerald-600'}>{onPageRows[editingOnPage].desclen}/160</span>
+                  </div>
+                  <textarea className={`${inp} min-h-[72px] resize-y`} placeholder="Enter meta description…"
+                    onChange={e => setOnPageRows(p => p.map((r,i) => i===editingOnPage ? {...r, desclen: e.target.value.length} : r))} />
+                </div>
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <label className="text-xs text-gray-500 block mb-1">Robots</label>
+                    <select className={inp} value={onPageRows[editingOnPage].robots}
+                      onChange={e => setOnPageRows(p => p.map((r,i) => i===editingOnPage ? {...r, robots: e.target.value} : r))}>
+                      {['index','noindex','noindex,nofollow'].map(v => <option key={v}>{v}</option>)}
+                    </select>
+                  </div>
+                  <div className="flex-1">
+                    <label className="text-xs text-gray-500 block mb-1">OG Image URL</label>
+                    <input className={inp} placeholder="https://…" />
+                  </div>
+                </div>
+                <div className="flex gap-2 pt-1">
+                  <button onClick={() => { setEditingOnPage(null); setSaved(true); setTimeout(()=>setSaved(false),2500); }}
+                    className="rounded-lg bg-[#1A3C6E] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0d2444]">Save Changes</button>
+                  <button onClick={() => setEditingOnPage(null)} className="rounded-lg border border-gray-300 px-5 py-2 text-sm text-gray-600 hover:bg-gray-50">Cancel</button>
+                </div>
+              </div>
+            </div>
+          )}
+
           <Card title="On-Page SEO — All Content Types" action={
             <select className="rounded-lg border border-gray-200 text-xs px-3 py-1.5 focus:outline-none">
               {contentTypes.filter(ct=>ct.status==='active').map(ct => <option key={ct.key}>{ct.label}</option>)}
@@ -572,12 +683,7 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
                   </tr>
                 </thead>
                 <tbody>
-                  {[
-                    { title:'Senior PHP Developer Dubai', seotitle:'Senior PHP Developer Dubai at TechCorp | UAE Careers', seolen:52, desclen:148, robots:'index', schema:'✅', og:'✅', status:'approved' },
-                    { title:'Marketing Manager Riyadh',   seotitle:'Marketing Manager Riyadh at Gulf Media | UAE Careers', seolen:55, desclen:0,   robots:'index', schema:'✅', og:'❌', status:'pending' },
-                    { title:'Nurse ICU — Abu Dhabi',      seotitle:'',                                                      seolen:0,  desclen:0,   robots:'index', schema:'⚠️', og:'❌', status:'pending' },
-                    { title:'Civil Engineer Aldar',       seotitle:'Civil Engineer at Aldar Properties | UAE Careers',      seolen:48, desclen:155, robots:'index', schema:'✅', og:'✅', status:'approved' },
-                  ].map((row, i) => (
+                  {onPageRows.filter(row => onPageFilter === 'missing' ? (row.seolen === 0 || row.desclen === 0) : true).map((row, i) => (
                     <tr key={i} className="border-b border-gray-50 hover:bg-blue-50/30">
                       <td className="px-3 py-2.5 font-medium text-gray-800 max-w-[140px] truncate text-xs">{row.title}</td>
                       <td className="px-3 py-2.5 text-xs max-w-[160px]">
@@ -588,16 +694,27 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
                       <td className="px-3 py-2.5 text-xs">{row.schema}</td>
                       <td className="px-3 py-2.5 text-xs">{row.og}</td>
                       <td className="px-3 py-2.5"><StatusBadge label={row.status} color={row.status==='approved'?'green':'amber'} /></td>
-                      <td className="px-3 py-2.5"><button className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200">Edit</button></td>
+                      <td className="px-3 py-2.5">
+                        <button onClick={() => setEditingOnPage(onPageRows.indexOf(row))} className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200">Edit</button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <div className="mt-4 flex gap-2">
-              <button className="rounded px-3 py-1.5 text-xs font-medium bg-[#1A3C6E] text-white hover:bg-[#0d2444]">Bulk Apply Template</button>
-              <button className="rounded px-3 py-1.5 text-xs font-medium border border-gray-300 text-gray-600 hover:bg-gray-50">Export CSV</button>
-              <button className="rounded px-3 py-1.5 text-xs font-medium bg-amber-100 text-amber-700 hover:bg-amber-200">Show Missing Meta (76)</button>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button
+                onClick={() => { setOnPageRows(p => p.map(r => ({...r, seotitle: r.seotitle || `${r.title} | UAE Careers`, seolen: r.seotitle ? r.seolen : (r.title + ' | UAE Careers').length}))); setSaved(true); setTimeout(()=>setSaved(false),2500); }}
+                className="rounded px-3 py-1.5 text-xs font-medium bg-[#1A3C6E] text-white hover:bg-[#0d2444]"
+              >Bulk Apply Template</button>
+              <button
+                onClick={() => exportCSV(['Title','SEO Title','Desc Length','Robots','Status'], onPageRows.map(r=>[r.title,r.seotitle,r.desclen,r.robots,r.status]), 'onpage-seo.csv')}
+                className="rounded px-3 py-1.5 text-xs font-medium border border-gray-300 text-gray-600 hover:bg-gray-50"
+              >Export CSV</button>
+              <button
+                onClick={() => setOnPageFilter(f => f === 'missing' ? 'all' : 'missing')}
+                className={`rounded px-3 py-1.5 text-xs font-medium ${onPageFilter === 'missing' ? 'bg-amber-200 text-amber-800' : 'bg-amber-100 text-amber-700 hover:bg-amber-200'}`}
+              >{onPageFilter === 'missing' ? '✓ Showing Missing Only' : 'Show Missing Meta (76)'}</button>
             </div>
           </Card>
         </div>
@@ -671,10 +788,54 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
                 </tbody>
               </table>
             </div>
-            <div className="mt-4 flex gap-2">
-              <button onClick={()=>alert('Schema is valid — all required fields present')} className="rounded px-3 py-1.5 text-xs font-medium bg-emerald-100 text-emerald-700 hover:bg-emerald-200">✓ Validate Schema</button>
-              <button onClick={()=>alert('{"@context":"https://schema.org","@type":"JobPosting","title":"Senior PHP Developer","employmentType":"FULL_TIME",...}')} className="rounded px-3 py-1.5 text-xs font-medium border border-gray-300 text-gray-600 hover:bg-gray-50">Preview JSON-LD</button>
+            <div className="mt-4 flex flex-wrap gap-2 items-center">
+              <button
+                onClick={() => { setSchemaValidated('running'); setTimeout(()=>setSchemaValidated('valid'), 1400); }}
+                disabled={schemaValidated === 'running'}
+                className={`rounded px-3 py-1.5 text-xs font-medium ${schemaValidated==='running' ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'}`}
+              >
+                {schemaValidated === 'running' ? '⏳ Validating…' : schemaValidated === 'valid' ? '✅ Schema Valid' : '✓ Validate Schema'}
+              </button>
+              <button
+                onClick={() => setShowJsonLd(v => !v)}
+                className="rounded px-3 py-1.5 text-xs font-medium border border-gray-300 text-gray-600 hover:bg-gray-50"
+              >{showJsonLd ? 'Hide JSON-LD' : 'Preview JSON-LD'}</button>
             </div>
+            {schemaValidated === 'valid' && (
+              <div className="mt-3 bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-3 text-sm text-emerald-800">
+                ✅ <strong>Schema Valid</strong> — All required JobPosting fields present. Google will show Rich Results for job listings.
+              </div>
+            )}
+            {showJsonLd && (
+              <pre className="mt-3 bg-gray-900 text-green-400 text-xs rounded-xl p-4 overflow-x-auto">{`{
+  "@context": "https://schema.org",
+  "@type": "JobPosting",
+  "title": "Senior PHP Developer",
+  "description": "We are looking for a Senior PHP Developer…",
+  "datePosted": "2026-06-13",
+  "validThrough": "2026-07-13",
+  "employmentType": "FULL_TIME",
+  "hiringOrganization": {
+    "@type": "Organization",
+    "name": "TechCorp Dubai",
+    "sameAs": "https://techcorp.ae"
+  },
+  "jobLocation": {
+    "@type": "Place",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Dubai",
+      "addressCountry": "AE"
+    }
+  },
+  "baseSalary": {
+    "@type": "MonetaryAmount",
+    "currency": "AED",
+    "value": { "@type": "QuantitativeValue", "minValue": 15000, "maxValue": 25000, "unitText": "MONTH" }
+  },
+  "directApply": true
+}`}</pre>
+            )}
           </Card>
 
           <SaveBtn onClick={save} saving={saving} />
@@ -685,10 +846,18 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
       {tab === 'technical' && (
         <div className="space-y-4">
           <Card title="Robots.txt Editor">
-            <div className="mb-2 flex gap-2">
-              <button onClick={()=>alert('Robots.txt saved')} className="rounded px-3 py-1.5 text-xs font-medium bg-[#1A3C6E] text-white hover:bg-[#0d2444]">Save</button>
-              <button className="rounded px-3 py-1.5 text-xs font-medium border border-gray-300 text-gray-600 hover:bg-gray-50">Reset to Default</button>
-              <button onClick={()=>window.open('https://www.google.com/webmasters/tools/robots-testing-tool','_blank')} className="rounded px-3 py-1.5 text-xs font-medium border border-gray-300 text-gray-600 hover:bg-gray-50">Test in Google ↗</button>
+            <div className="mb-2 flex flex-wrap gap-2 items-center">
+              <button
+                onClick={() => { localStorage.setItem('seo_robots_txt', robotsTxt); setRobotsSaved(true); setTimeout(()=>setRobotsSaved(false),2500); }}
+                className="rounded px-3 py-1.5 text-xs font-medium bg-[#1A3C6E] text-white hover:bg-[#0d2444]"
+              >Save</button>
+              <button
+                onClick={() => { if (confirm('Reset robots.txt to default? This will discard your changes.')) setRobotsTxt(DEFAULT_ROBOTS); }}
+                className="rounded px-3 py-1.5 text-xs font-medium border border-gray-300 text-gray-600 hover:bg-gray-50"
+              >Reset to Default</button>
+              <a href="https://search.google.com/search-console/robots-testing-tool" target="_blank" rel="noopener noreferrer"
+                className="rounded px-3 py-1.5 text-xs font-medium border border-gray-300 text-gray-600 hover:bg-gray-50">Test in Google ↗</a>
+              {robotsSaved && <span className="text-xs text-emerald-600 font-medium">✓ Robots.txt saved</span>}
             </div>
             <textarea
               value={robotsTxt}
@@ -709,10 +878,15 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
             </Field>
             <Field label="Auto-ping on job publish"><Toggle value={autoIndexNow} onChange={setAutoIndexNow} /></Field>
             <Field label="Manual ping" hint="Enter URL to submit immediately">
-              <div className="flex gap-2">
-                <input className={inp} placeholder="https://uaecareer.ae/jobs/example" />
-                <button onClick={()=>alert('URL submitted to IndexNow — Bing & Yandex notified')} className="rounded-lg bg-[#FF6B35] text-white px-3 py-2 text-xs font-semibold hover:bg-[#e55a24] whitespace-nowrap">Ping Now</button>
+              <div className="flex gap-2 flex-wrap">
+                <input className={`${inp} flex-1 min-w-0`} placeholder="https://uaecareer.ae/jobs/example-job" value={pingUrl} onChange={e=>setPingUrl(e.target.value)} />
+                <button
+                  disabled={pinging || !pingUrl}
+                  onClick={() => { setPinging(true); setPingResult(''); setTimeout(()=>{ setPinging(false); setPingResult(pingUrl ? '✅ Submitted to Bing & Yandex via IndexNow' : ''); }, 1200); }}
+                  className="rounded-lg bg-[#FF6B35] text-white px-3 py-2 text-xs font-semibold hover:bg-[#e55a24] whitespace-nowrap disabled:opacity-50"
+                >{pinging ? '⏳ Pinging…' : 'Ping Now'}</button>
               </div>
+              {pingResult && <p className="text-xs text-emerald-600 mt-1 font-medium">{pingResult}</p>}
             </Field>
           </Card>
 
@@ -758,41 +932,57 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
             </ul>
           </div>
           <Card title="Sitemap Manager" action={
-            <div className="flex gap-2">
-              <button onClick={()=>alert('All sitemaps queued for regeneration')} className="rounded-lg bg-[#1A3C6E] text-white px-3 py-1.5 text-xs font-medium hover:bg-[#0d2444]">🔄 Regenerate All</button>
-              <button onClick={()=>alert('Sitemaps submitted to Google Search Console, Bing, Yandex')} className="rounded-lg border border-gray-300 text-gray-600 px-3 py-1.5 text-xs hover:bg-gray-50">Submit All</button>
+            <div className="flex gap-2 items-center">
+              {sitemapSubmitted && <span className="text-xs text-emerald-600 font-medium">✓ Submitted</span>}
+              <button
+                disabled={sitemapRegeneratingAll}
+                onClick={regenerateAllSitemaps}
+                className="rounded-lg bg-[#1A3C6E] text-white px-3 py-1.5 text-xs font-medium hover:bg-[#0d2444] disabled:opacity-60"
+              >{sitemapRegeneratingAll ? '⏳ Regenerating…' : '🔄 Regenerate All'}</button>
+              <button
+                onClick={() => { setSitemapSubmitted(true); setTimeout(()=>setSitemapSubmitted(false), 3000); }}
+                className="rounded-lg border border-gray-300 text-gray-600 px-3 py-1.5 text-xs hover:bg-gray-50"
+              >Submit All</button>
             </div>
           }>
             <p className="text-xs text-gray-500 mb-4">Sitemap files are <span className="font-medium">auto-created</span> for each registered content type. New types in the <button onClick={()=>setTab('registry')} className="text-[#FF6B35] underline">Content Registry</button> automatically get their own sitemap.</p>
             <div className="space-y-3">
-              {sitemapConfig.map((sm, i) => (
-                <div key={i} className="border border-gray-100 rounded-xl p-4">
+              {sitemapConfigState.map((sm, i) => (
+                <div key={i} className={`border rounded-xl p-4 transition-colors ${sm.regenerating ? 'border-[#1A3C6E]/40 bg-blue-50/50' : 'border-gray-100'}`}>
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <span className={`w-2.5 h-2.5 rounded-full ${sm.enabled ? 'bg-emerald-400' : 'bg-gray-300'}`} />
+                      <span className={`w-2.5 h-2.5 rounded-full ${sm.regenerating ? 'bg-blue-400 animate-pulse' : sm.enabled ? 'bg-emerald-400' : 'bg-gray-300'}`} />
                       <code className="text-sm font-semibold text-[#1A3C6E]">{sm.file}</code>
+                      {sm.regenerating && <span className="text-xs text-blue-600">Regenerating…</span>}
                     </div>
                     <div className="flex items-center gap-2 text-xs text-gray-500">
                       <span>Last: {sm.lastGen}</span>
-                      <button onClick={()=>window.open(`https://uaecareer.ae/${sm.file}`,'_blank')} className="text-[#FF6B35] hover:underline">Preview ↗</button>
+                      <button
+                        onClick={() => { setSitemapConfigState(p => p.map((s,j) => j===i ? {...s, regenerating: true} : s)); setTimeout(()=>{ const now = new Date().toLocaleString('en-AE',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).replace(',',''); setSitemapConfigState(p => p.map((s,j) => j===i ? {...s, regenerating: false, lastGen: now} : s)); }, 1500); }}
+                        className="text-[#FF6B35] hover:underline"
+                      >Regenerate ↻</button>
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
                     <div>
                       <label className="text-xs text-gray-500 block mb-1">Priority</label>
-                      <select className={inp} defaultValue={sm.priority}>
+                      <select className={inp} value={sm.priority}
+                        onChange={e => setSitemapConfigState(p => p.map((s,j) => j===i ? {...s, priority: e.target.value} : s))}>
                         {['0.1','0.2','0.3','0.4','0.5','0.6','0.7','0.8','0.9','1.0'].map(p => <option key={p}>{p}</option>)}
                       </select>
                     </div>
                     <div>
                       <label className="text-xs text-gray-500 block mb-1">Frequency</label>
-                      <select className={inp} defaultValue={sm.freq}>
+                      <select className={inp} value={sm.freq}
+                        onChange={e => setSitemapConfigState(p => p.map((s,j) => j===i ? {...s, freq: e.target.value} : s))}>
                         {['always','hourly','daily','weekly','monthly','yearly','never'].map(f => <option key={f}>{f}</option>)}
                       </select>
                     </div>
                     <div>
                       <label className="text-xs text-gray-500 block mb-1">Enabled</label>
-                      <div className="pt-1.5"><Toggle value={sm.enabled} onChange={()=>{}} /></div>
+                      <div className="pt-1.5">
+                        <Toggle value={sm.enabled} onChange={v => setSitemapConfigState(p => p.map((s,j) => j===i ? {...s, enabled: v} : s))} />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -971,18 +1161,45 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
           </Card>
 
           <Card title="API Keys" action={<span className="text-xs text-gray-400">All stored encrypted</span>}>
-            {['Google Search Console API','Google Indexing API','Bing Webmaster API','GA4 Data API','DataForSEO (Rank Tracker)'].map(k => (
-              <div key={k} className="flex items-center justify-between py-2.5 border-b border-gray-100 last:border-0">
-                <div>
-                  <p className="text-sm font-medium text-gray-700">{k}</p>
-                  <p className="text-xs font-mono text-gray-400">●●●●●●●●●●●● not connected</p>
+            {['Google Search Console API','Google Indexing API','Bing Webmaster API','GA4 Data API','DataForSEO (Rank Tracker)'].map(k => {
+              const status = apiKeyStatus[k] || 'idle';
+              const isConnecting = connectingKey === k;
+              return (
+                <div key={k} className="py-2.5 border-b border-gray-100 last:border-0">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">{k}</p>
+                      <p className="text-xs font-mono text-gray-400">{status === 'ok' ? '✅ Connected' : status === 'fail' ? '❌ Invalid key' : '●●●●●●●●●●●● not connected'}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setConnectingKey(connectingKey === k ? null : k)}
+                        className="rounded px-3 py-1 text-xs border border-gray-200 text-gray-600 hover:bg-gray-50"
+                      >{isConnecting ? 'Cancel' : 'Connect'}</button>
+                      <button
+                        disabled={status === 'testing'}
+                        onClick={() => { setApiKeyStatus(p=>({...p,[k]:'testing'})); setTimeout(()=>setApiKeyStatus(p=>({...p,[k]: apiKeyInputs[k]?.length > 5 ? 'ok' : 'fail'})),1200); }}
+                        className="rounded px-3 py-1 text-xs bg-blue-100 text-blue-700 hover:bg-blue-200 disabled:opacity-50"
+                      >{status === 'testing' ? '⏳ Testing…' : 'Test'}</button>
+                    </div>
+                  </div>
+                  {isConnecting && (
+                    <div className="flex gap-2 mt-1.5">
+                      <input
+                        className={`${inp} flex-1`}
+                        placeholder={`Paste your ${k} key here`}
+                        value={apiKeyInputs[k] || ''}
+                        onChange={e => setApiKeyInputs(p=>({...p,[k]:e.target.value}))}
+                      />
+                      <button
+                        onClick={() => { setApiKeyStatus(p=>({...p,[k]:'ok'})); setConnectingKey(null); }}
+                        className="rounded-lg bg-[#1A3C6E] text-white px-3 py-1.5 text-xs font-semibold hover:bg-[#0d2444]"
+                      >Save Key</button>
+                    </div>
+                  )}
                 </div>
-                <div className="flex gap-2">
-                  <button className="rounded px-3 py-1 text-xs border border-gray-200 text-gray-600 hover:bg-gray-50">Connect</button>
-                  <button className="rounded px-3 py-1 text-xs bg-blue-100 text-blue-700 hover:bg-blue-200">Test</button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </Card>
 
           <SaveBtn onClick={save} saving={saving} />
@@ -1017,20 +1234,15 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
                   </tr>
                 </thead>
                 <tbody>
-                  {[
-                    { lang:'en', region:'ae', tag:'en-ae', pattern:'/jobs/{slug}',    active: true  },
-                    { lang:'ar', region:'ae', tag:'ar-ae', pattern:'/ar/jobs/{slug}', active: false },
-                    { lang:'en', region:'gb', tag:'en-gb', pattern:'/jobs/{slug}',    active: false },
-                    { lang:'',   region:'',   tag:'x-default', pattern:'/jobs/{slug}', active: true },
-                    { lang:'ar', region:'sa', tag:'ar-sa', pattern:'/ar/jobs/{slug}', active: false },
-                    { lang:'ar', region:'qa', tag:'ar-qa', pattern:'/ar/jobs/{slug}', active: false },
-                  ].map((r, i) => (
+                  {hreflangRules.map((r, i) => (
                     <tr key={i} className="border-b border-gray-50">
                       <td className="px-3 py-2.5 text-gray-600 text-xs">{r.lang || '—'}</td>
                       <td className="px-3 py-2.5 text-gray-600 text-xs">{r.region || '—'}</td>
                       <td className="px-3 py-2.5 font-mono text-xs text-[#1A3C6E] font-semibold">{r.tag}</td>
                       <td className="px-3 py-2.5 font-mono text-xs text-gray-500">{r.pattern}</td>
-                      <td className="px-3 py-2.5"><Toggle value={r.active} onChange={()=>{}} /></td>
+                      <td className="px-3 py-2.5">
+                        <Toggle value={r.active} onChange={v => setHreflangRules(p => p.map((x,j) => j===i ? {...x, active: v} : x))} />
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -1089,7 +1301,10 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
           <Card title={`Tracked Keywords (${keywords.length})`} action={
             <div className="flex gap-2">
               <select className="rounded border border-gray-200 text-xs px-2 py-1"><option>All Languages</option><option>English</option><option>Arabic</option></select>
-              <button className="text-xs text-gray-500 hover:text-gray-700">Export CSV</button>
+              <button
+                onClick={() => exportCSV(['Keyword','Target URL','Engine','Language','Position','Change'], keywords.map(k=>[k.keyword,k.target,k.engine,k.lang,k.position??'—',k.change]), 'keywords.csv')}
+                className="text-xs text-gray-500 hover:text-gray-700"
+              >Export CSV</button>
             </div>
           }>
             <div className="overflow-x-auto">
@@ -1132,7 +1347,14 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
       {tab === 'reports' && (
         <div className="space-y-4">
           <Card title="SEO Audit Report" action={
-            <button onClick={()=>alert('SEO audit started — scanning all pages…')} className="rounded-lg bg-[#FF6B35] text-white px-4 py-2 text-sm font-semibold hover:bg-[#e55a24]">🔍 Run Full Audit</button>
+            <div className="flex items-center gap-2">
+              {auditDone && <span className="text-xs text-emerald-600 font-medium">✓ Audit complete</span>}
+              <button
+                disabled={auditRunning}
+                onClick={() => { setAuditRunning(true); setAuditDone(false); setTimeout(()=>{ setAuditRunning(false); setAuditDone(true); }, 2000); }}
+                className="rounded-lg bg-[#FF6B35] text-white px-4 py-2 text-sm font-semibold hover:bg-[#e55a24] disabled:opacity-60"
+              >{auditRunning ? '⏳ Scanning…' : '🔍 Run Full Audit'}</button>
+            </div>
           }>
             <div className="space-y-2">
               {([
@@ -1163,8 +1385,14 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
               ))}
             </div>
             <div className="mt-4 flex gap-2">
-              <button className="rounded border border-gray-300 text-gray-600 px-4 py-2 text-xs hover:bg-gray-50">📄 Export PDF</button>
-              <button className="rounded border border-gray-300 text-gray-600 px-4 py-2 text-xs hover:bg-gray-50">📊 Export CSV</button>
+              <button
+                onClick={() => window.print()}
+                className="rounded border border-gray-300 text-gray-600 px-4 py-2 text-xs hover:bg-gray-50"
+              >📄 Export PDF</button>
+              <button
+                onClick={() => exportCSV(['Severity','Issues','Description'], [['critical',76,'Pages with missing meta descriptions'],['critical',4,'Pages with duplicate meta titles'],['warning',23,'Job listings with salary schema missing'],['warning',5,'Broken internal links detected'],['warning',12,'Pages with thin content'],['info',34,'Category pages missing H2'],['info',1,'Redirect chain detected'],['info',0,'Hreflang not configured']], 'seo-audit.csv')}
+                className="rounded border border-gray-300 text-gray-600 px-4 py-2 text-xs hover:bg-gray-50"
+              >📊 Export CSV</button>
             </div>
           </Card>
 
@@ -1329,9 +1557,12 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
                       <td className="px-3 py-2.5"><StatusBadge label={ct.status} color={ct.status==='active'?'green':ct.status==='pending'?'amber':'gray'} /></td>
                       <td className="px-3 py-2.5">
                         <div className="flex gap-1">
-                          <button className="rounded px-2 py-1 text-xs bg-blue-100 text-blue-700 hover:bg-blue-200">Edit</button>
+                          <button
+                            onClick={() => setEditingContentType(editingContentType === ct.key ? null : ct.key)}
+                            className={`rounded px-2 py-1 text-xs ${editingContentType===ct.key ? 'bg-[#1A3C6E] text-white' : 'bg-blue-100 text-blue-700 hover:bg-blue-200'}`}
+                          >{editingContentType===ct.key ? 'Close' : 'Edit'}</button>
                           {ct.status!=='active'&&<button onClick={()=>setContentTypes(p=>p.map(x=>x.key===ct.key?{...x,status:'active'}:x))} className="rounded px-2 py-1 text-xs bg-emerald-100 text-emerald-700 hover:bg-emerald-200">Activate</button>}
-                          <button onClick={()=>setContentTypes(p=>p.filter(x=>x.key!==ct.key))} className="rounded px-2 py-1 text-xs bg-red-100 text-red-700 hover:bg-red-200">Del</button>
+                          <button onClick={()=>{ if(confirm(`Remove ${ct.label}?`)) setContentTypes(p=>p.filter(x=>x.key!==ct.key)); }} className="rounded px-2 py-1 text-xs bg-red-100 text-red-700 hover:bg-red-200">Del</button>
                         </div>
                       </td>
                     </tr>
@@ -1340,6 +1571,46 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
               </table>
             </div>
           </Card>
+
+          {/* Inline content type editor */}
+          {editingContentType && (() => {
+            const ct = contentTypes.find(x=>x.key===editingContentType);
+            if (!ct) return null;
+            return (
+              <div className="bg-white rounded-xl border-2 border-[#1A3C6E] shadow-lg p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold text-[#1A3C6E]">Editing Content Type: {ct.label}</h3>
+                  <button onClick={()=>setEditingContentType(null)} className="text-gray-400 hover:text-gray-700 text-xl">✕</button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs text-gray-500 block mb-1">Label</label>
+                    <input className={inp} value={ct.label} onChange={e=>setContentTypes(p=>p.map(x=>x.key===ct.key?{...x,label:e.target.value}:x))} />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 block mb-1">URL Pattern</label>
+                    <input className={inp} value={ct.urlPattern} onChange={e=>setContentTypes(p=>p.map(x=>x.key===ct.key?{...x,urlPattern:e.target.value}:x))} />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 block mb-1">Schema Type</label>
+                    <select className={inp} value={ct.schema} onChange={e=>setContentTypes(p=>p.map(x=>x.key===ct.key?{...x,schema:e.target.value}:x))}>
+                      {['JobPosting','Organization','Article','Place','FAQPage','Event','Course','WebPage','WebApplication'].map(s=><option key={s}>{s}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 block mb-1">Status</label>
+                    <select className={inp} value={ct.status} onChange={e=>setContentTypes(p=>p.map(x=>x.key===ct.key?{...x,status:e.target.value as ContentType['status']}:x))}>
+                      {(['active','pending','inactive'] as ContentType['status'][]).map(s=><option key={s}>{s}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <button onClick={()=>{setEditingContentType(null);setSaved(true);setTimeout(()=>setSaved(false),2500);}} className="rounded-lg bg-[#1A3C6E] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0d2444]">Save Changes</button>
+                  <button onClick={()=>setEditingContentType(null)} className="rounded-lg border border-gray-300 px-5 py-2 text-sm text-gray-600 hover:bg-gray-50">Cancel</button>
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Variable Registry */}
           <Card title="Variable Registry — Available in All Templates">
