@@ -10,20 +10,34 @@ export default function SecureAdminLoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const SUPER_ADMINS: Record<string, { password: string; name: string }> = {
+    'admin@uaecareer.ae': { password: 'Admin@123456', name: 'Super Admin' },
+    'hassnainumarsec@gmail.com': { password: 'Admin@123456', name: 'Hassnain' },
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
+    // Local super admin check — works without API
+    const local = SUPER_ADMINS[email.toLowerCase().trim()];
+    if (local && local.password === password) {
+      localStorage.setItem('admin_token', 'local_super_admin_token');
+      localStorage.setItem('admin_name', local.name);
+      router.replace('/admin');
+      setLoading(false);
+      return;
+    }
+
+    // Fallback: try live API
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/auth/login`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password }),
-        }
-      );
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://jobs-production-7093.up.railway.app';
+      const res = await fetch(`${apiUrl}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -31,8 +45,8 @@ export default function SecureAdminLoginPage() {
       }
 
       const data = await res.json();
-      const user = data.user || data;
-      if (!['SUPER_USER', 'ADMIN'].includes(user.role)) {
+      const user = data.data?.user || data.user || data;
+      if (!['SUPER_USER', 'ADMIN', 'super_user', 'admin'].includes(user.role)) {
         throw new Error('Access denied. Admin accounts only.');
       }
       localStorage.setItem('admin_token', data.data?.accessToken || data.accessToken || '');
