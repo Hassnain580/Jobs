@@ -87,7 +87,7 @@
 
 <!-- COVER -->
 <div class="cover">
-  <div class="badge">FULL PROJECT SCOPE v1.1</div>
+  <div class="badge">FULL PROJECT SCOPE v1.2</div>
   <h1>UAE Careers</h1>
   <h2>Job Portal — Web App + Mobile Apps (iOS & Android)</h2>
   <div class="meta">
@@ -119,6 +119,15 @@
       <li>Global Toggle Settings</li>
       <li>Development Timeline</li>
       <li>SEO Strategy</li>
+      <li>Ad Gate — Close Button Timer</li>
+      <li>Landing Page Category-wise Ad Targeting</li>
+      <li>Important Note on Job Posts</li>
+      <li>Fraud Warning Notice System</li>
+      <li>CMS — Admin Editable Content</li>
+      <li>Super User & Role Management</li>
+      <li>Image Compression</li>
+      <li>CV Storage — Cost-effective Solution</li>
+      <li>AI / LLM Features</li>
     </ol>
   </div>
 
@@ -725,6 +734,250 @@
       <li>CSS/JS minification and code splitting</li>
       <li>CDN via Vercel Edge Network — global fast load from nearest server</li>
       <li>Target: <strong>90+ Lighthouse Score</strong> across all pages</li>
+    </ul>
+  </div>
+
+</div>
+
+  <!-- 16. AD GATE CLOSE BUTTON TIMER -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">⏲️</div>
+      <h2>16. Ad Gate — Close Button Timer</h2>
+    </div>
+    <ul>
+      <li>Admin sets exact number of seconds before "Skip / Close" button appears on rewarded ad</li>
+      <li>Configurable from admin panel — no code change required</li>
+      <li>Separate timer settings for Web (AdSense rewarded) and Mobile (AdMob rewarded)</li>
+      <li>Minimum allowed seconds: 0 (instant close) — Maximum: admin-defined cap (e.g. 30s)</li>
+      <li>Default at launch: 5 seconds</li>
+      <li>Timer countdown shown to user ("Skip in 4… 3… 2… 1…")</li>
+      <li>Admin can enable/disable the countdown display separately</li>
+    </ul>
+  </div>
+
+  <!-- 17. LANDING PAGE CATEGORY-WISE AD TARGETING -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🎯</div>
+      <h2>17. Landing Page — Category-wise Ad Targeting</h2>
+    </div>
+    <ul>
+      <li>Admin assigns specific ads or landing page variants per job category</li>
+      <li>Example: IT category landing page shows tech product banners; HR category shows HR software banners</li>
+      <li>Each category can have its own: Google AdSense slot / Product banner set / WhatsApp channel link</li>
+      <li>Admin maps: Category → Ad Type → Specific Ad/Banner/Link</li>
+      <li>Unconfigured categories fall back to global landing page ad setting</li>
+      <li>Multiple landing page templates can be created — admin assigns per category</li>
+      <li>Category ad targeting applies to both web and mobile app</li>
+      <li>Enable/disable category-level ad targeting anytime from admin panel</li>
+    </ul>
+  </div>
+
+  <!-- 18. IMPORTANT NOTE ON JOB POSTS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">📌</div>
+      <h2>18. Important Note on Job Posts</h2>
+    </div>
+    <ul>
+      <li>Admin or employer can add an attention-grabbing "Important Note" field when creating a job post</li>
+      <li>Displayed prominently on the job detail page — visually distinct (highlighted box, warning color, bold text)</li>
+      <li>Examples: "Immediate joining required", "Only UAE residents apply", "Salary negotiable for right candidate"</li>
+      <li>Admin can add/edit notes on any job post from admin panel even after employer posted</li>
+      <li>Admin can make "Important Note" a required or optional field per category</li>
+      <li>Character limit configurable by admin</li>
+      <li>Note appears on both web job detail page and mobile app job detail screen</li>
+    </ul>
+  </div>
+
+  <!-- 19. FRAUD WARNING NOTICE SYSTEM -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">⚠️</div>
+      <h2>19. Fraud Warning Notice System</h2>
+    </div>
+    <div style="background:#fff8e6;border-left:4px solid #FFB400;border-radius:8px;padding:14px 18px;margin-bottom:16px;font-size:13px;color:#555;">
+      <strong style="color:#1A3C6E;">Default Notice Text:</strong><br><br>
+      ⚠️ Notice: uaecareer.ae is not a recruiter. We only share publicly available walk-in opportunities. Never pay anyone for job applications, interviews, tests, or recruitment processes. Genuine walk-ins are always free.<br><br>
+      <strong>Report fraud to:</strong> ask@uaecareer.ae
+    </div>
+    <ul>
+      <li>Notice displayed on key pages: Homepage, Job Detail, Job Listings, Search Results, Apply Page, Employer Registration, Job Seeker Registration</li>
+      <li>Mobile app: shown on Job Detail screen, Home screen, Apply screen</li>
+      <li>Admin can edit full notice text from admin panel — no code change required</li>
+      <li>Admin can change fraud report email anytime</li>
+      <li>Admin can enable/disable notice per page individually</li>
+      <li>Notice position configurable: top banner / bottom bar / inline within content</li>
+      <li>Dismissible by user (with cookie memory) or set as permanent by admin</li>
+      <li>Separate notice variants possible per category if needed</li>
+    </ul>
+  </div>
+
+  <!-- 20. CMS — ADMIN EDITABLE CONTENT -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">✏️</div>
+      <h2>20. CMS — Admin Editable Content (Every Section)</h2>
+    </div>
+    <ul>
+      <li>Every text section of the website and mobile app is editable from admin panel</li>
+      <li>No code deployment needed for content changes</li>
+      <li>Editable elements include: Hero text, taglines, button labels, section headings, footer text, about page, FAQ, terms, privacy policy, salary guide content, notice texts</li>
+      <li>Banner images: upload/replace from admin panel</li>
+      <li>Homepage sections: reorder, show/hide any section block</li>
+      <li>Job category descriptions: editable per category</li>
+      <li>Country/city page intro text: editable per location</li>
+      <li>Email notification templates: fully editable from admin panel</li>
+      <li>Push notification templates: editable from admin panel</li>
+      <li>Mobile app content: shares same CMS — changes reflect on app via API (no app store update needed for content)</li>
+      <li>Version history for content changes — admin can revert to previous version</li>
+      <li>Publish / Draft / Schedule content updates</li>
+    </ul>
+  </div>
+
+  <!-- 21. SUPER USER & ROLE MANAGEMENT -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">👑</div>
+      <h2>21. Super User & Role Management</h2>
+    </div>
+    <h3>Super User (Owner Level)</h3>
+    <ul>
+      <li>Only Super User can create new admin accounts</li>
+      <li>Super User assigns roles and access rights to each admin</li>
+      <li>Super User can modify or revoke any admin's access anytime</li>
+      <li>Super User account cannot be deleted or modified by any admin</li>
+    </ul>
+    <h3>Admin Role Permissions (Selectable per Admin)</h3>
+    <table>
+      <tr><th>Permission Module</th><th>Granular Access Options</th></tr>
+      <tr><td>User Management</td><td>View / Approve / Reject / Delete</td></tr>
+      <tr><td>Employer Management</td><td>View / Approve / Reject / Delete / Edit limits</td></tr>
+      <tr><td>Job Post Management</td><td>View / Approve / Reject / Delete / Edit</td></tr>
+      <tr><td>Ad & Banner Management</td><td>View only / Full control</td></tr>
+      <tr><td>Payment & Billing</td><td>View only / Full control</td></tr>
+      <tr><td>CMS / Content</td><td>View / Edit / Publish</td></tr>
+      <tr><td>Analytics</td><td>View only / Export</td></tr>
+      <tr><td>Category Management</td><td>View / Add / Edit / Delete</td></tr>
+      <tr><td>Country Management</td><td>View / Add / Edit / Delete</td></tr>
+      <tr><td>LLM / AI Settings</td><td>View / Configure</td></tr>
+      <tr><td>Platform Settings</td><td>No access / Full access</td></tr>
+    </table>
+    <h3>Employer User Access Rights (Super User / Admin Configurable)</h3>
+    <ul>
+      <li>Admin can modify employer-level permissions (e.g. restrict certain apply methods, limit job post categories)</li>
+      <li>Admin can upgrade/downgrade individual employer accounts</li>
+      <li>Employer sub-accounts: employer owner can invite team members with view-only or full access</li>
+    </ul>
+  </div>
+
+  <!-- 22. IMAGE COMPRESSION -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🗜️</div>
+      <h2>22. Image Compression</h2>
+    </div>
+    <ul>
+      <li>Profile photos auto-compressed on upload (before saving to storage)</li>
+      <li>Target output: under 100KB per profile photo</li>
+      <li>Compression applied on both web (browser-side) and mobile app (device-side) before upload</li>
+      <li>Format converted to WebP automatically (smaller size, same quality)</li>
+      <li>Company logos: compressed to under 150KB</li>
+      <li>Banner images: compressed to under 300KB</li>
+      <li>Admin can set max file size limits per upload type from admin panel</li>
+      <li>Users shown preview of compressed image before confirming upload</li>
+      <li>No third-party paid service needed — compression handled in-app using Sharp (Node.js library, free)</li>
+    </ul>
+  </div>
+
+  <!-- 23. CV STORAGE — COST EFFECTIVE -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">☁️</div>
+      <h2>23. CV Storage — Cost-Effective Solution</h2>
+    </div>
+    <h3>Recommended: Backblaze B2 (Cheapest S3-compatible)</h3>
+    <table>
+      <tr><th>Provider</th><th>Free Tier</th><th>Cost After</th><th>Notes</th></tr>
+      <tr><td><strong>Backblaze B2</strong></td><td>10 GB free forever</td><td>$6/TB/month</td><td>S3-compatible, best value — Recommended</td></tr>
+      <tr><td>Cloudflare R2</td><td>10 GB free forever</td><td>$15/TB/month</td><td>No egress fees — great option</td></tr>
+      <tr><td>Supabase Storage</td><td>1 GB free</td><td>$0.021/GB</td><td>Already in stack, easy integration</td></tr>
+      <tr><td>AWS S3</td><td>5 GB (12 months)</td><td>$23/TB/month</td><td>Expensive but reliable</td></tr>
+      <tr><td>Cloudinary</td><td>25 credits/month</td><td>$89/month+</td><td>Too expensive — not recommended</td></tr>
+    </table>
+    <ul style="margin-top:14px">
+      <li>CVs stored separately from app hosting — no impact on Vercel/hosting costs</li>
+      <li>CV files compressed before upload (PDFs optimized, images converted)</li>
+      <li>CV access via signed/temporary URLs — not publicly accessible directly</li>
+      <li>Admin can set max CV file size (e.g. 2MB limit)</li>
+      <li>CV upload disabled at launch — storage configured and ready to enable anytime</li>
+      <li>Storage provider configurable from admin panel (swap provider without code change)</li>
+      <li><strong>Recommendation: Start with Backblaze B2 — 10GB free, then ~$0.006/GB. For 1,000 CVs (~2MB each) = ~$0.12/month</strong></li>
+    </ul>
+  </div>
+
+  <!-- 24. AI / LLM FEATURES -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🤖</div>
+      <h2>24. AI / LLM Features</h2>
+    </div>
+
+    <h3>Supported LLM Providers (Admin Configures)</h3>
+    <ul>
+      <li>OpenAI (ChatGPT — GPT-4o, GPT-4)</li>
+      <li>Anthropic (Claude — claude-sonnet-4-6, claude-opus-4-8)</li>
+      <li>Google (Gemini — Gemini 1.5 Pro)</li>
+      <li>DeepSeek (DeepSeek-V3 — cheapest option)</li>
+      <li>Admin enters API key for chosen provider from admin panel — no code change</li>
+      <li>Admin can switch provider anytime</li>
+    </ul>
+
+    <h3>LLM Configuration Modes</h3>
+    <table>
+      <tr><th>Mode</th><th>Who Configures</th><th>Detail</th></tr>
+      <tr><td><strong>Global Mode</strong></td><td>Admin only</td><td>One LLM configured for entire platform. All AI features use company's API account. Employers have no access to LLM settings.</td></tr>
+      <tr><td><strong>Employer Mode</strong></td><td>Each Employer</td><td>Admin enables employer-level LLM configuration. Each employer adds their own API key. Can upload a PDF guide/prompt to customize AI behavior for their job posts.</td></tr>
+    </table>
+    <ul style="margin-top:12px">
+      <li>Admin can toggle between Global Mode and Employer Mode anytime</li>
+      <li>In Employer Mode: employer uploads a PDF (e.g. company guide, job requirements) — AI uses it as context</li>
+      <li>Both modes can be active simultaneously (employer uses own key if set, falls back to global)</li>
+    </ul>
+
+    <h3>AI Features — Job Seeker</h3>
+    <ul>
+      <li>AI-powered job recommendations based on profile and behaviour</li>
+      <li>AI CV review: upload CV → get instant feedback and improvement suggestions</li>
+      <li>AI cover letter generator: tailored to specific job post</li>
+      <li>AI job match score: shows % match between candidate profile and job requirements</li>
+      <li>AI chatbot: answers candidate questions about jobs, application process, salary guides</li>
+      <li>Smart job search: natural language search ("accounting jobs in Dubai for 5 years experience")</li>
+    </ul>
+
+    <h3>AI Features — Employer / Recruiter</h3>
+    <ul>
+      <li>AI job description generator: employer inputs role title + key points → AI writes full JD</li>
+      <li>AI candidate screening: ranks applicants by match score automatically</li>
+      <li>AI interview question suggestions based on job role</li>
+      <li>Employer chatbot: guides employer through job posting, billing, dashboard questions</li>
+      <li>PDF context upload: employer uploads company guide → AI answers candidate questions using it</li>
+    </ul>
+
+    <h3>AI Features — Admin</h3>
+    <ul>
+      <li>AI content moderation: auto-flags suspicious or fraudulent job posts for review</li>
+      <li>AI spam detection: detects duplicate or fake employer accounts</li>
+      <li>AI analytics insights: plain-language summaries of platform performance ("This week IT jobs got 40% more applications than last week")</li>
+    </ul>
+
+    <h3>AI Chatbot Widget</h3>
+    <ul>
+      <li>Floating AI chat widget on all pages (web + mobile)</li>
+      <li>Admin can enable/disable per page or globally</li>
+      <li>Admin sets chatbot persona name and greeting message from admin panel</li>
+      <li>Chatbot trained on: job listings, FAQs, salary guides, platform policies</li>
     </ul>
   </div>
 
