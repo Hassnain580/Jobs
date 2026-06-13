@@ -79,12 +79,12 @@ export default function HomePage() {
 
       <main className="flex-1">
         {/* 1. Hero */}
-        <section className="bg-[#1A3C6E] text-white py-16 px-4">
+        <section className="bg-[#1A3C6E] text-white py-12 px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl sm:text-5xl font-bold leading-tight mb-4">
+            <h1 className="text-3xl sm:text-5xl font-bold leading-tight mb-4">
               Find Your Dream Job in the Gulf
             </h1>
-            <p className="text-blue-200 text-lg mb-8">
+            <p className="text-blue-200 text-base sm:text-lg mb-8">
               Thousands of jobs across UAE, Saudi Arabia, Qatar and more — updated daily.
             </p>
             <form className="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto">

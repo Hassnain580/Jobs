@@ -17,7 +17,7 @@ export default function AdminLoginPage() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/admin/auth/login/`,
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/auth/login`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -27,12 +27,16 @@ export default function AdminLoginPage() {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data?.detail || data?.message || 'Invalid credentials');
+        throw new Error(data?.message || 'Invalid credentials');
       }
 
       const data = await res.json();
-      localStorage.setItem('admin_token', data.access || data.token || 'demo_token');
-      localStorage.setItem('admin_name', data.name || data.user?.name || email.split('@')[0]);
+      const user = data.user || data;
+      if (!['SUPER_USER', 'ADMIN'].includes(user.role)) {
+        throw new Error('Access denied. Admin accounts only.');
+      }
+      localStorage.setItem('admin_token', data.data?.accessToken || data.accessToken || '');
+      localStorage.setItem('admin_name', user.firstName || user.email || 'Admin');
       router.replace('/admin');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Login failed';
