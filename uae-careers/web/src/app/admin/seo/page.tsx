@@ -320,13 +320,38 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
   };
 
   // ── On-page manager state ───────────────────────────────────────────────────
-  type OnPageRow = { title: string; seotitle: string; seolen: number; desclen: number; robots: string; schema: string; og: string; status: string };
-  const [onPageRows, setOnPageRows] = useState<OnPageRow[]>([
-    { title:'Senior PHP Developer Dubai', seotitle:'Senior PHP Developer Dubai at TechCorp | UAE Careers', seolen:52, desclen:148, robots:'index', schema:'✅', og:'✅', status:'approved' },
-    { title:'Marketing Manager Riyadh',   seotitle:'Marketing Manager Riyadh at Gulf Media | UAE Careers', seolen:55, desclen:0,   robots:'index', schema:'✅', og:'❌', status:'pending' },
-    { title:'Nurse ICU — Abu Dhabi',      seotitle:'',                                                      seolen:0,  desclen:0,   robots:'index', schema:'⚠️', og:'❌', status:'pending' },
-    { title:'Civil Engineer Aldar',       seotitle:'Civil Engineer at Aldar Properties | UAE Careers',      seolen:48, desclen:155, robots:'index', schema:'✅', og:'✅', status:'approved' },
-  ]);
+  type OnPageRow = { title: string; seotitle: string; seolen: number; desclen: number; robots: string; schema: string; og: string; status: string; contentType: string };
+  const ALL_ONPAGE_ROWS: OnPageRow[] = [
+    // Job Listings
+    { contentType:'jobs',       title:'Senior PHP Developer Dubai',    seotitle:'Senior PHP Developer Dubai at TechCorp | UAE Careers',  seolen:52, desclen:148, robots:'index', schema:'✅', og:'✅', status:'approved' },
+    { contentType:'jobs',       title:'Marketing Manager Riyadh',      seotitle:'Marketing Manager Riyadh at Gulf Media | UAE Careers',   seolen:55, desclen:0,   robots:'index', schema:'✅', og:'❌', status:'pending'  },
+    { contentType:'jobs',       title:'Nurse ICU — Abu Dhabi',         seotitle:'',                                                        seolen:0,  desclen:0,   robots:'index', schema:'⚠️', og:'❌', status:'pending'  },
+    { contentType:'jobs',       title:'Civil Engineer Aldar',          seotitle:'Civil Engineer at Aldar Properties | UAE Careers',       seolen:48, desclen:155, robots:'index', schema:'✅', og:'✅', status:'approved' },
+    // Company Profiles
+    { contentType:'companies',  title:'Emirates Group',                seotitle:'Jobs at Emirates Group | UAE Careers',                   seolen:38, desclen:142, robots:'index', schema:'✅', og:'✅', status:'approved' },
+    { contentType:'companies',  title:'ADNOC',                         seotitle:'Jobs at ADNOC — Oil & Gas Careers | UAE Careers',        seolen:46, desclen:158, robots:'index', schema:'✅', og:'✅', status:'approved' },
+    { contentType:'companies',  title:'G42',                           seotitle:'',                                                        seolen:0,  desclen:0,   robots:'index', schema:'❌', og:'❌', status:'pending'  },
+    // Job Categories
+    { contentType:'categories', title:'Information Technology Jobs',   seotitle:'IT Jobs in UAE & GCC | UAE Careers',                    seolen:36, desclen:145, robots:'index', schema:'✅', og:'✅', status:'approved' },
+    { contentType:'categories', title:'Finance & Banking Jobs',        seotitle:'Finance Jobs UAE | UAE Careers',                        seolen:33, desclen:0,   robots:'index', schema:'✅', og:'❌', status:'pending'  },
+    { contentType:'categories', title:'Healthcare Jobs UAE',           seotitle:'',                                                        seolen:0,  desclen:0,   robots:'index', schema:'⚠️', og:'❌', status:'pending'  },
+    // Location Pages
+    { contentType:'locations',  title:'Jobs in Dubai, UAE',            seotitle:'Jobs in Dubai UAE — Browse 2,400+ Vacancies | UAE Careers', seolen:58, desclen:153, robots:'index', schema:'✅', og:'✅', status:'approved' },
+    { contentType:'locations',  title:'Jobs in Abu Dhabi, UAE',        seotitle:'Jobs in Abu Dhabi | UAE Careers',                       seolen:37, desclen:0,   robots:'index', schema:'✅', og:'❌', status:'pending'  },
+    // Blog / Articles
+    { contentType:'blog',       title:'Top 10 Jobs in Dubai 2026',     seotitle:'Top 10 Jobs in Dubai 2026 | UAE Careers',               seolen:44, desclen:152, robots:'index', schema:'✅', og:'✅', status:'approved' },
+    { contentType:'blog',       title:'How to Write a UAE CV',         seotitle:'',                                                        seolen:0,  desclen:0,   robots:'index', schema:'❌', og:'❌', status:'pending'  },
+    { contentType:'blog',       title:'Salary Guide for Engineers',    seotitle:'Engineer Salary Guide UAE 2026 | UAE Careers',          seolen:47, desclen:0,   robots:'index', schema:'✅', og:'❌', status:'pending'  },
+    { contentType:'blog',       title:'Work Visa Process UAE 2026',    seotitle:'UAE Work Visa Process 2026 | UAE Careers',              seolen:42, desclen:148, robots:'index', schema:'✅', og:'✅', status:'approved' },
+    // Salary Guides
+    { contentType:'salary',     title:'Software Engineer Salary UAE',  seotitle:'Software Engineer Salary in UAE 2026 | UAE Careers',   seolen:51, desclen:155, robots:'index', schema:'✅', og:'✅', status:'approved' },
+    { contentType:'salary',     title:'Nurse Salary Dubai',            seotitle:'',                                                        seolen:0,  desclen:0,   robots:'index', schema:'❌', og:'❌', status:'pending'  },
+    // Career Tools
+    { contentType:'tools',      title:'CV Builder Tool',               seotitle:'Free CV Builder for UAE Jobs | UAE Careers',            seolen:42, desclen:137, robots:'index', schema:'✅', og:'✅', status:'approved' },
+    { contentType:'tools',      title:'Salary Calculator Dubai',       seotitle:'Dubai Salary Calculator 2026 | UAE Careers',            seolen:42, desclen:0,   robots:'index', schema:'✅', og:'❌', status:'pending'  },
+  ];
+  const [onPageRows, setOnPageRows] = useState<OnPageRow[]>(ALL_ONPAGE_ROWS);
+  const [contentTypeFilter, setContentTypeFilter] = useState('all');
   const [editingOnPage, setEditingOnPage] = useState<number | null>(null);
   const [onPageFilter, setOnPageFilter] = useState<'all' | 'missing'>('all');
 
@@ -720,8 +745,9 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
           )}
 
           <Card title="On-Page SEO — All Content Types" action={
-            <select className="rounded-lg border border-gray-200 text-xs px-3 py-1.5 focus:outline-none">
-              {contentTypes.filter(ct=>ct.status==='active').map(ct => <option key={ct.key}>{ct.label}</option>)}
+            <select value={contentTypeFilter} onChange={e => setContentTypeFilter(e.target.value)} className="rounded-lg border border-gray-200 text-xs px-3 py-1.5 focus:outline-none">
+              <option value="all">All Content Types</option>
+              {contentTypes.filter(ct=>ct.status==='active').map(ct => <option key={ct.key} value={ct.key}>{ct.label}</option>)}
             </select>
           }>
             <p className="text-xs text-gray-500 mb-4">Content types are driven by the <button onClick={()=>setTab('registry')} className="text-[#FF6B35] underline font-medium">Content Type Registry (Tab 13)</button>. New types appear here automatically when registered.</p>
@@ -735,7 +761,7 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
                   </tr>
                 </thead>
                 <tbody>
-                  {onPageRows.filter(row => onPageFilter === 'missing' ? (row.seolen === 0 || row.desclen === 0) : true).map((row, i) => (
+                  {onPageRows.filter(row => contentTypeFilter === 'all' || row.contentType === contentTypeFilter).filter(row => onPageFilter === 'missing' ? (row.seolen === 0 || row.desclen === 0) : true).map((row, i) => (
                     <tr key={i} className="border-b border-gray-50 hover:bg-blue-50/30">
                       <td className="px-3 py-2.5 font-medium text-gray-800 max-w-[140px] truncate text-xs">{row.title}</td>
                       <td className="px-3 py-2.5 text-xs max-w-[160px]">
