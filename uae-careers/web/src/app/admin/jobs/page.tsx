@@ -22,8 +22,20 @@ interface Job {
   is_featured: boolean;
   is_walk_in: boolean;
   status: JobStatus;
+  expiry_date: string;
   created: string;
   views: number;
+}
+
+function resolveStatus(status: JobStatus, expiry_date: string): JobStatus {
+  if (status === 'approved' && expiry_date && new Date(expiry_date) < new Date()) return 'expired';
+  return status;
+}
+
+function defaultExpiry() {
+  const d = new Date();
+  d.setDate(d.getDate() + 30);
+  return d.toISOString().slice(0, 10);
 }
 
 const EMPTY_JOB: Omit<Job, 'id' | 'created' | 'views'> = {
@@ -41,15 +53,16 @@ const EMPTY_JOB: Omit<Job, 'id' | 'created' | 'views'> = {
   is_featured: false,
   is_walk_in: false,
   status: 'pending',
+  expiry_date: defaultExpiry(),
 };
 
 const MOCK_JOBS: Job[] = [
-  { id: 1, title: 'Senior Software Engineer', employer: 'Tech Corp Dubai', category: 'IT', country: 'UAE', city: 'Dubai', job_type: 'full_time', salary_min: '15000', salary_max: '25000', description: '', apply_method: 'email', apply_contact: 'hr@techcorp.ae', is_featured: true, is_walk_in: false, status: 'pending', created: '2026-06-12', views: 0 },
-  { id: 2, title: 'Marketing Manager', employer: 'Gulf Media', category: 'Marketing', country: 'KSA', city: 'Riyadh', job_type: 'full_time', salary_min: '12000', salary_max: '20000', description: '', apply_method: 'email', apply_contact: 'jobs@gulfmedia.sa', is_featured: false, is_walk_in: false, status: 'approved', created: '2026-06-11', views: 342 },
-  { id: 3, title: 'Financial Analyst', employer: 'Emirates Bank', category: 'Finance', country: 'UAE', city: 'Abu Dhabi', job_type: 'full_time', salary_min: '10000', salary_max: '16000', description: '', apply_method: 'email', apply_contact: 'careers@emiratesbank.ae', is_featured: false, is_walk_in: false, status: 'approved', created: '2026-06-11', views: 521 },
-  { id: 4, title: 'HR Coordinator', employer: 'Majid Al Futtaim', category: 'HR', country: 'UAE', city: 'Dubai', job_type: 'full_time', salary_min: '7000', salary_max: '10000', description: '', apply_method: 'email', apply_contact: 'hr@maf.ae', is_featured: false, is_walk_in: false, status: 'rejected', created: '2026-06-10', views: 0 },
-  { id: 5, title: 'Sales Executive', employer: 'Noon.com', category: 'Sales', country: 'UAE', city: 'Dubai', job_type: 'full_time', salary_min: '6000', salary_max: '9000', description: '', apply_method: 'link', apply_contact: 'https://noon.com/careers', is_featured: false, is_walk_in: false, status: 'pending', created: '2026-06-10', views: 0 },
-  { id: 6, title: 'Civil Engineer', employer: 'Aldar Properties', category: 'Engineering', country: 'UAE', city: 'Abu Dhabi', job_type: 'contract', salary_min: '10000', salary_max: '18000', description: '', apply_method: 'email', apply_contact: 'recruitment@aldar.com', is_featured: false, is_walk_in: false, status: 'approved', created: '2026-06-09', views: 789 },
+  { id: 1, title: 'Senior Software Engineer', employer: 'Tech Corp Dubai', category: 'IT', country: 'UAE', city: 'Dubai', job_type: 'full_time', salary_min: '15000', salary_max: '25000', description: '', apply_method: 'email', apply_contact: 'hr@techcorp.ae', is_featured: true, is_walk_in: false, status: 'pending', expiry_date: '2026-07-12', created: '2026-06-12', views: 0 },
+  { id: 2, title: 'Marketing Manager', employer: 'Gulf Media', category: 'Marketing', country: 'KSA', city: 'Riyadh', job_type: 'full_time', salary_min: '12000', salary_max: '20000', description: '', apply_method: 'email', apply_contact: 'jobs@gulfmedia.sa', is_featured: false, is_walk_in: false, status: 'approved', expiry_date: '2026-07-11', created: '2026-06-11', views: 342 },
+  { id: 3, title: 'Financial Analyst', employer: 'Emirates Bank', category: 'Finance', country: 'UAE', city: 'Abu Dhabi', job_type: 'full_time', salary_min: '10000', salary_max: '16000', description: '', apply_method: 'email', apply_contact: 'careers@emiratesbank.ae', is_featured: false, is_walk_in: false, status: 'approved', expiry_date: '2026-05-01', created: '2026-06-11', views: 521 },
+  { id: 4, title: 'HR Coordinator', employer: 'Majid Al Futtaim', category: 'HR', country: 'UAE', city: 'Dubai', job_type: 'full_time', salary_min: '7000', salary_max: '10000', description: '', apply_method: 'email', apply_contact: 'hr@maf.ae', is_featured: false, is_walk_in: false, status: 'rejected', expiry_date: '2026-07-10', created: '2026-06-10', views: 0 },
+  { id: 5, title: 'Sales Executive', employer: 'Noon.com', category: 'Sales', country: 'UAE', city: 'Dubai', job_type: 'full_time', salary_min: '6000', salary_max: '9000', description: '', apply_method: 'link', apply_contact: 'https://noon.com/careers', is_featured: false, is_walk_in: false, status: 'pending', expiry_date: '2026-07-10', created: '2026-06-10', views: 0 },
+  { id: 6, title: 'Civil Engineer', employer: 'Aldar Properties', category: 'Engineering', country: 'UAE', city: 'Abu Dhabi', job_type: 'contract', salary_min: '10000', salary_max: '18000', description: '', apply_method: 'email', apply_contact: 'recruitment@aldar.com', is_featured: false, is_walk_in: false, status: 'approved', expiry_date: '2026-07-09', created: '2026-06-09', views: 789 },
 ];
 
 const STATUS_CONFIG: Record<JobStatus, { label: string; classes: string }> = {
@@ -86,6 +99,10 @@ interface JobFormProps {
   onSave: (data: Omit<Job, 'id' | 'created' | 'views'>) => void;
   onClose: () => void;
   title: string;
+}
+
+function daysUntil(dateStr: string): number {
+  return Math.ceil((new Date(dateStr).getTime() - Date.now()) / 86400000);
 }
 
 function JobModal({ initial, onSave, onClose, title }: JobFormProps) {
@@ -154,6 +171,24 @@ function JobModal({ initial, onSave, onClose, title }: JobFormProps) {
                 ))}
               </select>
             </InputRow>
+            <InputRow label="Expiry Date *">
+              <input
+                className={cls}
+                type="date"
+                value={form.expiry_date}
+                min={new Date().toISOString().slice(0, 10)}
+                onChange={(e) => set('expiry_date', e.target.value)}
+              />
+              {form.expiry_date && (
+                <p className={`text-xs mt-1 ${daysUntil(form.expiry_date) <= 7 ? 'text-red-500' : daysUntil(form.expiry_date) <= 14 ? 'text-amber-500' : 'text-gray-400'}`}>
+                  {daysUntil(form.expiry_date) < 0
+                    ? '⚠ Already expired — job will be unpublished'
+                    : daysUntil(form.expiry_date) === 0
+                    ? '⚠ Expires today'
+                    : `Expires in ${daysUntil(form.expiry_date)} day${daysUntil(form.expiry_date) !== 1 ? 's' : ''}`}
+                </p>
+              )}
+            </InputRow>
             <div className="flex items-center gap-6 pt-5">
               <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
                 <input type="checkbox" checked={form.is_featured} onChange={(e) => set('is_featured', e.target.checked)} className="rounded" />
@@ -208,7 +243,10 @@ export default function AdminJobsPage() {
   const [page, setPage] = useState(1);
   const [modal, setModal] = useState<{ mode: 'add' | 'edit'; job?: Job } | null>(null);
 
-  const filtered = jobs.filter((j) => {
+  // Auto-expire approved jobs past their expiry_date on each render
+  const jobsWithExpiry = jobs.map((j) => ({ ...j, status: resolveStatus(j.status, j.expiry_date) }));
+
+  const filtered = jobsWithExpiry.filter((j) => {
     const matchSearch = j.title.toLowerCase().includes(search.toLowerCase()) || j.employer.toLowerCase().includes(search.toLowerCase());
     const matchStatus = statusFilter === 'All' || j.status === statusFilter.toLowerCase();
     const matchCat = categoryFilter === 'All' || j.category === categoryFilter;
@@ -251,7 +289,7 @@ export default function AdminJobsPage() {
       {modal && (
         <JobModal
           title={modal.mode === 'add' ? 'Add New Job' : 'Edit Job'}
-          initial={modal.job ? { title: modal.job.title, employer: modal.job.employer, category: modal.job.category, country: modal.job.country, city: modal.job.city, job_type: modal.job.job_type, salary_min: modal.job.salary_min, salary_max: modal.job.salary_max, description: modal.job.description, apply_method: modal.job.apply_method, apply_contact: modal.job.apply_contact, is_featured: modal.job.is_featured, is_walk_in: modal.job.is_walk_in, status: modal.job.status } : EMPTY_JOB}
+          initial={modal.job ? { title: modal.job.title, employer: modal.job.employer, category: modal.job.category, country: modal.job.country, city: modal.job.city, job_type: modal.job.job_type, salary_min: modal.job.salary_min, salary_max: modal.job.salary_max, description: modal.job.description, apply_method: modal.job.apply_method, apply_contact: modal.job.apply_contact, is_featured: modal.job.is_featured, is_walk_in: modal.job.is_walk_in, status: modal.job.status, expiry_date: modal.job.expiry_date } : EMPTY_JOB}
           onSave={handleSave}
           onClose={() => setModal(null)}
         />
@@ -316,7 +354,7 @@ export default function AdminJobsPage() {
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Category</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Location</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Created</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Expires</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Views</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
               </tr>
@@ -345,7 +383,16 @@ export default function AdminJobsPage() {
                         {STATUS_CONFIG[job.status].label}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-500 text-xs">{job.created}</td>
+                    <td className="px-4 py-3 text-xs">
+                      {job.expiry_date ? (
+                        <span className={daysUntil(job.expiry_date) < 0 ? 'text-gray-400 line-through' : daysUntil(job.expiry_date) <= 7 ? 'text-red-600 font-medium' : 'text-gray-500'}>
+                          {job.expiry_date}
+                          {daysUntil(job.expiry_date) >= 0 && daysUntil(job.expiry_date) <= 7 && (
+                            <span className="block text-[10px] text-red-500">{daysUntil(job.expiry_date)}d left</span>
+                          )}
+                        </span>
+                      ) : '—'}
+                    </td>
                     <td className="px-4 py-3 text-gray-600">{job.views.toLocaleString()}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1 flex-wrap">

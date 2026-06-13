@@ -246,7 +246,66 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
     { type: 'Blog / Article',  title: '{title} | {site_name}',                       desc: '{excerpt}' },
   ]);
 
-  // ── Content registry ────────────────────────────────────────────────────────
+  // ── Content registry + crawler ──────────────────────────────────────────────
+  type CrawlerStatus = 'idle' | 'running' | 'done';
+  const [crawlerStatus, setCrawlerStatus] = useState<CrawlerStatus>('idle');
+  const [crawlerProgress, setCrawlerProgress] = useState(0);
+  const [crawlerLog, setCrawlerLog] = useState<string[]>([]);
+  const [crawlerFound, setCrawlerFound] = useState(0);
+  const [crawlerNew, setCrawlerNew] = useState(0);
+  const [autoRunEnabled, setAutoRunEnabled] = useState(false);
+  const [autoRunInterval, setAutoRunInterval] = useState('24');
+  const [autoRunUnit, setAutoRunUnit] = useState<'hours' | 'days'>('hours');
+  const [lastCrawled, setLastCrawled] = useState<string | null>(null);
+
+  const runCrawler = () => {
+    if (crawlerStatus === 'running') return;
+    setCrawlerStatus('running');
+    setCrawlerProgress(0);
+    setCrawlerLog([]);
+    setCrawlerFound(0);
+    setCrawlerNew(0);
+
+    const steps = [
+      { pct: 5,  msg: '🔍 Starting URL discovery from sitemap.xml…' },
+      { pct: 15, msg: '📡 Crawling /jobs/* — found 4,823 URLs' },
+      { pct: 25, msg: '🏢 Crawling /companies/* — found 347 URLs' },
+      { pct: 35, msg: '🗂 Crawling /jobs/category/* — found 34 URLs' },
+      { pct: 45, msg: '🌍 Crawling /jobs/location/* — found 12 URLs' },
+      { pct: 55, msg: '📝 Crawling /blog/* — found 89 URLs' },
+      { pct: 65, msg: '💰 Crawling /salary-guide/* — found 23 URLs (NEW)' },
+      { pct: 75, msg: '🔧 Crawling /tools/* — found 8 URLs (NEW)' },
+      { pct: 82, msg: '📊 Analysing URL patterns and extracting content type signatures…' },
+      { pct: 90, msg: '⚙️ Mapping schemas: JobPosting, Organization, Article, Place, FAQPage…' },
+      { pct: 95, msg: '🔗 Cross-referencing against existing registry entries…' },
+      { pct: 100, msg: '✅ Crawl complete — registry updated' },
+    ];
+
+    let i = 0;
+    const tick = () => {
+      if (i >= steps.length) {
+        setCrawlerStatus('done');
+        setCrawlerFound(5336);
+        setCrawlerNew(2);
+        setLastCrawled(new Date().toLocaleString('en-AE', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }));
+        setContentTypes(prev => {
+          const keys = prev.map(p => p.key);
+          const additions: ContentType[] = [];
+          if (!keys.includes('salary')) additions.push({ key: 'salary', label: 'Salary Guides', urlPattern: '/salary-guide/{role}', schema: 'Article', sitemap: 'sitemap-salary.xml', status: 'active', records: 23, missingMeta: 0 });
+          if (!keys.includes('tools')) additions.push({ key: 'tools', label: 'Career Tools', urlPattern: '/tools/{slug}', schema: 'WebApplication', sitemap: 'sitemap-tools.xml', status: 'active', records: 8, missingMeta: 0 });
+          return [...prev, ...additions];
+        });
+        return;
+      }
+      const step = steps[i++];
+      setCrawlerProgress(step.pct);
+      setCrawlerLog(prev => [...prev, step.msg]);
+      setTimeout(tick, 480 + Math.random() * 200);
+    };
+    setTimeout(tick, 300);
+  };
+
+  // ── Original content registry state ─────────────────────────────────────────
   const [contentTypes, setContentTypes] = useState<ContentType[]>(MOCK_CONTENT_TYPES);
   const [showRegWizard, setShowRegWizard] = useState(false);
   const [wizardStep, setWizardStep] = useState(1);
@@ -1139,21 +1198,97 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
       {/* ─────────────────────────── TAB 13: CONTENT REGISTRY ───────────────── */}
       {tab === 'registry' && (
         <div className="space-y-4">
-          {/* Discovery alert */}
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-            <p className="text-sm font-semibold text-amber-800 mb-1">⚡ Auto-Discovery Engine — 2 new URL patterns detected</p>
-            <p className="text-xs text-amber-700 mb-3">These pages are receiving traffic but have no SEO configuration. They currently use global defaults.</p>
-            {[{p:'/salary-guide/...',u:47,h:234},{p:'/tools/...',u:12,h:89}].map(d=>(
-              <div key={d.p} className="flex items-center justify-between py-1.5">
-                <span className="text-xs text-amber-800"><code className="bg-amber-100 px-1.5 py-0.5 rounded">{d.p}</code> — {d.u} URLs, {d.h} hits this week</span>
-                <button onClick={()=>{ setShowRegWizard(true); setNewType_url(d.p.replace('...','slug')); }} className="text-xs bg-amber-700 text-white px-3 py-1 rounded hover:bg-amber-800">Configure →</button>
+          {/* Auto-Crawler Panel */}
+          <Card title="Content Registry Crawler" action={
+            <button
+              onClick={runCrawler}
+              disabled={crawlerStatus === 'running'}
+              className={`rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors ${crawlerStatus === 'running' ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#1A3C6E] hover:bg-[#0d2444]'}`}
+            >
+              {crawlerStatus === 'running' ? '⏳ Crawling…' : crawlerStatus === 'done' ? '🔄 Re-Run Crawler' : '▶ Run Crawler Now'}
+            </button>
+          }>
+            <p className="text-xs text-gray-500 mb-4">
+              The crawler scans your entire website, discovers URL patterns, identifies content types, and automatically registers them with the correct schema, sitemap, and SEO settings — no manual input required.
+              {lastCrawled && <span className="ml-2 text-emerald-600 font-medium">Last run: {lastCrawled}</span>}
+            </p>
+
+            {/* Progress bar */}
+            {(crawlerStatus === 'running' || crawlerStatus === 'done') && (
+              <div className="mb-4">
+                <div className="flex justify-between text-xs text-gray-500 mb-1">
+                  <span>{crawlerStatus === 'done' ? `✅ Done — ${crawlerFound.toLocaleString()} URLs scanned, ${crawlerNew} new content type${crawlerNew !== 1 ? 's' : ''} registered` : 'Crawling…'}</span>
+                  <span>{crawlerProgress}%</span>
+                </div>
+                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${crawlerStatus === 'done' ? 'bg-emerald-500' : 'bg-[#1A3C6E]'}`}
+                    style={{ width: `${crawlerProgress}%` }}
+                  />
+                </div>
+                {crawlerLog.length > 0 && (
+                  <div className="mt-3 bg-gray-900 rounded-xl p-3 max-h-40 overflow-y-auto space-y-1">
+                    {crawlerLog.map((line, i) => (
+                      <p key={i} className="text-xs text-green-400 font-mono">{line}</p>
+                    ))}
+                  </div>
+                )}
               </div>
-            ))}
-          </div>
+            )}
+
+            {/* Auto-run scheduler */}
+            <div className="border border-gray-100 rounded-xl p-4 bg-gray-50">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <p className="text-sm font-semibold text-gray-700">Auto-Run Schedule</p>
+                  <p className="text-xs text-gray-400 mt-0.5">Crawler will run automatically at the selected interval</p>
+                </div>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <span className="text-xs text-gray-500">{autoRunEnabled ? 'Enabled' : 'Disabled'}</span>
+                  <button
+                    type="button"
+                    onClick={() => setAutoRunEnabled(v => !v)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${autoRunEnabled ? 'bg-[#1A3C6E]' : 'bg-gray-300'}`}
+                  >
+                    <span className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform ${autoRunEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
+                  </button>
+                </label>
+              </div>
+              {autoRunEnabled && (
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-gray-500 whitespace-nowrap">Run every</span>
+                  <input
+                    type="number"
+                    min="1"
+                    max="999"
+                    value={autoRunInterval}
+                    onChange={(e) => setAutoRunInterval(e.target.value)}
+                    className="w-20 rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1A3C6E]"
+                  />
+                  <select
+                    value={autoRunUnit}
+                    onChange={(e) => setAutoRunUnit(e.target.value as 'hours' | 'days')}
+                    className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1A3C6E]"
+                  >
+                    <option value="hours">hours</option>
+                    <option value="days">days</option>
+                  </select>
+                  <span className="text-xs text-emerald-600 font-medium">
+                    Next run: {(() => {
+                      const d = new Date();
+                      const n = parseInt(autoRunInterval) || 1;
+                      autoRunUnit === 'hours' ? d.setHours(d.getHours() + n) : d.setDate(d.getDate() + n);
+                      return d.toLocaleString('en-AE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+                    })()}
+                  </span>
+                </div>
+              )}
+            </div>
+          </Card>
 
           {/* Registry table */}
           <Card title={`Content Type Registry (${contentTypes.length} types)`} action={
-            <button onClick={()=>setShowRegWizard(true)} className="rounded-lg bg-[#FF6B35] text-white px-4 py-2 text-sm font-semibold hover:bg-[#e55a24]">+ Register Type</button>
+            <button onClick={()=>setShowRegWizard(true)} className="rounded-lg border border-[#1A3C6E] text-[#1A3C6E] px-4 py-2 text-sm font-semibold hover:bg-[#1A3C6E]/5">+ Add Manually</button>
           }>
             <p className="text-xs text-gray-500 mb-4">This is the architectural brain of the SEO module. Every content type registered here gets automatic meta tags, schema, sitemap entry, and On-Page SEO coverage. <strong>Zero code changes required to the SEO module when new content types are added.</strong></p>
             <div className="overflow-x-auto">
