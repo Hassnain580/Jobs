@@ -29,7 +29,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     setMounted(true);
     const token = localStorage.getItem('admin_token');
     if (!token && pathname !== '/admin/login') {
-      router.replace('/admin/login');
+      router.replace('/secure-portal-9x4m7k');
       return;
     }
     const name = localStorage.getItem('admin_name');
@@ -39,7 +39,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const handleLogout = () => {
     localStorage.removeItem('admin_token');
     localStorage.removeItem('admin_name');
-    router.replace('/admin/login');
+    router.replace('/secure-portal-9x4m7k');
   };
 
   // Don't render layout on login page
