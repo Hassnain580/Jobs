@@ -1,31 +1,48 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "UAE Careers",
+    "slug": "uae-careers",
+    "scheme": "uaecareers",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.uaecareers.app"
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#1A3C6E",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.uaecareers.app"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
     },
     "plugins": [
       "expo-router",
       "expo-font",
       "expo-status-bar",
-      "expo-secure-store"
-    ]
+      "expo-secure-store",
+      "expo-image-picker",
+      "expo-document-picker",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#1A3C6E"
+        }
+      ],
+      "expo-local-authentication"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
   }
 }
