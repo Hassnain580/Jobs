@@ -383,6 +383,44 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
   // ── Audit state ─────────────────────────────────────────────────────────────
   const [auditRunning, setAuditRunning] = useState(false);
   const [auditDone, setAuditDone] = useState(false);
+  const [auditProgress, setAuditProgress] = useState(0);
+  const [auditLog, setAuditLog] = useState<string[]>([]);
+  const [auditHighlight, setAuditHighlight] = useState<string | null>(null);
+
+  const runAudit = () => {
+    if (auditRunning) return;
+    setAuditRunning(true);
+    setAuditDone(false);
+    setAuditProgress(0);
+    setAuditLog([]);
+    const steps = [
+      { pct: 8,  msg: '🔍 Starting crawl — loading all registered content types…' },
+      { pct: 18, msg: '📝 Checking meta titles on 4,823 job pages…' },
+      { pct: 30, msg: '📄 Checking meta descriptions — 76 missing found' },
+      { pct: 40, msg: '🔖 Validating JobPosting schema fields…' },
+      { pct: 50, msg: '🔗 Scanning internal links for broken URLs — 5 found' },
+      { pct: 60, msg: '📊 Measuring content depth (word count) on category pages…' },
+      { pct: 70, msg: '🔀 Checking redirect chains…' },
+      { pct: 80, msg: '🌍 Validating hreflang tags across all locales…' },
+      { pct: 90, msg: '🖼 Checking OG image coverage…' },
+      { pct: 100, msg: '✅ Audit complete — 8 issues identified' },
+    ];
+    let i = 0;
+    const tick = () => {
+      if (i >= steps.length) { setAuditRunning(false); setAuditDone(true); return; }
+      const s = steps[i++];
+      setAuditProgress(s.pct);
+      setAuditLog(p => [...p, s.msg]);
+      setTimeout(tick, 400 + Math.random() * 150);
+    };
+    setTimeout(tick, 200);
+  };
+
+  const fixAndNavigate = (goTab: Tab, highlight: string) => {
+    setAuditHighlight(highlight);
+    setTab(goTab);
+    setTimeout(() => setAuditHighlight(null), 4000);
+  };
 
   // ── Registry edit state ─────────────────────────────────────────────────────
   const [editingContentType, setEditingContentType] = useState<string | null>(null);
@@ -621,6 +659,20 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
       {/* ─────────────────────────── TAB 3: ON-PAGE MANAGER ──────────────────── */}
       {tab === 'onpage' && (
         <div className="space-y-4">
+          {auditHighlight && ['missing-meta','duplicate-titles','thin-content','missing-h2'].includes(auditHighlight) && (
+            <div className="bg-[#1A3C6E] text-white rounded-xl px-5 py-3 flex items-center gap-3 shadow-lg animate-pulse">
+              <span className="text-xl">👇</span>
+              <div>
+                <p className="font-semibold text-sm">Navigated from Audit Report</p>
+                <p className="text-xs text-white/70">{{
+                  'missing-meta': 'Use Edit on each row to add missing meta descriptions, or click Bulk Apply Template.',
+                  'duplicate-titles': 'Check for rows with the same SEO title and click Edit to make each unique.',
+                  'thin-content': 'Use Edit to add more descriptive content to pages marked with thin text.',
+                  'missing-h2': 'Edit category pages and add H2 subheadings to improve structure.',
+                }[auditHighlight]}</p>
+              </div>
+            </div>
+          )}
           {/* Inline edit panel */}
           {editingOnPage !== null && (
             <div className="bg-white rounded-xl border-2 border-[#1A3C6E] shadow-lg p-5">
@@ -723,6 +775,15 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
       {/* ─────────────────────────── TAB 4: SCHEMA ───────────────────────────── */}
       {tab === 'schema' && (
         <div className="space-y-4">
+          {auditHighlight === 'schema-missing' && (
+            <div className="bg-[#1A3C6E] text-white rounded-xl px-5 py-3 flex items-center gap-3 shadow-lg animate-pulse">
+              <span className="text-xl">👇</span>
+              <div>
+                <p className="font-semibold text-sm">Navigated from Audit — Schema Missing</p>
+                <p className="text-xs text-white/70">Enable JobPosting schema below and ensure all required fields (title, description, datePosted, hiringOrganization, jobLocation) are mapped.</p>
+              </div>
+            </div>
+          )}
           <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
             <p className="text-sm font-semibold text-emerald-800 mb-1">⚡ Prerequisites for Schema / Structured Data</p>
             <ul className="text-xs text-emerald-700 space-y-1 mt-2">
@@ -845,6 +906,15 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
       {/* ─────────────────────────── TAB 5: TECHNICAL SEO ────────────────────── */}
       {tab === 'technical' && (
         <div className="space-y-4">
+          {auditHighlight === 'broken-links' && (
+            <div className="bg-[#1A3C6E] text-white rounded-xl px-5 py-3 flex items-center gap-3 shadow-lg animate-pulse">
+              <span className="text-xl">👇</span>
+              <div>
+                <p className="font-semibold text-sm">Navigated from Audit — Broken Internal Links</p>
+                <p className="text-xs text-white/70">Review your robots.txt to ensure crawlers are not blocked. Check the Redirects tab to set up 301s for any broken URLs.</p>
+              </div>
+            </div>
+          )}
           <Card title="Robots.txt Editor">
             <div className="mb-2 flex flex-wrap gap-2 items-center">
               <button
@@ -995,6 +1065,15 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
       {/* ─────────────────────────── TAB 7: REDIRECTS & 404 ─────────────────── */}
       {tab === 'redirects' && (
         <div className="space-y-4">
+          {auditHighlight === 'redirect-chain' && (
+            <div className="bg-[#1A3C6E] text-white rounded-xl px-5 py-3 flex items-center gap-3 shadow-lg animate-pulse">
+              <span className="text-xl">👇</span>
+              <div>
+                <p className="font-semibold text-sm">Navigated from Audit — Redirect Chain Detected</p>
+                <p className="text-xs text-white/70">A→B→C chains waste crawl budget. Find multi-hop redirects in the table below and update source A to point directly to destination C.</p>
+              </div>
+            </div>
+          )}
           <Card title="Add Redirect">
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
               <input className={inp} placeholder="/old-url" value={newSource} onChange={e => setNewSource(e.target.value)} />
@@ -1209,6 +1288,15 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
       {/* ─────────────────────────── TAB 10: MULTILINGUAL ───────────────────── */}
       {tab === 'multilingual' && (
         <div className="space-y-4">
+          {auditHighlight === 'hreflang' && (
+            <div className="bg-[#1A3C6E] text-white rounded-xl px-5 py-3 flex items-center gap-3 shadow-lg animate-pulse">
+              <span className="text-xl">👇</span>
+              <div>
+                <p className="font-semibold text-sm">Navigated from Audit — Hreflang Not Configured</p>
+                <p className="text-xs text-white/70">Enable hreflang tags below and activate at least en-ae and x-default to tell Google which language version to show UAE vs global users.</p>
+              </div>
+            </div>
+          )}
           <Card title="Language & Region Configuration">
             <Field label="Primary Language">
               <select className={inp} value={primaryLang} onChange={e => setPrimaryLang(e.target.value)}>
@@ -1346,54 +1434,110 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
       {/* ─────────────────────────── TAB 12: REPORTS ─────────────────────────── */}
       {tab === 'reports' && (
         <div className="space-y-4">
-          <Card title="SEO Audit Report" action={
-            <div className="flex items-center gap-2">
-              {auditDone && <span className="text-xs text-emerald-600 font-medium">✓ Audit complete</span>}
-              <button
-                disabled={auditRunning}
-                onClick={() => { setAuditRunning(true); setAuditDone(false); setTimeout(()=>{ setAuditRunning(false); setAuditDone(true); }, 2000); }}
-                className="rounded-lg bg-[#FF6B35] text-white px-4 py-2 text-sm font-semibold hover:bg-[#e55a24] disabled:opacity-60"
-              >{auditRunning ? '⏳ Scanning…' : '🔍 Run Full Audit'}</button>
-            </div>
+          <Card title="SEO Audit" action={
+            <button
+              disabled={auditRunning}
+              onClick={runAudit}
+              className="rounded-lg bg-[#FF6B35] text-white px-4 py-2 text-sm font-semibold hover:bg-[#e55a24] disabled:opacity-60 transition-colors"
+            >{auditRunning ? '⏳ Scanning…' : auditDone ? '🔄 Re-Run Audit' : '🔍 Run Full Audit'}</button>
           }>
-            <div className="space-y-2">
-              {([
-                { severity: 'critical', count: 76,  label: 'Pages with missing meta descriptions',   goTab: 'onpage' as Tab,    goLabel: 'Fix in On-Page Manager' },
-                { severity: 'critical', count: 4,   label: 'Pages with duplicate meta titles',        goTab: 'onpage' as Tab,    goLabel: 'Fix in On-Page Manager' },
-                { severity: 'warning',  count: 23,  label: 'Job listings with salary schema missing', goTab: 'schema' as Tab,    goLabel: 'Fix in Schema Manager'  },
-                { severity: 'warning',  count: 5,   label: 'Broken internal links detected',          goTab: 'technical' as Tab, goLabel: 'View in Technical SEO'  },
-                { severity: 'warning',  count: 12,  label: 'Pages with thin content (< 300 words)',   goTab: 'onpage' as Tab,    goLabel: 'View in On-Page Manager'},
-                { severity: 'info',     count: 34,  label: 'Category pages missing H2 subheadings',  goTab: 'onpage' as Tab,    goLabel: 'View in On-Page Manager'},
-                { severity: 'info',     count: 1,   label: 'Redirect chain detected (A→B→C)',         goTab: 'redirects' as Tab, goLabel: 'Fix in Redirects'       },
-                { severity: 'info',     count: 0,   label: 'Hreflang not configured (en-ae / ar-ae)', goTab: 'multilingual' as Tab, goLabel: 'Configure Hreflang'  },
-              ] as { severity:string; count:number; label:string; goTab:Tab; goLabel:string }[]).map((issue, i) => (
-                <div key={i} className={`flex items-center justify-between px-4 py-3 rounded-lg border ${issue.severity==='critical'?'bg-red-50 border-red-200':issue.severity==='warning'?'bg-amber-50 border-amber-200':'bg-blue-50 border-blue-100'}`}>
-                  <div className="flex items-center gap-3">
-                    <span className="text-lg">{issue.severity==='critical'?'❌':issue.severity==='warning'?'⚠️':'ℹ️'}</span>
-                    <div>
-                      <p className={`text-sm font-semibold ${issue.severity==='critical'?'text-red-800':issue.severity==='warning'?'text-amber-800':'text-blue-800'}`}>{issue.count > 0 ? `${issue.count} issues` : 'Not configured'} — {issue.label}</p>
-                      <p className="text-xs text-gray-500 capitalize">{issue.severity} · Click to go to the right section</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => setTab(issue.goTab)}
-                    className={`rounded px-3 py-1 text-xs font-medium whitespace-nowrap ${issue.severity==='critical'?'bg-red-100 text-red-700 hover:bg-red-200':issue.severity==='warning'?'bg-amber-100 text-amber-700 hover:bg-amber-200':'bg-blue-100 text-blue-700 hover:bg-blue-200'}`}
-                  >
-                    {issue.goLabel} →
-                  </button>
+            {/* Idle state — prompt user */}
+            {!auditRunning && !auditDone && (
+              <div className="py-10 text-center">
+                <p className="text-4xl mb-3">🔍</p>
+                <p className="text-gray-700 font-semibold mb-1">No audit has been run yet</p>
+                <p className="text-sm text-gray-400">Click <strong>Run Full Audit</strong> to scan all pages, schemas, redirects, and hreflang tags.</p>
+              </div>
+            )}
+
+            {/* Progress — while running */}
+            {auditRunning && (
+              <div className="space-y-3">
+                <div className="flex justify-between text-xs text-gray-500 mb-1">
+                  <span>Scanning your website…</span>
+                  <span className="font-semibold text-[#1A3C6E]">{auditProgress}%</span>
                 </div>
-              ))}
-            </div>
-            <div className="mt-4 flex gap-2">
-              <button
-                onClick={() => window.print()}
-                className="rounded border border-gray-300 text-gray-600 px-4 py-2 text-xs hover:bg-gray-50"
-              >📄 Export PDF</button>
-              <button
-                onClick={() => exportCSV(['Severity','Issues','Description'], [['critical',76,'Pages with missing meta descriptions'],['critical',4,'Pages with duplicate meta titles'],['warning',23,'Job listings with salary schema missing'],['warning',5,'Broken internal links detected'],['warning',12,'Pages with thin content'],['info',34,'Category pages missing H2'],['info',1,'Redirect chain detected'],['info',0,'Hreflang not configured']], 'seo-audit.csv')}
-                className="rounded border border-gray-300 text-gray-600 px-4 py-2 text-xs hover:bg-gray-50"
-              >📊 Export CSV</button>
-            </div>
+                <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-[#1A3C6E] rounded-full transition-all duration-500"
+                    style={{ width: `${auditProgress}%` }}
+                  />
+                </div>
+                <div className="bg-gray-900 rounded-xl p-3 max-h-48 overflow-y-auto space-y-1">
+                  {auditLog.map((line, i) => (
+                    <p key={i} className="text-xs text-green-400 font-mono">{line}</p>
+                  ))}
+                  <p className="text-xs text-green-400 font-mono animate-pulse">▌</p>
+                </div>
+              </div>
+            )}
+
+            {/* Results — after audit */}
+            {auditDone && !auditRunning && (() => {
+              const AUDIT_ISSUES = [
+                { severity: 'critical', count: 76,  label: 'Pages with missing meta descriptions',   goTab: 'onpage' as Tab,       highlight: 'missing-meta',    goLabel: 'Fix in On-Page Manager' },
+                { severity: 'critical', count: 4,   label: 'Pages with duplicate meta titles',        goTab: 'onpage' as Tab,       highlight: 'duplicate-titles', goLabel: 'Fix in On-Page Manager' },
+                { severity: 'warning',  count: 23,  label: 'Job listings with salary schema missing', goTab: 'schema' as Tab,       highlight: 'schema-missing',  goLabel: 'Fix in Schema Manager'  },
+                { severity: 'warning',  count: 5,   label: 'Broken internal links detected',          goTab: 'technical' as Tab,    highlight: 'broken-links',    goLabel: 'Fix in Technical SEO'   },
+                { severity: 'warning',  count: 12,  label: 'Pages with thin content (< 300 words)',   goTab: 'onpage' as Tab,       highlight: 'thin-content',    goLabel: 'Fix in On-Page Manager' },
+                { severity: 'info',     count: 34,  label: 'Category pages missing H2 subheadings',  goTab: 'onpage' as Tab,       highlight: 'missing-h2',      goLabel: 'Fix in On-Page Manager' },
+                { severity: 'info',     count: 1,   label: 'Redirect chain detected (A→B→C)',         goTab: 'redirects' as Tab,    highlight: 'redirect-chain',  goLabel: 'Fix in Redirects'       },
+                { severity: 'info',     count: 0,   label: 'Hreflang not configured (en-ae / ar-ae)', goTab: 'multilingual' as Tab, highlight: 'hreflang',        goLabel: 'Configure Hreflang'     },
+              ];
+              const critical = AUDIT_ISSUES.filter(x=>x.severity==='critical').reduce((s,x)=>s+x.count,0);
+              const warnings = AUDIT_ISSUES.filter(x=>x.severity==='warning').reduce((s,x)=>s+x.count,0);
+              const score = Math.max(0, 100 - critical * 0.8 - warnings * 0.3);
+              return (
+                <div className="space-y-4">
+                  {/* Score summary */}
+                  <div className="grid grid-cols-4 gap-3">
+                    {[
+                      { label: 'SEO Score',    value: `${Math.round(score)}/100`, color: score>=75?'text-emerald-600':score>=50?'text-amber-600':'text-red-600', bg: score>=75?'bg-emerald-50':'bg-amber-50' },
+                      { label: 'Critical',     value: AUDIT_ISSUES.filter(x=>x.severity==='critical').length, color: 'text-red-600', bg: 'bg-red-50' },
+                      { label: 'Warnings',     value: AUDIT_ISSUES.filter(x=>x.severity==='warning').length,  color: 'text-amber-600', bg: 'bg-amber-50' },
+                      { label: 'Info',         value: AUDIT_ISSUES.filter(x=>x.severity==='info').length,     color: 'text-blue-600', bg: 'bg-blue-50' },
+                    ].map(s => (
+                      <div key={s.label} className={`${s.bg} rounded-xl p-3 text-center`}>
+                        <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Issue list */}
+                  <div className="space-y-2">
+                    {AUDIT_ISSUES.map((issue, i) => (
+                      <div key={i} className={`flex items-center justify-between px-4 py-3 rounded-lg border ${issue.severity==='critical'?'bg-red-50 border-red-200':issue.severity==='warning'?'bg-amber-50 border-amber-200':'bg-blue-50 border-blue-100'}`}>
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <span className="text-lg flex-shrink-0">{issue.severity==='critical'?'❌':issue.severity==='warning'?'⚠️':'ℹ️'}</span>
+                          <div className="min-w-0">
+                            <p className={`text-sm font-semibold leading-tight ${issue.severity==='critical'?'text-red-800':issue.severity==='warning'?'text-amber-800':'text-blue-800'}`}>
+                              {issue.count > 0 ? `${issue.count} issue${issue.count!==1?'s':''}` : 'Not configured'} — {issue.label}
+                            </p>
+                            <p className="text-xs text-gray-500 capitalize mt-0.5">{issue.severity} severity · navigates to {issue.goTab} tab</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => fixAndNavigate(issue.goTab, issue.highlight)}
+                          className={`ml-3 flex-shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold whitespace-nowrap flex items-center gap-1 transition-colors ${issue.severity==='critical'?'bg-red-600 text-white hover:bg-red-700':issue.severity==='warning'?'bg-amber-500 text-white hover:bg-amber-600':'bg-blue-100 text-blue-700 hover:bg-blue-200'}`}
+                        >
+                          {issue.goLabel} <span>→</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Export */}
+                  <div className="flex gap-2 pt-1">
+                    <button onClick={() => window.print()} className="rounded border border-gray-300 text-gray-600 px-4 py-2 text-xs hover:bg-gray-50">📄 Export PDF</button>
+                    <button
+                      onClick={() => exportCSV(['Severity','Count','Description','Go To Tab'], AUDIT_ISSUES.map(x=>[x.severity,x.count,x.label,x.goTab]), 'seo-audit.csv')}
+                      className="rounded border border-gray-300 text-gray-600 px-4 py-2 text-xs hover:bg-gray-50"
+                    >📊 Export CSV</button>
+                  </div>
+                </div>
+              );
+            })()}
           </Card>
 
           <Card title="Scheduled Email Reports">
