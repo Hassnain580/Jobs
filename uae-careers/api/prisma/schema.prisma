@@ -1,0 +1,470 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── ENUMS ───────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  SUPER_USER
+  ADMIN
+  EMPLOYER
+  JOB_SEEKER
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ApplyMethod {
+  EMAIL
+  EXTERNAL_URL
+  IN_APP
+  WHATSAPP
+}
+
+enum JobStatus {
+  DRAFT
+  PENDING
+  ACTIVE
+  EXPIRED
+  REJECTED
+}
+
+enum ApplicationStatus {
+  APPLIED
+  VIEWED
+  SHORTLISTED
+  REJECTED
+}
+
+enum AdType {
+  GOOGLE_ADSENSE
+  PRODUCT_BANNER
+  WHATSAPP_LINK
+}
+
+enum LLMProvider {
+  OPENAI
+  ANTHROPIC
+  GOOGLE
+  DEEPSEEK
+}
+
+// ─── USER ────────────────────────────────────────────────────────────────────
+
+model User {
+  id              String         @id @default(uuid())
+  email           String?        @unique
+  phone           String?        @unique
+  passwordHash    String?
+  role            UserRole       @default(JOB_SEEKER)
+  approvalStatus  ApprovalStatus @default(PENDING)
+  isActive        Boolean        @default(true)
+  isBanned        Boolean        @default(false)
+  googleId        String?        @unique
+  linkedinId      String?        @unique
+  emailVerified   Boolean        @default(false)
+  phoneVerified   Boolean        @default(false)
+  lastLogin       DateTime?
+  registeredVia   String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  jobSeekerProfile JobSeekerProfile?
+  employerProfile  EmployerProfile?
+  adminProfile     AdminProfile?
+  applications     Application[]
+  savedJobs        SavedJob[]
+  otpCodes         OtpCode[]
+  notifications    Notification[]
+
+  @@map("users")
+}
+
+// ─── JOB SEEKER PROFILE ──────────────────────────────────────────────────────
+
+model JobSeekerProfile {
+  id                String    @id @default(uuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName         String?
+  lastName          String?
+  photoUrl          String?
+  photoKey          String?
+  nationality       String?
+  currentCountry    String?
+  currentCity       String?
+  dateOfBirth       DateTime?
+  gender            String?
+  currentJobTitle   String?
+  industryId        String?
+  totalExperience   Int?
+  educationLevel    String?
+  fieldOfStudy      String?
+  expectedSalaryMin Int?
+  expectedSalaryMax Int?
+  salaryCurrency    String?   @default("AED")
+  jobTypePreference String[]
+  countriesOpenTo   String[]
+  skills            String[]
+  languages         Json?
+  cvUrl             String?
+  cvKey             String?
+  cvFileName        String?
+  isPremium         Boolean   @default(false)
+  premiumExpiresAt  DateTime?
+  profileComplete   Int       @default(0)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@map("job_seeker_profiles")
+}
+
+// ─── EMPLOYER PROFILE ────────────────────────────────────────────────────────
+
+model EmployerProfile {
+  id               String      @id @default(uuid())
+  userId           String      @unique
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName      String?
+  logoUrl          String?
+  logoKey          String?
+  description      String?
+  industry         String?
+  companySize      String?
+  countryId        String?
+  cityId           String?
+  website          String?
+  linkedin         String?
+  freePostsUsed    Int         @default(0)
+  freePostsLimit   Int         @default(3)
+  llmApiKey        String?
+  llmProvider      LLMProvider?
+  llmGuidePdfUrl   String?
+  llmGuidePdfKey   String?
+  stripeCustomerId String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  jobs Job[]
+
+  @@map("employer_profiles")
+}
+
+// ─── ADMIN PROFILE ───────────────────────────────────────────────────────────
+
+model AdminProfile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName   String?
+  lastName    String?
+  permissions Json     @default("{}")
+  createdBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("admin_profiles")
+}
+
+// ─── COUNTRIES & CITIES ──────────────────────────────────────────────────────
+
+model Country {
+  id        String  @id @default(uuid())
+  name      String
+  code      String  @unique
+  isActive  Boolean @default(true)
+  sortOrder Int     @default(0)
+
+  cities City[]
+  jobs   Job[]
+
+  @@map("countries")
+}
+
+model City {
+  id        String  @id @default(uuid())
+  name      String
+  countryId String
+  country   Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  isActive  Boolean @default(true)
+
+  jobs Job[]
+
+  @@map("cities")
+}
+
+// ─── CATEGORIES ──────────────────────────────────────────────────────────────
+
+model Category {
+  id            String      @id @default(uuid())
+  name          String
+  slug          String      @unique
+  description   String?
+  icon          String?
+  isActive      Boolean     @default(true)
+  sortOrder     Int         @default(0)
+  adsEnabled    Boolean     @default(true)
+  adType        AdType?
+  applyMethod   ApplyMethod?
+  noteRequired  Boolean     @default(false)
+  noteCharLimit Int         @default(500)
+  createdAt     DateTime    @default(now())
+
+  jobs           Job[]
+  productBanners ProductBanner[]
+  categoryAds    CategoryAd[]
+
+  @@map("categories")
+}
+
+// ─── JOBS ────────────────────────────────────────────────────────────────────
+
+model Job {
+  id               String          @id @default(uuid())
+  title            String
+  slug             String          @unique
+  employerId       String
+  employer         EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  categoryId       String?
+  category         Category?       @relation(fields: [categoryId], references: [id])
+  countryId        String?
+  country          Country?        @relation(fields: [countryId], references: [id])
+  cityId           String?
+  city             City?           @relation(fields: [cityId], references: [id])
+  description      String
+  responsibilities String?
+  requirements     String?
+  importantNote    String?
+  salaryMin        Int?
+  salaryMax        Int?
+  salaryCurrency   String?         @default("AED")
+  salaryHidden     Boolean         @default(false)
+  experienceMin    Int?
+  experienceMax    Int?
+  educationLevel   String?
+  jobType          String?
+  applyMethod      ApplyMethod     @default(EMAIL)
+  applyEmail       String?
+  applyUrl         String?
+  applyWhatsapp    String?
+  isWalkIn         Boolean         @default(false)
+  walkInDate       DateTime?
+  walkInVenue      String?
+  status           JobStatus       @default(PENDING)
+  isSponsored      Boolean         @default(false)
+  isFeatured       Boolean         @default(false)
+  views            Int             @default(0)
+  expiresAt        DateTime?
+  postedAt         DateTime?
+  metaTitle        String?
+  metaDescription  String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  applications Application[]
+  savedBy      SavedJob[]
+
+  @@map("jobs")
+}
+
+// ─── APPLICATIONS ────────────────────────────────────────────────────────────
+
+model Application {
+  id          String            @id @default(uuid())
+  jobId       String
+  job         Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      ApplicationStatus @default(APPLIED)
+  coverLetter String?
+  cvUrl       String?
+  appliedAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@unique([jobId, userId])
+  @@map("applications")
+}
+
+model SavedJob {
+  id      String   @id @default(uuid())
+  jobId   String
+  job     Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  savedAt DateTime @default(now())
+
+  @@unique([jobId, userId])
+  @@map("saved_jobs")
+}
+
+// ─── OTP ─────────────────────────────────────────────────────────────────────
+
+model OtpCode {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  phone     String?
+  email     String?
+  code      String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("otp_codes")
+}
+
+// ─── PRODUCT BANNERS ─────────────────────────────────────────────────────────
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  imageUrl    String?
+  imageKey    String?
+  linkUrl     String
+  isActive    Boolean  @default(true)
+  isGlobal    Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  clicks      Int      @default(0)
+  impressions Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  categoryBanners ProductBanner[]
+
+  @@map("products")
+}
+
+model ProductBanner {
+  id         String    @id @default(uuid())
+  productId  String
+  product    Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  isActive   Boolean   @default(true)
+  sortOrder  Int       @default(0)
+
+  @@map("product_banners")
+}
+
+// ─── ADS ─────────────────────────────────────────────────────────────────────
+
+model CategoryAd {
+  id          String   @id @default(uuid())
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  adType      AdType
+  adSlotId    String?
+  bannerUrl   String?
+  linkUrl     String?
+  whatsappUrl String?
+  isActive    Boolean  @default(true)
+
+  @@map("category_ads")
+}
+
+// ─── NOTIFICATIONS ───────────────────────────────────────────────────────────
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String
+  type      String
+  isRead    Boolean  @default(false)
+  data      Json?
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
+// ─── PLATFORM SETTINGS ───────────────────────────────────────────────────────
+
+model PlatformSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String
+  type      String   @default("string")
+  group     String?
+  label     String?
+  updatedAt DateTime @updatedAt
+  updatedBy String?
+
+  @@map("platform_settings")
+}
+
+// ─── CMS CONTENT ─────────────────────────────────────────────────────────────
+
+model CmsContent {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  title       String?
+  content     String
+  page        String?
+  type        String   @default("text")
+  isPublished Boolean  @default(true)
+  version     Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  updatedBy   String?
+
+  history CmsHistory[]
+
+  @@map("cms_content")
+}
+
+model CmsHistory {
+  id          String     @id @default(uuid())
+  contentId   String
+  content     CmsContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  prevContent String
+  version     Int
+  updatedBy   String?
+  createdAt   DateTime   @default(now())
+
+  @@map("cms_history")
+}
+
+// ─── TRANSACTIONS ────────────────────────────────────────────────────────────
+
+model Transaction {
+  id          String   @id @default(uuid())
+  userId      String
+  amount      Float
+  currency    String   @default("USD")
+  type        String
+  status      String   @default("pending")
+  provider    String?
+  providerRef String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@map("transactions")
+}
+
+// ─── JOB ALERTS ──────────────────────────────────────────────────────────────
+
+model JobAlert {
+  id         String    @id @default(uuid())
+  userId     String
+  keywords   String?
+  categoryId String?
+  countryId  String?
+  cityId     String?
+  jobType    String?
+  frequency  String    @default("daily")
+  isActive   Boolean   @default(true)
+  lastSentAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@map("job_alerts")
+}
