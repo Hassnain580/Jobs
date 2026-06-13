@@ -2,46 +2,37 @@
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import { ChevronRight, ChevronLeft, Check, Loader2, AlertTriangle, Eye } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { cn, formatSalary } from '@/lib/utils';
 
-// Step 1 schema
-const step1Schema = z.object({
-  title: z.string().min(5, 'Job title must be at least 5 characters'),
-  category: z.string().min(1, 'Select a category'),
-  country: z.string().min(1, 'Select a country'),
-  city: z.string().min(2, 'Enter a city'),
-  job_type: z.string().min(1, 'Select a job type'),
-  experience: z.string().min(1, 'Select experience level'),
-  salary_min: z.string().optional(),
-  salary_max: z.string().optional(),
-  salary_currency: z.string().optional(),
-});
+type Step1Form = {
+  title: string;
+  category: string;
+  country: string;
+  city: string;
+  job_type: string;
+  experience: string;
+  salary_min?: string;
+  salary_max?: string;
+  salary_currency?: string;
+};
 
-// Step 2 schema
-const step2Schema = z.object({
-  description: z.string().min(100, 'Description must be at least 100 characters'),
-  responsibilities: z.string().optional(),
-  requirements: z.string().optional(),
-  important_note: z.string().max(500, 'Max 500 characters').optional(),
-});
+type Step2Form = {
+  description: string;
+  responsibilities?: string;
+  requirements?: string;
+  important_note?: string;
+};
 
-// Step 3 schema
-const step3Schema = z.object({
-  apply_method: z.enum(['email', 'url', 'whatsapp', 'walkin']),
-  apply_email: z.string().email().optional().or(z.literal('')),
-  apply_url: z.string().url().optional().or(z.literal('')),
-  apply_whatsapp: z.string().optional(),
-});
-
-type Step1Form = z.infer<typeof step1Schema>;
-type Step2Form = z.infer<typeof step2Schema>;
-type Step3Form = z.infer<typeof step3Schema>;
+type Step3Form = {
+  apply_method: 'email' | 'url' | 'whatsapp' | 'walkin';
+  apply_email?: string;
+  apply_url?: string;
+  apply_whatsapp?: string;
+};
 
 const STEPS = ['Basic Info', 'Job Details', 'Apply Settings', 'Preview & Submit'];
 
@@ -64,17 +55,14 @@ export default function PostJobPage() {
   });
 
   const step1Form = useForm<Step1Form>({
-    resolver: zodResolver(step1Schema),
     defaultValues: formData,
   });
 
   const step2Form = useForm<Step2Form>({
-    resolver: zodResolver(step2Schema),
     defaultValues: formData,
   });
 
   const step3Form = useForm<Step3Form>({
-    resolver: zodResolver(step3Schema),
     defaultValues: { apply_method: 'email', ...formData },
   });
 
@@ -151,7 +139,7 @@ export default function PostJobPage() {
                 <h2 className="text-lg font-bold text-gray-900 mb-5">Basic Information</h2>
 
                 <FormField label="Job Title *" error={step1Form.formState.errors.title?.message}>
-                  <input {...step1Form.register('title')} placeholder="e.g. Senior Software Engineer" className="form-input" />
+                  <input {...step1Form.register('title', { required: 'Job title is required', minLength: { value: 5, message: 'At least 5 characters' } })} placeholder="e.g. Senior Software Engineer" className="form-input" />
                 </FormField>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -209,7 +197,7 @@ export default function PostJobPage() {
 
                 <FormField label="Job Description *" error={step2Form.formState.errors.description?.message}>
                   <textarea
-                    {...step2Form.register('description')}
+                    {...step2Form.register('description', { required: 'Description is required', minLength: { value: 100, message: 'At least 100 characters' } })}
                     rows={7}
                     placeholder="Describe the role, company culture, and what makes it exciting..."
                     className="form-input resize-y"
