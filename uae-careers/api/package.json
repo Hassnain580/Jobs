@@ -11,6 +11,9 @@
     "db:seed": "node prisma/seed.js",
     "db:studio": "prisma studio"
   },
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
