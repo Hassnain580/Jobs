@@ -30,6 +30,7 @@ const NAV_LINKS = [
   { href: '/jobs', label: 'Jobs' },
   { href: '/companies', label: 'Companies' },
   { href: '/salary-guide', label: 'Salary Guide' },
+  { href: '/cv-builder', label: 'CV Builder' },
 ];
 
 function getInitials(first: string, last: string) {
