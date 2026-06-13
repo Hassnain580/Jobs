@@ -540,6 +540,15 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
       {/* ─────────────────────────── TAB 4: SCHEMA ───────────────────────────── */}
       {tab === 'schema' && (
         <div className="space-y-4">
+          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+            <p className="text-sm font-semibold text-emerald-800 mb-1">⚡ Prerequisites for Schema / Structured Data</p>
+            <ul className="text-xs text-emerald-700 space-y-1 mt-2">
+              <li>1. <strong>JobPosting schema</strong> requires every job to have: title, description, datePosted, validThrough, hiringOrganization, jobLocation — ensure these fields are filled in the Jobs module.</li>
+              <li>2. <strong>Validate Schema</strong> button calls Google's Rich Results Test API — requires the site to be live and publicly accessible (not localhost).</li>
+              <li>3. <strong>JSON-LD preview</strong> works offline — use it to check structure before deploying.</li>
+              <li>4. After enabling a new schema type, trigger a <button onClick={()=>setTab('sitemap')} className="underline font-semibold">Sitemap Regeneration</button> so Google re-crawls updated pages.</li>
+            </ul>
+          </div>
           <Card title="Schema / Structured Data — Global Toggles">
             <div className="space-y-3">
               {[
@@ -673,6 +682,15 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
       {/* ─────────────────────────── TAB 6: SITEMAP ──────────────────────────── */}
       {tab === 'sitemap' && (
         <div className="space-y-4">
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <p className="text-sm font-semibold text-amber-800 mb-1">⚡ Prerequisites for Sitemap Submission</p>
+            <ul className="text-xs text-amber-700 space-y-1 mt-2">
+              <li>1. <strong>Verify domain in Google Search Console</strong> (Webmaster Tools tab) before using "Submit All" — unverified domains are silently ignored by GSC.</li>
+              <li>2. <strong>Bing Webmaster</strong> requires its own verification code (separate from GSC) before Bing will accept submissions.</li>
+              <li>3. <strong>Regenerate All</strong> runs locally and works without any external setup — do this first whenever you add new content.</li>
+              <li>4. Sitemap URLs are publicly accessible at <code className="bg-amber-100 px-1 rounded">https://uaecareer.ae/sitemap.xml</code> — no auth required.</li>
+            </ul>
+          </div>
           <Card title="Sitemap Manager" action={
             <div className="flex gap-2">
               <button onClick={()=>alert('All sitemaps queued for regeneration')} className="rounded-lg bg-[#1A3C6E] text-white px-3 py-1.5 text-xs font-medium hover:bg-[#0d2444]">🔄 Regenerate All</button>
@@ -798,6 +816,15 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
       {/* ─────────────────────────── TAB 8: SOCIAL / OG ──────────────────────── */}
       {tab === 'social' && (
         <div className="space-y-4">
+          <div className="bg-purple-50 border border-purple-200 rounded-xl p-4">
+            <p className="text-sm font-semibold text-purple-800 mb-1">⚡ Prerequisites for Social / OG Tags</p>
+            <ul className="text-xs text-purple-700 space-y-1 mt-2">
+              <li>1. <strong>OG Image must be publicly hosted</strong> — local file paths and localhost URLs will not work for social sharing. Upload your image to a CDN or public URL first.</li>
+              <li>2. <strong>Facebook App ID</strong> is optional but unlocks Facebook Insights for your shared links. Create one at developers.facebook.com.</li>
+              <li>3. <strong>Twitter/X card preview</strong> only shows real data after Twitter crawls the page. Use <a href="https://cards-dev.twitter.com/validator" target="_blank" rel="noopener noreferrer" className="underline">Twitter Card Validator</a> to force a crawl.</li>
+              <li>4. Changes here take effect globally — per-page overrides are set in the On-Page Manager.</li>
+            </ul>
+          </div>
           <Card title="Global Social Defaults">
             <Field label="Default OG Image" hint="1200×630px — used when no specific OG image is set (PNG/JPG)">
               <input className={inp} value={defaultOGImage} onChange={e => setDefaultOGImage(e.target.value)} placeholder="https://uaecareer.ae/og-default.jpg" />
@@ -841,6 +868,15 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
       {/* ─────────────────────────── TAB 9: WEBMASTER TOOLS ─────────────────── */}
       {tab === 'webmaster' && (
         <div className="space-y-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <p className="text-sm font-semibold text-blue-800 mb-1">⚡ Setup Order — Complete in This Sequence</p>
+            <ul className="text-xs text-blue-700 space-y-1 mt-2">
+              <li>1. <strong>Google Search Console:</strong> Add property at search.google.com/search-console → copy the HTML meta tag value → paste below → deploy → click Verify in GSC.</li>
+              <li>2. <strong>Bing Webmaster:</strong> Sign in at bing.com/webmasters → Add site → copy msvalidate.01 value → paste below → deploy → verify.</li>
+              <li>3. <strong>GTM first, then GA4:</strong> If using Google Tag Manager, add GA4 through GTM — do NOT enter both GTM and GA4 IDs here simultaneously or you will double-count pageviews.</li>
+              <li>4. <strong>IndexNow API key</strong> (Technical tab) only works after GSC verification is complete.</li>
+            </ul>
+          </div>
           <Card title="Search Engine Verification">
             <Field label="Google Search Console" hint="Paste HTML meta tag value only (not the full tag)">
               <input className={inp} value={gscCode} onChange={e => setGscCode(e.target.value)} placeholder="google-site-verification=xxxxx" />
