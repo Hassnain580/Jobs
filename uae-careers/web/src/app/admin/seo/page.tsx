@@ -253,10 +253,31 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
   const [crawlerLog, setCrawlerLog] = useState<string[]>([]);
   const [crawlerFound, setCrawlerFound] = useState(0);
   const [crawlerNew, setCrawlerNew] = useState(0);
-  const [autoRunEnabled, setAutoRunEnabled] = useState(false);
-  const [autoRunInterval, setAutoRunInterval] = useState('24');
-  const [autoRunUnit, setAutoRunUnit] = useState<'hours' | 'days'>('hours');
-  const [lastCrawled, setLastCrawled] = useState<string | null>(null);
+  const [autoRunEnabled, setAutoRunEnabled] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem('seo_crawler_auto_enabled') === 'true';
+  });
+  const [autoRunInterval, setAutoRunInterval] = useState(() => {
+    if (typeof window === 'undefined') return '24';
+    return localStorage.getItem('seo_crawler_interval') || '24';
+  });
+  const [autoRunUnit, setAutoRunUnit] = useState<'hours' | 'days'>(() => {
+    if (typeof window === 'undefined') return 'hours';
+    return (localStorage.getItem('seo_crawler_unit') as 'hours' | 'days') || 'hours';
+  });
+  const [scheduleSaved, setScheduleSaved] = useState(false);
+  const [lastCrawled, setLastCrawled] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('seo_crawler_last_run');
+  });
+
+  const saveSchedule = () => {
+    localStorage.setItem('seo_crawler_auto_enabled', String(autoRunEnabled));
+    localStorage.setItem('seo_crawler_interval', autoRunInterval);
+    localStorage.setItem('seo_crawler_unit', autoRunUnit);
+    setScheduleSaved(true);
+    setTimeout(() => setScheduleSaved(false), 2500);
+  };
 
   const runCrawler = () => {
     if (crawlerStatus === 'running') return;
@@ -287,7 +308,9 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
         setCrawlerStatus('done');
         setCrawlerFound(5336);
         setCrawlerNew(2);
-        setLastCrawled(new Date().toLocaleString('en-AE', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }));
+        const ts = new Date().toLocaleString('en-AE', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        setLastCrawled(ts);
+        localStorage.setItem('seo_crawler_last_run', ts);
         setContentTypes(prev => {
           const keys = prev.map(p => p.key);
           const additions: ContentType[] = [];
@@ -393,22 +416,6 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
                 <p className={`text-2xl font-bold mt-1 ${s.color}`}>{s.value}</p>
               </div>
             ))}
-          </div>
-
-          {/* Discovery alert */}
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-            <p className="text-sm font-semibold text-amber-800 mb-2">⚠️ SEO Auto-Discovery Alert</p>
-            <div className="space-y-1.5 text-sm text-amber-700">
-              {[
-                { pattern: '/salary-guide/...', urls: 47, hits: 234 },
-                { pattern: '/tools/...',         urls: 12, hits: 89 },
-              ].map(d => (
-                <div key={d.pattern} className="flex items-center justify-between">
-                  <span><code className="bg-amber-100 px-1.5 py-0.5 rounded text-xs">{d.pattern}</code> — {d.urls} URLs, {d.hits} hits this week</span>
-                  <button onClick={() => { setTab('registry'); setShowRegWizard(true); }} className="text-xs font-semibold text-amber-800 underline">Configure →</button>
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* Checklist */}
@@ -1255,7 +1262,7 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
                 </label>
               </div>
               {autoRunEnabled && (
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3 mt-1">
                   <span className="text-xs text-gray-500 whitespace-nowrap">Run every</span>
                   <input
                     type="number"
@@ -1274,7 +1281,7 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
                     <option value="days">days</option>
                   </select>
                   <span className="text-xs text-emerald-600 font-medium">
-                    Next run: {(() => {
+                    Next: {(() => {
                       const d = new Date();
                       const n = parseInt(autoRunInterval) || 1;
                       autoRunUnit === 'hours' ? d.setHours(d.getHours() + n) : d.setDate(d.getDate() + n);
@@ -1283,6 +1290,15 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
                   </span>
                 </div>
               )}
+              <div className="flex items-center gap-3 mt-4">
+                <button
+                  onClick={saveSchedule}
+                  className="rounded-lg bg-[#FF6B35] px-5 py-2 text-sm font-semibold text-white hover:bg-[#e55a24] transition-colors"
+                >
+                  Save Schedule
+                </button>
+                {scheduleSaved && <span className="text-sm text-emerald-600 font-medium">✓ Schedule saved</span>}
+              </div>
             </div>
           </Card>
 
@@ -1359,51 +1375,6 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
                   ))}
                 </tbody>
               </table>
-            </div>
-          </Card>
-
-          {/* Developer registration API */}
-          <Card title="Developer Registration API — SEO::register()">
-            <p className="text-xs text-gray-500 mb-3">When your team builds a new feature, add this call once to the model/service file. The content type will appear in this registry automatically — no SEO module code changes needed.</p>
-            <pre className="bg-gray-900 text-green-400 text-xs rounded-xl p-4 overflow-x-auto">{`// Place this call once in your new feature's service or model boot
-// It is idempotent — safe to call on every app startup
-
-SEO.register({
-  type:         'courses',              // unique key
-  label:        'Online Courses',
-  url_pattern:  '/courses/{slug}',
-  archive_url:  '/courses/',
-
-  db_table:    'courses',
-  pk_field:    'id',
-  slug_field:  'slug',
-  title_field: 'name',
-
-  variables: {
-    title:      'courses.name',
-    instructor: 'instructors.full_name',
-    category:   'course_categories.name',
-    price:      'courses.price',
-    city:       'Dubai',              // static value
-  },
-
-  default_title: '{title} Course by {instructor} | {site_name}',
-  default_desc:  'Enroll in {title} — {category} course in {city}.',
-
-  default_schema: 'Course',
-  sitemap:        true,
-  sitemap_file:   'sitemap-courses.xml',
-  sitemap_priority: 0.7,
-  sitemap_freq:   'weekly',
-
-  // Auto-noindex when these conditions are met:
-  noindex_when: { published: false, status: 'archived' },
-  auto_redirect: '/courses/',       // redirect noindexed to archive
-  indexnow_ping: true,
-});`}</pre>
-            <div className="mt-3 flex gap-2">
-              <button onClick={()=>navigator.clipboard?.writeText('SEO.register({...})')} className="rounded px-3 py-1.5 text-xs border border-gray-300 text-gray-600 hover:bg-gray-50">📋 Copy</button>
-              <span className="text-xs text-gray-400 pt-1.5">After calling register(), the type appears here as Active with all defaults applied.</span>
             </div>
           </Card>
 
