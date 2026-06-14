@@ -13,48 +13,86 @@ import JobCard from '@/components/ui/JobCard';
 import { formatSalary, timeAgo } from '@/lib/utils';
 import type { Job, ProductBanner } from '@/types';
 
-// In production, fetch from API. Here we use mock data.
+// Mock job catalogue — same source as jobs listing page
+const JOB_TITLES = [
+  'Senior Software Engineer', 'Marketing Manager', 'Civil Engineer', 'Registered Nurse',
+  'HR Business Partner', 'Financial Analyst', 'IT Support Specialist', 'Sales Executive',
+  'Operations Manager', 'Graphic Designer', 'Project Manager', 'Business Analyst',
+  'QA Engineer', 'DevOps Engineer', 'Data Scientist', 'UX Designer',
+  'Customer Service Rep', 'Supply Chain Manager', 'Legal Counsel', 'Risk Analyst',
+];
+const JOB_COMPANIES = [
+  'Emirates Group', 'ADNOC', 'Emaar', 'NMC Health', 'Dubai Holding',
+  'Etisalat', 'DEWA', 'DP World', 'Majid Al Futtaim', 'First Abu Dhabi Bank',
+];
+const JOB_CITIES = [
+  'Dubai', 'Abu Dhabi', 'Sharjah', 'Dubai', 'Abu Dhabi',
+  'Dubai', 'Abu Dhabi', 'Dubai', 'Sharjah', 'Dubai',
+  'Abu Dhabi', 'Dubai', 'Sharjah', 'Dubai', 'Abu Dhabi',
+  'Dubai', 'Sharjah', 'Abu Dhabi', 'Dubai', 'Abu Dhabi',
+];
+const JOB_TYPES: Job['job_type'][] = [
+  'full_time', 'full_time', 'contract', 'full_time', 'part_time',
+  'full_time', 'contract', 'full_time', 'full_time', 'freelance',
+  'full_time', 'full_time', 'contract', 'full_time', 'full_time',
+  'full_time', 'part_time', 'full_time', 'contract', 'full_time',
+];
+const CATEGORIES = [
+  'Information Technology', 'Marketing', 'Engineering', 'Healthcare',
+  'Human Resources', 'Finance', 'IT Support', 'Sales',
+  'Operations', 'Design', 'Project Management', 'Business Analysis',
+  'Quality Assurance', 'DevOps', 'Data & Analytics', 'UX & Design',
+  'Customer Service', 'Supply Chain', 'Legal', 'Risk & Compliance',
+];
+const DESCRIPTIONS = [
+  `<p>We are looking for a talented Senior Software Engineer to join our world-class technology team. You will work on cutting-edge systems powering one of the UAE's leading organisations.</p><p>This is a unique opportunity to build at scale, collaborate with global teams, and make a real impact.</p>`,
+  `<p>Lead our marketing initiatives and drive brand growth across UAE and the wider region. You will oversee digital campaigns, agency relationships, and the full marketing calendar.</p>`,
+  `<p>Join a flagship infrastructure project in the UAE. You will oversee civil works, liaise with consultants and contractors, and ensure delivery on time and to specification.</p>`,
+  `<p>Provide compassionate, evidence-based nursing care in a state-of-the-art UAE hospital. You will work alongside a multidisciplinary clinical team serving a diverse patient population.</p>`,
+  `<p>Partner with business leaders to align people strategy with company goals. You will own talent acquisition, employee relations, and organisational development initiatives.</p>`,
+  `<p>Deliver high-quality financial analysis to support strategic decision-making across the organisation. You will build models, prepare reports, and present insights to senior leadership.</p>`,
+  `<p>Provide first and second-line IT support to a growing UAE organisation. You will troubleshoot hardware, software, and network issues and maintain IT asset records.</p>`,
+  `<p>Drive revenue growth by developing new client relationships and managing an existing portfolio across the UAE market.</p>`,
+  `<p>Oversee day-to-day operations and drive continuous improvement across our UAE business units. You will manage cross-functional teams and own key KPIs.</p>`,
+  `<p>Create compelling visual content for digital and print channels. You will work closely with marketing, brand, and product teams to deliver world-class design.</p>`,
+];
+
+const ALL_MOCK_JOBS: Job[] = Array.from({ length: 20 }, (_, i) => ({
+  id: i + 1,
+  slug: `job-${i + 1}`,
+  title: JOB_TITLES[i],
+  company: {
+    id: i + 1,
+    name: JOB_COMPANIES[i % 10],
+    slug: JOB_COMPANIES[i % 10].toLowerCase().replace(/\s+/g, '-'),
+    logo: undefined,
+  },
+  location_city: JOB_CITIES[i],
+  location_country: 'UAE',
+  country_code: 'ae',
+  salary_min: 5000 + i * 500,
+  salary_max: 10000 + i * 1000,
+  salary_currency: 'AED',
+  job_type: JOB_TYPES[i],
+  experience_level: ['1-3 Years', '3-5 Years', '5+ Years', 'Entry Level'][i % 4],
+  category: { id: (i % 8) + 1, name: CATEGORIES[i] ?? 'General', slug: CATEGORIES[i]?.toLowerCase().replace(/\s+/g, '-') ?? 'general' },
+  description: DESCRIPTIONS[i % DESCRIPTIONS.length],
+  responsibilities: `<ul><li>Lead and deliver high-impact projects in a fast-paced environment</li><li>Collaborate with cross-functional teams across the UAE and internationally</li><li>Report to senior leadership and contribute to strategic planning</li><li>Mentor junior team members and foster a culture of excellence</li></ul>`,
+  requirements: `<ul><li>Bachelor's degree in a relevant field</li><li>3+ years of relevant experience, preferably in the UAE or GCC</li><li>Strong communication and stakeholder management skills</li><li>Proficiency in relevant tools and technologies</li><li>Valid UAE work authorisation or eligibility to obtain it</li></ul>`,
+  important_note: 'UAE Careers connects job seekers directly with employers. We never charge candidates for job applications.',
+  apply_method: i % 4 === 0 ? 'walkin' : 'email',
+  is_sponsored: i % 5 === 0,
+  is_featured: i < 3,
+  is_walk_in: i % 6 === 0,
+  is_active: true,
+  created_at: new Date(Date.now() - i * 86400000).toISOString(),
+  updated_at: new Date().toISOString(),
+}));
+
+const JOB_BY_SLUG = new Map(ALL_MOCK_JOBS.map((j) => [j.slug, j]));
+
 async function getJob(slug: string): Promise<Job | null> {
-  return {
-    id: 1,
-    slug,
-    title: 'Senior Software Engineer',
-    company: { id: 1, name: 'Emirates Group', slug: 'emirates-group', logo: undefined },
-    location_city: 'Dubai',
-    location_country: 'UAE',
-    country_code: 'ae',
-    salary_min: 15000,
-    salary_max: 25000,
-    salary_currency: 'AED',
-    job_type: 'full_time',
-    experience_level: '5+ Years',
-    category: { id: 1, name: 'Information Technology', slug: 'it' },
-    description: `<p>We are looking for a talented Senior Software Engineer to join our world-class technology team at Emirates Group. You will work on cutting-edge systems powering one of the world's leading airlines and travel companies.</p>
-<p>This is a unique opportunity to build at scale, collaborate with global teams, and make a real impact on millions of passengers each year.</p>`,
-    responsibilities: `<ul>
-<li>Design, develop and maintain scalable backend services using Python/Node.js</li>
-<li>Collaborate with product managers and designers to deliver high-quality features</li>
-<li>Lead code reviews and mentor junior engineers</li>
-<li>Participate in on-call rotations and incident response</li>
-<li>Drive architectural decisions and technology choices</li>
-</ul>`,
-    requirements: `<ul>
-<li>Bachelor's degree in Computer Science or related field</li>
-<li>5+ years of professional software development experience</li>
-<li>Strong expertise in Python, JavaScript/TypeScript, or similar</li>
-<li>Experience with cloud platforms (AWS, Azure, or GCP)</li>
-<li>Knowledge of microservices and distributed systems</li>
-<li>Excellent communication skills</li>
-</ul>`,
-    important_note: 'This is a direct-hire position. No agencies please. Walk-in interviews are held every Tuesday from 10AM–1PM at Emirates Group Headquarters, Airport Road, Dubai. Bring your CV and original certificates.',
-    apply_method: 'walkin',
-    is_sponsored: false,
-    is_featured: true,
-    is_walk_in: true,
-    is_active: true,
-    created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
-    updated_at: new Date().toISOString(),
-  };
+  return JOB_BY_SLUG.get(slug) ?? null;
 }
 
 const MOCK_BANNERS: ProductBanner[] = [
