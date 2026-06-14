@@ -26,40 +26,8 @@ const INITIAL_COUNTRIES: Country[] = [
       { id: 103, name: 'Sharjah', isActive: true },
       { id: 104, name: 'Ajman', isActive: true },
       { id: 105, name: 'Ras Al Khaimah', isActive: true },
-    ],
-  },
-  {
-    id: 2, name: 'Saudi Arabia', code: 'SA', isActive: true, expanded: false,
-    cities: [
-      { id: 201, name: 'Riyadh', isActive: true },
-      { id: 202, name: 'Jeddah', isActive: true },
-      { id: 203, name: 'Dammam', isActive: true },
-    ],
-  },
-  {
-    id: 3, name: 'Qatar', code: 'QA', isActive: true, expanded: false,
-    cities: [
-      { id: 301, name: 'Doha', isActive: true },
-      { id: 302, name: 'Al Wakrah', isActive: false },
-    ],
-  },
-  {
-    id: 4, name: 'Kuwait', code: 'KW', isActive: true, expanded: false,
-    cities: [
-      { id: 401, name: 'Kuwait City', isActive: true },
-    ],
-  },
-  {
-    id: 5, name: 'Bahrain', code: 'BH', isActive: true, expanded: false,
-    cities: [
-      { id: 501, name: 'Manama', isActive: true },
-    ],
-  },
-  {
-    id: 6, name: 'Oman', code: 'OM', isActive: true, expanded: false,
-    cities: [
-      { id: 601, name: 'Muscat', isActive: true },
-      { id: 602, name: 'Salalah', isActive: true },
+      { id: 106, name: 'Fujairah', isActive: true },
+      { id: 107, name: 'Umm Al Quwain', isActive: true },
     ],
   },
 ];

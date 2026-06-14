@@ -693,7 +693,7 @@ export default function CvBuilderPage() {
                     </Field>
                     <Field label="Emirate / Location">
                       <select className={selCls} value={cv.personal.emirate} onChange={e => upPersonal('emirate', e.target.value)}>
-                        {['Dubai','Abu Dhabi','Sharjah','Ajman','Ras Al Khaimah','Fujairah','Umm Al Quwain','Abu Dhabi (ADGM)','Dubai (DIFC)','Other GCC - Riyadh','Other GCC - Doha','Other GCC - Kuwait City','Other GCC - Muscat','Other GCC - Manama'].map(c => <option key={c}>{c}</option>)}
+                        {['Dubai','Abu Dhabi','Sharjah','Ajman','Ras Al Khaimah','Fujairah','Umm Al Quwain','Abu Dhabi (ADGM)','Dubai (DIFC)','Ras Al Khaimah (RAK)','Fujairah','Umm Al Quwain','Dubai (DIFC)','Abu Dhabi (ADGM)'].map(c => <option key={c}>{c}</option>)}
                       </select>
                     </Field>
                     <Field label="LinkedIn URL">
@@ -716,7 +716,7 @@ export default function CvBuilderPage() {
                     <Field label="Visa Status *" note="Critical for UAE employers">
                       <select className={selCls} value={cv.personal.visa_status} onChange={e => upPersonal('visa_status', e.target.value)}>
                         <option value="">Select…</option>
-                        {['Employment Visa','Residence Visa (Spouse)','Residence Visa (Parent)','Visit Visa','Cancelled Visa','Golden Visa','UAE Citizen','GCC National'].map(v => <option key={v}>{v}</option>)}
+                        {['Employment Visa','Residence Visa (Spouse)','Residence Visa (Parent)','Visit Visa','Cancelled Visa','Golden Visa','UAE Citizen','UAE Citizen'].map(v => <option key={v}>{v}</option>)}
                       </select>
                     </Field>
                     <Field label="Marital Status">

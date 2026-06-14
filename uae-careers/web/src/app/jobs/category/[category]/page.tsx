@@ -15,8 +15,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category } = await params;
   const label = toTitle(category);
   return {
-    title: `${label} Jobs in UAE & GCC | UAE Careers`,
-    description: `Browse the latest ${label} job vacancies in UAE, Saudi Arabia, Qatar, Kuwait and across the Gulf. Apply online today.`,
+    title: `${label} Jobs in UAE | UAE Careers`,
+    description: `Browse the latest ${label} job vacancies across UAE — Dubai, Abu Dhabi, Sharjah and all emirates. Apply online today.`,
     alternates: { canonical: `/jobs/category/${category}` },
   };
 }
@@ -41,8 +41,8 @@ export default async function CategoryJobsPage({ params }: Props) {
         </div>
 
         <div className="max-w-5xl mx-auto px-4 py-8">
-          <h1 className="text-2xl font-bold text-[#1A3C6E] mb-2">{label} Jobs in UAE & GCC</h1>
-          <p className="text-gray-500 mb-6">Browse the latest {label.toLowerCase()} vacancies across UAE, Saudi Arabia, Qatar, Kuwait, Bahrain and Oman.</p>
+          <h1 className="text-2xl font-bold text-[#1A3C6E] mb-2">{label} Jobs in UAE</h1>
+          <p className="text-gray-500 mb-6">Browse the latest {label.toLowerCase()} vacancies across Dubai, Abu Dhabi, Sharjah and all UAE emirates.</p>
           <div className="bg-white rounded-xl border border-gray-100 p-8 text-center text-gray-400">
             <p className="text-lg font-medium mb-2">Jobs loading…</p>
             <p className="text-sm">Connect the API to display live {label.toLowerCase()} listings.</p>

@@ -58,7 +58,7 @@ const EMPTY_JOB: Omit<Job, 'id' | 'created' | 'views'> = {
 
 const MOCK_JOBS: Job[] = [
   { id: 1, title: 'Senior Software Engineer', employer: 'Tech Corp Dubai', category: 'IT', country: 'UAE', city: 'Dubai', job_type: 'full_time', salary_min: '15000', salary_max: '25000', description: '', apply_method: 'email', apply_contact: 'hr@techcorp.ae', is_featured: true, is_walk_in: false, status: 'pending', expiry_date: '2026-07-12', created: '2026-06-12', views: 0 },
-  { id: 2, title: 'Marketing Manager', employer: 'Gulf Media', category: 'Marketing', country: 'KSA', city: 'Riyadh', job_type: 'full_time', salary_min: '12000', salary_max: '20000', description: '', apply_method: 'email', apply_contact: 'jobs@gulfmedia.sa', is_featured: false, is_walk_in: false, status: 'approved', expiry_date: '2026-07-11', created: '2026-06-11', views: 342 },
+  { id: 2, title: 'Marketing Manager', employer: 'Global Media UAE', category: 'Marketing', country: 'UAE', city: 'Dubai', job_type: 'full_time', salary_min: '12000', salary_max: '20000', description: '', apply_method: 'email', apply_contact: 'jobs@globalmediauae.com', is_featured: false, is_walk_in: false, status: 'approved', expiry_date: '2026-07-11', created: '2026-06-11', views: 342 },
   { id: 3, title: 'Financial Analyst', employer: 'Emirates Bank', category: 'Finance', country: 'UAE', city: 'Abu Dhabi', job_type: 'full_time', salary_min: '10000', salary_max: '16000', description: '', apply_method: 'email', apply_contact: 'careers@emiratesbank.ae', is_featured: false, is_walk_in: false, status: 'approved', expiry_date: '2026-05-01', created: '2026-06-11', views: 521 },
   { id: 4, title: 'HR Coordinator', employer: 'Majid Al Futtaim', category: 'HR', country: 'UAE', city: 'Dubai', job_type: 'full_time', salary_min: '7000', salary_max: '10000', description: '', apply_method: 'email', apply_contact: 'hr@maf.ae', is_featured: false, is_walk_in: false, status: 'rejected', expiry_date: '2026-07-10', created: '2026-06-10', views: 0 },
   { id: 5, title: 'Sales Executive', employer: 'Noon.com', category: 'Sales', country: 'UAE', city: 'Dubai', job_type: 'full_time', salary_min: '6000', salary_max: '9000', description: '', apply_method: 'link', apply_contact: 'https://noon.com/careers', is_featured: false, is_walk_in: false, status: 'pending', expiry_date: '2026-07-10', created: '2026-06-10', views: 0 },
@@ -80,7 +80,7 @@ const JOB_TYPES: { value: JobType; label: string }[] = [
 ];
 
 const CATEGORIES = ['IT', 'Marketing', 'Finance', 'HR', 'Sales', 'Engineering', 'Design', 'Operations', 'Healthcare', 'Education', 'Hospitality', 'Construction'];
-const COUNTRIES = ['UAE', 'KSA', 'Qatar', 'Kuwait', 'Bahrain', 'Oman'];
+const COUNTRIES = ['UAE'];
 const PAGE_SIZE = 10;
 
 function InputRow({ label, children }: { label: string; children: React.ReactNode }) {

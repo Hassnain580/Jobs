@@ -32,9 +32,9 @@ const ALL_CATEGORIES = [
 const INITIAL_PRODUCTS: Product[] = [
   {
     id: 1,
-    name: 'Gulf Talent Pro',
-    description: 'Premium job board for GCC professionals.',
-    imageUrl: 'https://placehold.co/300x150/1A3C6E/white?text=Gulf+Talent',
+    name: 'UAE Talent Pro',
+    description: 'Premium job board for UAE professionals.',
+    imageUrl: 'https://placehold.co/300x150/1A3C6E/white?text=UAE+Talent',
     linkUrl: 'https://gulftalent.com',
     isActive: true,
     isGlobal: true,
@@ -43,9 +43,9 @@ const INITIAL_PRODUCTS: Product[] = [
   },
   {
     id: 2,
-    name: 'Naukri Gulf',
+    name: 'Bayt UAE',
     description: 'Leading recruitment platform in Middle East.',
-    imageUrl: 'https://placehold.co/300x150/FF6B35/white?text=Naukri+Gulf',
+    imageUrl: 'https://placehold.co/300x150/FF6B35/white?text=Bayt+UAE',
     linkUrl: 'https://naukrigulf.com',
     isActive: true,
     isGlobal: false,

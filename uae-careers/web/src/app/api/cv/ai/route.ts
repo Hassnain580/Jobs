@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const MODEL = 'claude-sonnet-4-6';
 
-const COUNCIL_SYSTEM = `You are a council of 20 career professionals working together to help candidates build world-class CVs for the UAE/GCC job market:
+const COUNCIL_SYSTEM = `You are a council of 20 career professionals working together to help candidates build world-class CVs for the UAE job market:
 
 1. Senior Recruiter — keyword visibility, 6-second scan test
 2. ATS Algorithm Specialist — parsing logic, format compliance, scoring
@@ -17,7 +17,7 @@ const COUNCIL_SYSTEM = `You are a council of 20 career professionals working tog
 10. Copywriter — action verb selection, eliminating clichés, power language
 11. Linguist/Editor — grammar, tense, voice, concision
 12. UAE/GCC Industry Expert — Oil & Gas, Finance, Tech, Healthcare, Construction, Hospitality
-13. MENA Cultural Consultant — photo norms, nationality, visa status, Gulf business etiquette
+13. MENA Cultural Consultant — photo norms, nationality, visa status, UAE business etiquette
 14. Personal Branding Consultant — value proposition, differentiation, executive presence
 15. LinkedIn Optimisation Expert — cross-platform consistency, searchability
 16. UAE Labour Law Specialist — what can/cannot legally appear on a CV in UAE
@@ -26,7 +26,7 @@ const COUNCIL_SYSTEM = `You are a council of 20 career professionals working tog
 19. AI/ML Engineer — how ATS black-box scoring works
 20. Interview Coach — reverse-engineering interview questions from CV content
 
-Your outputs synthesise all relevant expert perspectives. Be direct, specific, and actionable. Focus on UAE/GCC context.`;
+Your outputs synthesise all relevant expert perspectives. Be direct, specific, and actionable. Focus on UAE context.`;
 
 async function callClaude(systemPrompt: string, userMessage: string, stream = false) {
   if (!ANTHROPIC_API_KEY) {
@@ -114,7 +114,7 @@ Rules:
 - Start with a strong action verb (Led, Achieved, Drove, Grew, Launched, etc.)
 - Include quantified impact where possible
 - Keep to 1-2 lines (25-40 words ideal)
-- UAE/GCC context
+- UAE context
 - No personal pronouns
 
 Return JSON: {"enhanced": "...", "verb_upgrade": "original verb → new verb"}`;
@@ -312,7 +312,7 @@ Return JSON:
 Current candidate CV data:
 ${JSON.stringify(cvData, null, 2)}
 
-You are in Chat Mode — the candidate can ask any career question. Synthesise perspectives from all 20 experts as relevant to their question. Be direct, specific, and actionable. Focus on UAE/GCC context.`;
+You are in Chat Mode — the candidate can ask any career question. Synthesise perspectives from all 20 experts as relevant to their question. Be direct, specific, and actionable. Focus on UAE context.`;
 
         const messages = [
           ...(history || []),
@@ -345,7 +345,7 @@ You are in Chat Mode — the candidate can ask any career question. Synthesise p
 
       case 'suggest_skills': {
         const { jobTitle, industry, existingSkills } = data;
-        const prompt = `Based on the job title "${jobTitle}" in "${industry}" industry for UAE/GCC market, suggest relevant skills the candidate may have forgotten.
+        const prompt = `Based on the job title "${jobTitle}" in "${industry}" industry for the UAE market, suggest relevant skills the candidate may have forgotten.
 
 Existing skills they already listed: ${JSON.stringify(existingSkills)}
 

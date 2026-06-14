@@ -12,7 +12,7 @@ const STAT_CARDS = [
 
 const PENDING_JOBS = [
   { id: 1, title: 'Senior Software Engineer', employer: 'Tech Corp Dubai', category: 'IT', country: 'UAE', date: '2026-06-12' },
-  { id: 2, title: 'Marketing Manager', employer: 'Gulf Media', category: 'Marketing', country: 'KSA', date: '2026-06-11' },
+  { id: 2, title: 'Marketing Manager', employer: 'Global Media UAE', category: 'Marketing', country: 'KSA', date: '2026-06-11' },
   { id: 3, title: 'Financial Analyst', employer: 'Emirates Bank', category: 'Finance', country: 'UAE', date: '2026-06-11' },
   { id: 4, title: 'HR Coordinator', employer: 'Majid Al Futtaim', category: 'HR', country: 'UAE', date: '2026-06-10' },
   { id: 5, title: 'Sales Executive', employer: 'Noon.com', category: 'Sales', country: 'UAE', date: '2026-06-10' },

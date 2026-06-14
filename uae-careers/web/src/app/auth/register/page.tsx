@@ -70,7 +70,7 @@ export default function RegisterPage() {
             <span className="text-2xl font-bold text-[#1A3C6E]">UAE Careers</span>
           </Link>
           <h1 className="mt-4 text-2xl font-bold text-gray-900">Create your account</h1>
-          <p className="text-sm text-gray-500 mt-1">Join thousands of Gulf professionals</p>
+          <p className="text-sm text-gray-500 mt-1">Join thousands of UAE professionals</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">

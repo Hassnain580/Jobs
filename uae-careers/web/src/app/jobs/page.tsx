@@ -51,8 +51,7 @@ const MOCK_JOBS: Job[] = Array.from({ length: 20 }, (_, i) => ({
   updated_at: new Date().toISOString(),
 }));
 
-const COUNTRIES = ['UAE', 'Saudi Arabia', 'Qatar', 'Kuwait', 'Oman', 'Bahrain'];
-const UAE_CITIES = ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'RAK'];
+const EMIRATES = ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'Ras Al Khaimah', 'Fujairah', 'Umm Al Quwain'];
 const JOB_TYPES = ['Full Time', 'Part Time', 'Contract', 'Internship', 'Freelance'];
 const EXPERIENCE_LEVELS = ['Entry Level', '1-3 Years', '3-5 Years', '5-10 Years', '10+ Years'];
 const CATEGORIES = ['IT & Technology', 'Engineering', 'Accounting', 'Medical', 'HR', 'Sales', 'Construction', 'Hospitality'];
@@ -140,27 +139,13 @@ export default function JobsPage() {
                 <FilterGroup label="Country">
                   <select
                     className="filter-select"
-                    value={filters.country}
-                    onChange={(e) => updateFilter('country', e.target.value)}
+                    value={filters.city}
+                    onChange={(e) => updateFilter('city', e.target.value)}
                   >
-                    <option value="">All Countries</option>
-                    {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                    <option value="">All Emirates</option>
+                    {EMIRATES.map((e) => <option key={e} value={e}>{e}</option>)}
                   </select>
                 </FilterGroup>
-
-                {/* City (shown only when UAE selected) */}
-                {filters.country === 'UAE' && (
-                  <FilterGroup label="City">
-                    <select
-                      className="filter-select"
-                      value={filters.city}
-                      onChange={(e) => updateFilter('city', e.target.value)}
-                    >
-                      <option value="">All Cities</option>
-                      {UAE_CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                  </FilterGroup>
-                )}
 
                 {/* Category */}
                 <FilterGroup label="Category">

@@ -31,7 +31,7 @@ const MOCK_JOBS: Job[] = Array.from({ length: 10 }, (_, i) => ({
   salary_currency: 'AED',
   job_type: ['full_time', 'full_time', 'contract', 'full_time', 'full_time', 'full_time', 'part_time', 'full_time', 'full_time', 'freelance'][i] as Job['job_type'],
   category: { id: 1, name: 'Technology', slug: 'technology' },
-  description: 'Join our dynamic team and grow your career in the Gulf.',
+  description: 'Join our dynamic team and grow your career in the UAE.',
   apply_method: 'email',
   is_sponsored: i === 0 || i === 3,
   is_featured: i === 0 || i === 1,
@@ -52,13 +52,13 @@ const CATEGORIES: (Category & { icon: string })[] = [
   { id: 8, name: 'Hospitality', slug: 'hospitality', icon: '🏨', job_count: 510 },
 ];
 
-const COUNTRIES = [
-  { flag: '🇦🇪', name: 'UAE', code: 'ae', count: 5420 },
-  { flag: '🇸🇦', name: 'Saudi Arabia', code: 'sa', count: 3180 },
-  { flag: '🇶🇦', name: 'Qatar', code: 'qa', count: 1960 },
-  { flag: '🇰🇼', name: 'Kuwait', code: 'kw', count: 1230 },
-  { flag: '🇴🇲', name: 'Oman', code: 'om', count: 890 },
-  { flag: '🇧🇭', name: 'Bahrain', code: 'bh', count: 670 },
+const EMIRATES = [
+  { flag: '🏙️', name: 'Dubai', code: 'dubai', count: 3240 },
+  { flag: '🏛️', name: 'Abu Dhabi', code: 'abu-dhabi', count: 1860 },
+  { flag: '🌆', name: 'Sharjah', code: 'sharjah', count: 680 },
+  { flag: '🏘️', name: 'Ajman', code: 'ajman', count: 290 },
+  { flag: '⛰️', name: 'Ras Al Khaimah', code: 'rak', count: 210 },
+  { flag: '🌊', name: 'Fujairah', code: 'fujairah', count: 140 },
 ];
 
 const SALARY_GUIDES = [
@@ -82,10 +82,10 @@ export default function HomePage() {
         <section className="bg-[#1A3C6E] text-white py-12 px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-3xl sm:text-5xl font-bold leading-tight mb-4">
-              Find Your Dream Job in the Gulf
+              Find Your Dream Job in the UAE
             </h1>
             <p className="text-blue-200 text-base sm:text-lg mb-8">
-              Thousands of jobs across UAE, Saudi Arabia, Qatar and more — updated daily.
+              Thousands of jobs across Dubai, Abu Dhabi, Sharjah and all emirates — updated daily.
             </p>
             <form className="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto">
               <div className="flex-1 relative">
@@ -99,10 +99,10 @@ export default function HomePage() {
               <div className="relative">
                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                 <select className="pl-10 pr-8 py-3 rounded-xl text-gray-900 bg-white text-sm border-2 border-[#FF6B35] focus:outline-none focus:ring-2 focus:ring-[#FF6B35] appearance-none w-full sm:w-44">
-                  <option value="">All Countries</option>
-                  {COUNTRIES.map((c) => (
-                    <option key={c.code} value={c.code}>
-                      {c.flag} {c.name}
+                  <option value="">All Emirates</option>
+                  {EMIRATES.map((e) => (
+                    <option key={e.code} value={e.code}>
+                      {e.name}
                     </option>
                   ))}
                 </select>
@@ -212,21 +212,21 @@ export default function HomePage() {
             </div>
           </section>
 
-          {/* 8. Browse by Country */}
+          {/* 8. Browse by Emirate */}
           <section>
-            <h2 className="text-2xl font-bold text-[#1A3C6E] mb-5">Browse by Country</h2>
+            <h2 className="text-2xl font-bold text-[#1A3C6E] mb-5">Browse by Emirate</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-              {COUNTRIES.map((c) => (
+              {EMIRATES.map((e) => (
                 <Link
-                  key={c.code}
-                  href={`/jobs?country=${c.code}`}
+                  key={e.code}
+                  href={`/jobs?city=${e.code}`}
                   className="bg-white rounded-xl border border-gray-200 p-4 text-center hover:border-[#1A3C6E] hover:shadow-md transition-all group"
                 >
-                  <span className="text-4xl block mb-1">{c.flag}</span>
+                  <span className="text-4xl block mb-1">{e.flag}</span>
                   <p className="text-sm font-semibold text-gray-800 group-hover:text-[#1A3C6E]">
-                    {c.name}
+                    {e.name}
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">{c.count.toLocaleString()} jobs</p>
+                  <p className="text-xs text-gray-500 mt-1">{e.count.toLocaleString()} jobs</p>
                 </Link>
               ))}
             </div>

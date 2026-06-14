@@ -142,7 +142,7 @@ export default function AdminSEOPage() {
 
   // ── Global settings state ───────────────────────────────────────────────────
   const [siteName,        setSiteName]        = useState('UAE Careers');
-  const [tagline,         setTagline]         = useState('Find Your Dream Job in the Gulf');
+  const [tagline,         setTagline]         = useState('Find Your Dream Job in the UAE');
   const [orgType,         setOrgType]         = useState('Organization');
   const [orgPhone,        setOrgPhone]        = useState('+971 4 123 4567');
   const [orgAddress,      setOrgAddress]      = useState('Business Bay, Dubai, UAE');
@@ -175,7 +175,7 @@ Sitemap: https://uaecareer.ae/sitemap-jobs.xml`);
   const [googleIndexingAPI, setGoogleIndexingAPI] = useState(false);
   const [llmsTxt, setLlmsTxt] = useState(`# UAE Careers - Jobs Portal
 ## What this site is
-UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Arabia, Qatar, Kuwait, Oman and Bahrain.
+UAE Careers is a UAE-only job board listing jobs across Dubai, Abu Dhabi, Sharjah, Ajman, Ras Al Khaimah, Fujairah and Umm Al Quwain.
 
 ## Key content
 - /jobs/ - All job listings (4,823 active jobs)
@@ -230,10 +230,10 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
   // ── Meta templates ──────────────────────────────────────────────────────────
   const [metaTemplates, setMetaTemplates] = useState([
     { type: 'Job Listing',     title: '{title} at {company} in {city} | {site_name}', desc: 'Apply for {title} at {company}. {job_type} job in {city}, {country}. Salary: {salary_range}. Apply today on {site_name}.' },
-    { type: 'Job Category',    title: '{category} Jobs in UAE | {site_name}',         desc: 'Browse {job_count}+ {category} jobs in UAE and GCC. Find full-time, part-time and walk-in opportunities.' },
+    { type: 'Job Category',    title: '{category} Jobs in UAE | {site_name}',         desc: 'Browse {job_count}+ {category} jobs across UAE — Dubai, Abu Dhabi and all emirates.' },
     { type: 'Company Profile', title: 'Jobs at {company} | {site_name}',             desc: 'View all open positions at {company}. Apply directly on {site_name}.' },
     { type: 'Location Page',   title: 'Jobs in {city}, UAE | {site_name}',           desc: 'Find jobs in {city}. Browse {job_count}+ vacancies across all industries. Updated daily.' },
-    { type: 'Home Page',       title: 'UAE Careers — Find Jobs in UAE, Gulf & MENA', desc: 'Search thousands of jobs in UAE, Saudi Arabia, Qatar, Kuwait, Oman. Walk-in interviews, featured jobs and salary guides — updated daily.' },
+    { type: 'Home Page',       title: 'UAE Careers — Find Jobs in UAE | Dubai, Abu Dhabi & All Emirates', desc: 'Search thousands of jobs across UAE — Dubai, Abu Dhabi, Sharjah and all emirates. Walk-in interviews, featured jobs and salary guides — updated daily.' },
     { type: 'Blog / Article',  title: '{title} | {site_name}',                       desc: '{excerpt}' },
   ]);
 
@@ -324,7 +324,7 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
   const ALL_ONPAGE_ROWS: OnPageRow[] = [
     // Job Listings
     { contentType:'jobs',       title:'Senior PHP Developer Dubai',    seotitle:'Senior PHP Developer Dubai at TechCorp | UAE Careers',  seolen:52, desclen:148, robots:'index', schema:'✅', og:'✅', status:'approved' },
-    { contentType:'jobs',       title:'Marketing Manager Riyadh',      seotitle:'Marketing Manager Riyadh at Gulf Media | UAE Careers',   seolen:55, desclen:0,   robots:'index', schema:'✅', og:'❌', status:'pending'  },
+    { contentType:'jobs',       title:'Marketing Manager Dubai',      seotitle:'Marketing Manager Dubai at Gulf Media | UAE Careers',   seolen:55, desclen:0,   robots:'index', schema:'✅', og:'❌', status:'pending'  },
     { contentType:'jobs',       title:'Nurse ICU — Abu Dhabi',         seotitle:'',                                                        seolen:0,  desclen:0,   robots:'index', schema:'⚠️', og:'❌', status:'pending'  },
     { contentType:'jobs',       title:'Civil Engineer Aldar',          seotitle:'Civil Engineer at Aldar Properties | UAE Careers',       seolen:48, desclen:155, robots:'index', schema:'✅', og:'✅', status:'approved' },
     // Company Profiles
@@ -332,7 +332,7 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
     { contentType:'companies',  title:'ADNOC',                         seotitle:'Jobs at ADNOC — Oil & Gas Careers | UAE Careers',        seolen:46, desclen:158, robots:'index', schema:'✅', og:'✅', status:'approved' },
     { contentType:'companies',  title:'G42',                           seotitle:'',                                                        seolen:0,  desclen:0,   robots:'index', schema:'❌', og:'❌', status:'pending'  },
     // Job Categories
-    { contentType:'categories', title:'Information Technology Jobs',   seotitle:'IT Jobs in UAE & GCC | UAE Careers',                    seolen:36, desclen:145, robots:'index', schema:'✅', og:'✅', status:'approved' },
+    { contentType:'categories', title:'Information Technology Jobs',   seotitle:'IT Jobs in UAE | UAE Careers',                    seolen:36, desclen:145, robots:'index', schema:'✅', og:'✅', status:'approved' },
     { contentType:'categories', title:'Finance & Banking Jobs',        seotitle:'Finance Jobs UAE | UAE Careers',                        seolen:33, desclen:0,   robots:'index', schema:'✅', og:'❌', status:'pending'  },
     { contentType:'categories', title:'Healthcare Jobs UAE',           seotitle:'',                                                        seolen:0,  desclen:0,   robots:'index', schema:'⚠️', og:'❌', status:'pending'  },
     // Location Pages
@@ -1337,7 +1337,7 @@ UAE Careers is a job board for the GCC/MENA region listing jobs in UAE, Saudi Ar
             <Field label="Enable Hreflang Tags"><Toggle value={enableHreflang} onChange={setEnableHreflang} /></Field>
           </Card>
 
-          <Card title="Hreflang Rules — GCC Targeting">
+          <Card title="Hreflang Rules — UAE Targeting">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>

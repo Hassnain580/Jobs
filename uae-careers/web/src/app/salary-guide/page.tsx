@@ -3,8 +3,8 @@ import Footer from '@/components/layout/Footer';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'GCC Salary Guide 2026 | UAE Careers',
-  description: 'Explore salary ranges for top jobs across UAE, Saudi Arabia, Qatar and the Gulf region.',
+  title: 'UAE Salary Guide 2026 | UAE Careers',
+  description: 'Explore salary ranges for top jobs across UAE — Dubai, Abu Dhabi and all emirates. Updated for 2026.',
 };
 
 const SALARIES = [
@@ -33,8 +33,8 @@ export default function SalaryGuidePage() {
       <main className="flex-1">
         <section className="bg-[#1A3C6E] text-white py-12 px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-3xl sm:text-4xl font-bold mb-3">GCC Salary Guide 2026</h1>
-            <p className="text-blue-200">Average monthly salaries across the Gulf region (in AED)</p>
+            <h1 className="text-3xl sm:text-4xl font-bold mb-3">UAE Salary Guide 2026</h1>
+            <p className="text-blue-200">Average monthly salaries across UAE — Dubai, Abu Dhabi & all emirates (in AED)</p>
           </div>
         </section>
 

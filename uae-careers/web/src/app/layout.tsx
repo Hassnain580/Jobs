@@ -6,12 +6,12 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
   title: {
-    default: 'UAE Careers — Find Jobs in UAE, Saudi Arabia, Qatar & Gulf',
+    default: 'UAE Careers — Find Jobs in UAE | Dubai, Abu Dhabi & All Emirates',
     template: '%s | UAE Careers',
   },
   description:
-    'Search thousands of jobs in UAE, Saudi Arabia, Qatar, Kuwait, Oman and Bahrain. Find walk-in interviews, featured jobs and salary guides.',
-  keywords: ['UAE jobs', 'Gulf jobs', 'Dubai jobs', 'jobs in UAE', 'walk-in interview UAE'],
+    'Search thousands of jobs across UAE — Dubai, Abu Dhabi, Sharjah, Ajman and all emirates. Find walk-in interviews, featured jobs and salary guides.',
+  keywords: ['UAE jobs', 'Dubai jobs', 'Abu Dhabi jobs', 'jobs in UAE', 'walk-in interview UAE', 'jobs in Dubai'],
   openGraph: {
     type: 'website',
     locale: 'en_US',

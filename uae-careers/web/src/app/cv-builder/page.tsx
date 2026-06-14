@@ -5,14 +5,14 @@ import Footer from '@/components/layout/Footer';
 
 export const metadata: Metadata = {
   title: 'AI CV Builder — Build a UAE-Ready CV | UAE Careers',
-  description: 'Create a professional, ATS-optimised CV for UAE and GCC job applications. Powered by AI with 20-expert council intelligence — free.',
+  description: 'Create a professional, ATS-optimised CV for UAE job applications. Powered by AI with 20-expert council intelligence — free.',
   alternates: { canonical: '/cv-builder' },
 };
 
 const FEATURES = [
   { icon: '🎯', title: 'ATS Score Engine', desc: 'Simulate how Workday, Taleo & Greenhouse parse your CV. Get a real score with fix-it actions.' },
   { icon: '✨', title: 'Achievement Transformer', desc: 'AI converts duty statements to quantified achievements using the STAR/CAR framework.' },
-  { icon: '🇦🇪', title: 'UAE-Specific Intelligence', desc: 'Visa status, photo norms, Gulf CV conventions, sector-specific guidance for UAE employers.' },
+  { icon: '🇦🇪', title: 'UAE-Specific Intelligence', desc: 'Visa status, photo norms, UAE CV conventions, sector-specific guidance for UAE employers.' },
   { icon: '🔍', title: 'Job Match Analysis', desc: 'Paste any job description — AI shows keyword gaps and rewrites your CV to close them.' },
   { icon: '📊', title: 'Live Quality Scorecard', desc: '8-dimension real-time scoring: achievement orientation, keyword strength, ATS safety, and more.' },
   { icon: '🤖', title: '20-Expert AI Council', desc: 'Every suggestion synthesises a Senior Recruiter, ATS Specialist, Career Coach, HR Director, and 16 more experts.' },
@@ -48,7 +48,7 @@ export default function CvBuilderLandingPage() {
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-5 leading-tight">
               Build a CV That Gets You<br />
-              <span className="text-[#FF6B35]">Hired in UAE & GCC</span>
+              <span className="text-[#FF6B35]">Hired in the UAE</span>
             </h1>
             <p className="text-lg text-white/80 max-w-2xl mx-auto mb-8">
               Not just a template — a smart career assistant with real-time ATS scoring, achievement transformation, and deep UAE market intelligence baked in.
@@ -89,7 +89,7 @@ export default function CvBuilderLandingPage() {
         <section className="py-16 px-4">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-2xl font-bold text-[#1A3C6E] text-center mb-2">What Makes This Different</h2>
-            <p className="text-gray-500 text-center text-sm mb-10">Built specifically for the UAE/GCC job market. No global tool offers this.</p>
+            <p className="text-gray-500 text-center text-sm mb-10">Built specifically for the UAE job market. No global tool offers this.</p>
             <div className="grid md:grid-cols-3 gap-5">
               {FEATURES.map(f => (
                 <div key={f.title} className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
@@ -137,7 +137,7 @@ export default function CvBuilderLandingPage() {
                   'Arabic CV mode with RTL layout support',
                   'DIFC, SCA, Central Bank — UAE-specific qualification flags',
                   'Emiratisation awareness for public & semi-government roles',
-                  'GCC city-specific guidance: Dubai, Abu Dhabi, Riyadh, Doha',
+                  'Emirate-specific guidance: Dubai, Abu Dhabi, Sharjah, Ajman, RAK',
                 ].map(item => (
                   <div key={item} className="flex items-start gap-2">
                     <span className="text-emerald-400 mt-0.5">✓</span>
@@ -152,7 +152,7 @@ export default function CvBuilderLandingPage() {
         {/* CTA */}
         <section className="py-16 px-4 bg-gray-50 text-center">
           <h2 className="text-2xl font-bold text-[#1A3C6E] mb-3">Ready to Build Your UAE CV?</h2>
-          <p className="text-gray-500 text-sm mb-6">Join thousands of candidates who have optimised their CVs for the Gulf market.</p>
+          <p className="text-gray-500 text-sm mb-6">Join thousands of candidates who have optimised their CVs for the UAE market.</p>
           <Link
             href="/cv-builder/builder"
             className="inline-block bg-[#FF6B35] text-white px-10 py-3.5 rounded-xl font-semibold hover:bg-[#e55a24] transition-colors shadow-lg"

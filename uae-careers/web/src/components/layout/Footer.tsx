@@ -2,12 +2,12 @@ import Link from 'next/link';
 import { Briefcase, AlertTriangle } from 'lucide-react';
 
 const JOBS_BY_COUNTRY = [
-  { label: 'UAE Jobs', href: '/jobs?country=ae' },
-  { label: 'Saudi Arabia Jobs', href: '/jobs?country=sa' },
-  { label: 'Qatar Jobs', href: '/jobs?country=qa' },
-  { label: 'Kuwait Jobs', href: '/jobs?country=kw' },
-  { label: 'Oman Jobs', href: '/jobs?country=om' },
-  { label: 'Bahrain Jobs', href: '/jobs?country=bh' },
+  { label: 'Dubai Jobs', href: '/jobs?city=dubai' },
+  { label: 'Abu Dhabi Jobs', href: '/jobs?city=abu-dhabi' },
+  { label: 'Sharjah Jobs', href: '/jobs?city=sharjah' },
+  { label: 'Ajman Jobs', href: '/jobs?city=ajman' },
+  { label: 'Ras Al Khaimah Jobs', href: '/jobs?city=rak' },
+  { label: 'Fujairah Jobs', href: '/jobs?city=fujairah' },
 ];
 
 const CATEGORIES = [
@@ -40,8 +40,8 @@ export default function Footer() {
               <span className="text-xl font-bold">UAE Careers</span>
             </div>
             <p className="text-blue-200 text-sm leading-relaxed mb-4">
-              Your trusted gateway to Gulf job opportunities. Connecting talent with top
-              employers across the Middle East.
+              Your trusted gateway to UAE job opportunities. Connecting talent with top
+              employers across all emirates.
             </p>
             {/* Social icons */}
             <div className="flex gap-3">
@@ -66,7 +66,7 @@ export default function Footer() {
           {/* Jobs by Country */}
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-wider text-[#FFB400] mb-4">
-              Jobs by Country
+              Jobs by Emirate
             </h3>
             <ul className="space-y-2">
               {JOBS_BY_COUNTRY.map((link) => (
@@ -147,7 +147,7 @@ export default function Footer() {
             &copy; {year} UAE Careers. All rights reserved.
           </p>
           <p className="text-xs text-blue-400">
-            Jobs in UAE, Saudi Arabia, Qatar, Kuwait, Oman &amp; Bahrain
+            Jobs across UAE — Dubai · Abu Dhabi · Sharjah · Ajman · RAK · Fujairah
           </p>
         </div>
       </div>
