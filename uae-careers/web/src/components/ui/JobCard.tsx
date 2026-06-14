@@ -13,15 +13,6 @@ const JOB_TYPE_LABELS: Record<string, string> = {
   freelance: 'Freelance',
 };
 
-const COUNTRY_FLAGS: Record<string, string> = {
-  ae: '🇦🇪',
-  sa: '🇸🇦',
-  qa: '🇶🇦',
-  kw: '🇰🇼',
-  om: '🇴🇲',
-  bh: '🇧🇭',
-};
-
 interface JobCardProps {
   job: Job;
   onSave?: (jobId: number) => void;
@@ -36,7 +27,7 @@ function CompanyLogo({ name, logo }: { name: string; logo?: string }) {
       <img
         src={logo}
         alt={name}
-        className="w-12 h-12 rounded-xl object-contain border border-gray-100"
+        className="w-11 h-11 rounded-xl object-contain border border-gray-100 flex-shrink-0"
       />
     );
   }
@@ -49,14 +40,13 @@ function CompanyLogo({ name, logo }: { name: string; logo?: string }) {
     .toUpperCase();
 
   return (
-    <div className="w-12 h-12 rounded-xl bg-[#1A3C6E] flex items-center justify-center flex-shrink-0">
-      <span className="text-white text-sm font-bold">{initials}</span>
+    <div className="w-11 h-11 rounded-xl bg-[#1A3C6E] flex items-center justify-center flex-shrink-0">
+      <span className="text-white text-xs font-bold">{initials}</span>
     </div>
   );
 }
 
 export default function JobCard({ job, onSave, isSaved, className }: JobCardProps) {
-  const flag = COUNTRY_FLAGS[job.country_code?.toLowerCase()] ?? '🌍';
   const salary = formatSalary(job.salary_min, job.salary_max, job.salary_currency);
   const postedAgo = timeAgo(job.created_at);
   const jobTypeLabel = JOB_TYPE_LABELS[job.job_type] ?? job.job_type;
@@ -64,68 +54,75 @@ export default function JobCard({ job, onSave, isSaved, className }: JobCardProp
   return (
     <div
       className={cn(
-        'relative bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow flex flex-col gap-3',
-        job.is_featured && 'border-[#FFB400] shadow-sm ring-1 ring-[#FFB400]/30',
+        'relative group bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md hover:border-[#1A3C6E]/30 transition-all flex flex-col gap-3 cursor-pointer',
+        job.is_featured && 'border-[#FFB400]/60 shadow-sm ring-1 ring-[#FFB400]/20',
         className
       )}
     >
-      {/* Badges row */}
-      <div className="flex flex-wrap gap-1.5 absolute top-3 right-3">
-        {job.is_sponsored && (
-          <span className="text-[10px] font-semibold bg-[#1A3C6E] text-white px-2 py-0.5 rounded-full">
-            Sponsored
-          </span>
-        )}
-        {job.is_featured && (
-          <span className="text-[10px] font-semibold bg-[#FFB400] text-white px-2 py-0.5 rounded-full flex items-center gap-1">
-            <Star className="w-2.5 h-2.5" /> Featured
-          </span>
-        )}
-        {job.is_walk_in && (
-          <span className="text-[10px] font-semibold bg-green-600 text-white px-2 py-0.5 rounded-full">
-            Walk-in
-          </span>
-        )}
-      </div>
+      {/* Whole-card link sits behind everything */}
+      <Link href={`/jobs/${job.slug}`} className="absolute inset-0 rounded-xl" aria-label={job.title} />
 
-      {/* Company + Title */}
-      <div className="flex items-start gap-3 pr-20">
+      {/* Top row: logo + title/company + badges */}
+      <div className="flex items-start gap-3">
         <CompanyLogo name={job.company.name} logo={job.company.logo} />
-        <div className="min-w-0">
-          <Link
-            href={`/jobs/${job.slug}`}
-            className="font-semibold text-gray-900 hover:text-[#1A3C6E] transition-colors line-clamp-2 leading-tight"
-          >
+
+        <div className="flex-1 min-w-0">
+          {/* Badges — in flow, above title */}
+          {(job.is_sponsored || job.is_featured || job.is_walk_in) && (
+            <div className="flex flex-wrap gap-1 mb-1.5">
+              {job.is_sponsored && (
+                <span className="inline-flex items-center text-[10px] font-semibold bg-[#1A3C6E] text-white px-2 py-0.5 rounded-full">
+                  Sponsored
+                </span>
+              )}
+              {job.is_featured && (
+                <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold bg-[#FFB400] text-white px-2 py-0.5 rounded-full">
+                  <Star className="w-2.5 h-2.5" /> Featured
+                </span>
+              )}
+              {job.is_walk_in && (
+                <span className="inline-flex items-center text-[10px] font-semibold bg-emerald-600 text-white px-2 py-0.5 rounded-full">
+                  Walk-in
+                </span>
+              )}
+            </div>
+          )}
+
+          <p className="font-semibold text-gray-900 group-hover:text-[#1A3C6E] transition-colors leading-snug line-clamp-2 text-sm">
             {job.title}
-          </Link>
-          <p className="text-sm text-gray-500 mt-0.5">{job.company.name}</p>
+          </p>
+          <p className="text-xs text-gray-500 mt-0.5 truncate">{job.company.name}</p>
         </div>
       </div>
 
       {/* Location + Salary */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-600">
-        <span className="flex items-center gap-1">
-          <MapPin className="w-3.5 h-3.5 text-gray-400" />
-          {flag} {job.location_city}, {job.location_country}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-600">
+        <span className="flex items-center gap-1 min-w-0">
+          <MapPin className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+          <span className="truncate">{job.location_city}, {job.location_country}</span>
         </span>
-        <span className="font-medium text-gray-800">{salary}</span>
+        {salary && (
+          <span className="font-semibold text-gray-800 whitespace-nowrap">{salary}</span>
+        )}
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-medium bg-blue-50 text-[#1A3C6E] px-2.5 py-1 rounded-full">
+      <div className="flex items-center justify-between pt-2 border-t border-gray-100 mt-auto">
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-medium bg-blue-50 text-[#1A3C6E] px-2.5 py-1 rounded-full whitespace-nowrap">
             {jobTypeLabel}
           </span>
-          <span className="flex items-center gap-1 text-xs text-gray-400">
-            <Clock className="w-3 h-3" />
+          <span className="flex items-center gap-1 text-[11px] text-gray-400 whitespace-nowrap">
+            <Clock className="w-3 h-3 flex-shrink-0" />
             {postedAgo}
           </span>
         </div>
-        <div className="flex items-center gap-2">
+
+        {/* Buttons sit above the card link via z-index */}
+        <div className="relative z-10 flex items-center gap-2">
           {onSave && (
             <button
-              onClick={() => onSave(job.id)}
+              onClick={(e) => { e.preventDefault(); onSave(job.id); }}
               aria-label={isSaved ? 'Unsave job' : 'Save job'}
               className={cn(
                 'p-1.5 rounded-lg transition-colors',
@@ -139,7 +136,8 @@ export default function JobCard({ job, onSave, isSaved, className }: JobCardProp
           )}
           <Link
             href={`/jobs/${job.slug}`}
-            className="text-xs font-semibold bg-[#FF6B35] text-white px-3 py-1.5 rounded-lg hover:bg-[#e55a24] transition-colors"
+            className="text-[11px] font-semibold bg-[#FF6B35] text-white px-3 py-1.5 rounded-lg hover:bg-[#e55a24] transition-colors whitespace-nowrap"
+            onClick={(e) => e.stopPropagation()}
           >
             Apply Now
           </Link>
