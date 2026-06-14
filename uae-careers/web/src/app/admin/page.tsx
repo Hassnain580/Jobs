@@ -2,37 +2,19 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { computeStats, ADMIN_JOBS, ADMIN_USERS } from '@/lib/admin-data';
+
+const stats = computeStats();
 
 const STAT_CARDS = [
-  { label: 'Total Users', value: '14,230', change: '+12%', color: 'bg-blue-500', icon: '👥' },
-  { label: 'Active Jobs', value: '3,891', change: '+8%', color: 'bg-emerald-500', icon: '💼' },
-  { label: 'Total Employers', value: '987', change: '+5%', color: 'bg-purple-500', icon: '🏢' },
-  { label: 'Monthly Revenue', value: 'AED 42,800', change: '+23%', color: 'bg-[#FFB400]', icon: '💰' },
+  { label: 'Total Users', value: stats.totalUsers.toLocaleString(), sub: `${stats.pendingUsers} pending approval`, color: 'bg-blue-500', icon: '👥' },
+  { label: 'Active Jobs', value: stats.activeJobs.toLocaleString(), sub: `${stats.pendingJobs} pending review`, color: 'bg-emerald-500', icon: '💼' },
+  { label: 'Total Employers', value: stats.totalEmployers.toLocaleString(), sub: `${stats.pendingEmployers} pending approval`, color: 'bg-purple-500', icon: '🏢' },
+  { label: 'Total Job Views', value: stats.totalViews.toLocaleString(), sub: `across ${stats.totalJobs} listings`, color: 'bg-[#FFB400]', icon: '👁' },
 ];
 
-const PENDING_JOBS = [
-  { id: 1, title: 'Senior Software Engineer', employer: 'Tech Corp Dubai', category: 'IT', country: 'UAE', date: '2026-06-12' },
-  { id: 2, title: 'Marketing Manager', employer: 'Global Media UAE', category: 'Marketing', country: 'KSA', date: '2026-06-11' },
-  { id: 3, title: 'Financial Analyst', employer: 'Emirates Bank', category: 'Finance', country: 'UAE', date: '2026-06-11' },
-  { id: 4, title: 'HR Coordinator', employer: 'Majid Al Futtaim', category: 'HR', country: 'UAE', date: '2026-06-10' },
-  { id: 5, title: 'Sales Executive', employer: 'Noon.com', category: 'Sales', country: 'UAE', date: '2026-06-10' },
-];
-
-const RECENT_USERS = [
-  { id: 1, name: 'Ahmed Al Mansouri', email: 'ahmed@email.com', role: 'Job Seeker', date: '2026-06-13' },
-  { id: 2, name: 'Sarah Johnson', email: 'sarah@techcorp.ae', role: 'Employer', date: '2026-06-13' },
-  { id: 3, name: 'Mohammed Al Rashid', email: 'mo@email.com', role: 'Job Seeker', date: '2026-06-12' },
-  { id: 4, name: 'Priya Sharma', email: 'priya@company.com', role: 'Employer', date: '2026-06-12' },
-];
-
-const BAR_CHART = [
-  { label: 'Jan', value: 65 },
-  { label: 'Feb', value: 78 },
-  { label: 'Mar', value: 55 },
-  { label: 'Apr', value: 90 },
-  { label: 'May', value: 82 },
-  { label: 'Jun', value: 95 },
-];
+const PENDING_JOBS = ADMIN_JOBS.filter((j) => j.status === 'pending');
+const RECENT_USERS = [...ADMIN_USERS].sort((a, b) => b.registered.localeCompare(a.registered)).slice(0, 4);
 
 export default function AdminDashboard() {
   const [approvingId, setApprovingId] = useState<number | null>(null);
@@ -51,44 +33,63 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between mb-3">
               <span className="text-2xl">{card.icon}</span>
               <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${card.color} text-white`}>
-                {card.change}
+                Live
               </span>
             </div>
             <p className="text-2xl font-bold text-gray-800">{card.value}</p>
             <p className="text-sm text-gray-500 mt-1">{card.label}</p>
+            <p className="text-xs text-gray-400 mt-0.5">{card.sub}</p>
           </div>
         ))}
       </div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Job postings bar chart */}
+      {/* Status Summary Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-          <h3 className="font-semibold text-gray-800 mb-4">Job Postings (Last 6 Months)</h3>
-          <div className="flex items-end gap-3 h-32">
-            {BAR_CHART.map((bar) => (
-              <div key={bar.label} className="flex flex-col items-center flex-1 gap-1">
-                <div
-                  className="w-full rounded-t-md bg-[#1A3C6E] transition-all"
-                  style={{ height: `${bar.value}%` }}
-                />
-                <span className="text-xs text-gray-500">{bar.label}</span>
-              </div>
-            ))}
+          <h3 className="font-semibold text-gray-800 mb-3">Jobs by Status</h3>
+          <div className="space-y-2">
+            {(['approved', 'pending', 'rejected', 'expired'] as const).map((s) => {
+              const count = ADMIN_JOBS.filter((j) => j.status === s).length;
+              const colors: Record<string, string> = { approved: 'bg-emerald-500', pending: 'bg-amber-400', rejected: 'bg-red-400', expired: 'bg-gray-400' };
+              return (
+                <div key={s} className="flex items-center gap-3">
+                  <span className="capitalize text-sm text-gray-600 w-20">{s}</span>
+                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full ${colors[s]}`} style={{ width: `${(count / ADMIN_JOBS.length) * 100}%` }} />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-700 w-4 text-right">{count}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* Revenue bar chart */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-          <h3 className="font-semibold text-gray-800 mb-4">Revenue Trend (AED 000s)</h3>
-          <div className="flex items-end gap-3 h-32">
-            {[42, 38, 55, 48, 60, 70].map((v, i) => (
-              <div key={i} className="flex flex-col items-center flex-1 gap-1">
-                <div
-                  className="w-full rounded-t-md bg-[#FF6B35] transition-all"
-                  style={{ height: `${(v / 70) * 100}%` }}
-                />
-                <span className="text-xs text-gray-500">M{i + 1}</span>
+          <h3 className="font-semibold text-gray-800 mb-3">Users by Status</h3>
+          <div className="space-y-2">
+            {(['approved', 'pending', 'rejected', 'banned'] as const).map((s) => {
+              const count = ADMIN_USERS.filter((u) => u.status === s).length;
+              const colors: Record<string, string> = { approved: 'bg-emerald-500', pending: 'bg-amber-400', rejected: 'bg-red-400', banned: 'bg-gray-400' };
+              return (
+                <div key={s} className="flex items-center gap-3">
+                  <span className="capitalize text-sm text-gray-600 w-20">{s}</span>
+                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full ${colors[s]}`} style={{ width: `${(count / ADMIN_USERS.length) * 100}%` }} />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-700 w-4 text-right">{count}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+          <h3 className="font-semibold text-gray-800 mb-3">Top Jobs by Views</h3>
+          <div className="space-y-2">
+            {[...ADMIN_JOBS].sort((a, b) => b.views - a.views).slice(0, 4).map((job) => (
+              <div key={job.id} className="flex items-center gap-3">
+                <span className="text-xs text-gray-600 flex-1 truncate">{job.title}</span>
+                <span className="text-xs font-semibold text-gray-700">{job.views.toLocaleString()}</span>
               </div>
             ))}
           </div>
@@ -100,7 +101,7 @@ export default function AdminDashboard() {
         {/* Pending Jobs */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100">
           <div className="flex items-center justify-between p-5 border-b border-gray-100">
-            <h3 className="font-semibold text-gray-800">Jobs Pending Approval</h3>
+            <h3 className="font-semibold text-gray-800">Jobs Pending Approval <span className="text-gray-400 font-normal text-sm">({PENDING_JOBS.length})</span></h3>
             <Link href="/admin/jobs" className="text-xs text-[#1A3C6E] hover:underline font-medium">
               View All
             </Link>
@@ -115,7 +116,9 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {PENDING_JOBS.map((job, i) => (
+                {PENDING_JOBS.length === 0 ? (
+                  <tr><td colSpan={3} className="px-4 py-8 text-center text-gray-400 text-sm">No pending jobs.</td></tr>
+                ) : PENDING_JOBS.map((job, i) => (
                   <tr key={job.id} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}>
                     <td className="px-4 py-3 font-medium text-gray-700 truncate max-w-[140px]">{job.title}</td>
                     <td className="px-4 py-3 text-gray-500 truncate max-w-[120px]">{job.employer}</td>
@@ -165,12 +168,12 @@ export default function AdminDashboard() {
                     </td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                        user.role === 'Employer' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
+                        user.role === 'employer' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
                       }`}>
-                        {user.role}
+                        {user.role === 'employer' ? 'Employer' : 'Job Seeker'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-500 text-xs">{user.date}</td>
+                    <td className="px-4 py-3 text-gray-500 text-xs">{user.registered}</td>
                   </tr>
                 ))}
               </tbody>

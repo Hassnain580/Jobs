@@ -2,41 +2,13 @@
 
 import { useState } from 'react';
 import { X } from 'lucide-react';
+import { ADMIN_EMPLOYERS, type AdminEmployer } from '@/lib/admin-data';
 
 type EmployerStatus = 'active' | 'pending' | 'suspended';
-
-interface Employer {
-  id: number;
-  company: string;
-  contact_name: string;
-  email: string;
-  phone: string;
-  country: string;
-  industry: string;
-  website: string;
-  description: string;
-  jobs_posted: number;
-  jobs_active: number;
-  status: EmployerStatus;
-  joined: string;
-  verified: boolean;
-}
+type Employer = AdminEmployer;
 
 const INDUSTRIES = ['Aviation', 'Oil & Gas', 'Real Estate', 'Healthcare', 'Technology', 'Finance', 'E-Commerce', 'Logistics', 'Retail', 'Media', 'Education', 'Hospitality', 'Construction', 'Manufacturing', 'Consulting'];
 const COUNTRIES = ['UAE'];
-
-const MOCK: Employer[] = [
-  { id: 1, company: 'Emirates Group', contact_name: 'Fatima Al Rashid', email: 'recruit@emirates.ae', phone: '+971 4 712 5000', country: 'UAE', industry: 'Aviation', website: 'https://emirates.com', description: 'Global airline and aviation services group based in Dubai.', jobs_posted: 24, jobs_active: 8, status: 'active', joined: '2026-01-10', verified: true },
-  { id: 2, company: 'ADNOC', contact_name: 'Mohammed Al Mazrouei', email: 'careers@adnoc.ae', phone: '+971 2 707 0000', country: 'UAE', industry: 'Oil & Gas', website: 'https://adnoc.ae', description: 'Abu Dhabi National Oil Company — leading energy company.', jobs_posted: 18, jobs_active: 5, status: 'active', joined: '2026-01-15', verified: true },
-  { id: 3, company: 'Emaar Properties', contact_name: 'Sarah Johnson', email: 'hr@emaar.ae', phone: '+971 4 367 3333', country: 'UAE', industry: 'Real Estate', website: 'https://emaar.com', description: 'Leading real estate developer behind Burj Khalifa and Downtown Dubai.', jobs_posted: 12, jobs_active: 3, status: 'active', joined: '2026-02-01', verified: true },
-  { id: 4, company: 'NMC Health', contact_name: 'Anil Sharma', email: 'jobs@nmc.ae', phone: '+971 2 633 2255', country: 'UAE', industry: 'Healthcare', website: 'https://nmchealth.com', description: 'Largest private healthcare provider in the UAE.', jobs_posted: 9, jobs_active: 4, status: 'pending', joined: '2026-03-10', verified: false },
-  { id: 5, company: 'Global Media UAE', contact_name: 'Omar Al-Qassim', email: 'hr@globalmediauae.com', phone: '+971 4 456 7890', country: 'UAE', industry: 'Media', website: 'https://globalmediauae.com', description: 'Leading media and broadcasting company in Dubai, UAE.', jobs_posted: 6, jobs_active: 2, status: 'active', joined: '2026-02-20', verified: true },
-  { id: 6, company: 'Noon.com', contact_name: 'Priya Patel', email: 'talent@noon.com', phone: '+971 4 200 1234', country: 'UAE', industry: 'E-Commerce', website: 'https://noon.com', description: "Middle East's homegrown e-commerce marketplace.", jobs_posted: 15, jobs_active: 7, status: 'active', joined: '2026-01-28', verified: true },
-  { id: 7, company: 'Aldar Properties', contact_name: 'Khalid Al-Hosani', email: 'recruit@aldar.com', phone: '+971 2 810 5555', country: 'UAE', industry: 'Real Estate', website: 'https://aldar.com', description: "Abu Dhabi's largest real estate developer.", jobs_posted: 8, jobs_active: 1, status: 'suspended', joined: '2026-02-14', verified: false },
-  { id: 8, company: 'DP World', contact_name: 'James Richardson', email: 'careers@dpworld.com', phone: '+971 4 881 5555', country: 'UAE', industry: 'Logistics', website: 'https://dpworld.com', description: 'Global smart end-to-end supply chain and logistics company.', jobs_posted: 11, jobs_active: 3, status: 'active', joined: '2026-03-01', verified: true },
-  { id: 9, company: 'G42', contact_name: 'Layla Al Nuaimi', email: 'hr@g42.ai', phone: '+971 2 491 4200', country: 'UAE', industry: 'Technology', website: 'https://g42.ai', description: 'Abu Dhabi based AI and cloud computing company.', jobs_posted: 20, jobs_active: 9, status: 'pending', joined: '2026-04-05', verified: false },
-  { id: 10, company: 'Majid Al Futtaim', contact_name: 'Rania Hassan', email: 'talent@maf.ae', phone: '+971 4 294 0000', country: 'UAE', industry: 'Retail', website: 'https://majidalfuttaim.com', description: 'Iconic lifestyle destination brand operating across 17 countries.', jobs_posted: 30, jobs_active: 12, status: 'active', joined: '2026-01-05', verified: true },
-];
 
 const EMPTY_EMPLOYER: Omit<Employer, 'id' | 'joined' | 'jobs_posted' | 'jobs_active'> = {
   company: '', contact_name: '', email: '', phone: '', country: 'UAE',
@@ -151,7 +123,7 @@ function EmployerModal({ initial, onSave, onClose, title }: EmployerModalProps) 
 }
 
 export default function AdminEmployersPage() {
-  const [employers, setEmployers] = useState<Employer[]>(MOCK);
+  const [employers, setEmployers] = useState<Employer[]>(ADMIN_EMPLOYERS);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [countryFilter, setCountryFilter] = useState('All');

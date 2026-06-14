@@ -1,28 +1,28 @@
 'use client';
 
 import { useState } from 'react';
+import { computeStats, ADMIN_JOBS } from '@/lib/admin-data';
+
+const stats = computeStats();
 
 const OVERVIEW_STATS = [
-  { label: 'Total Page Views', value: '284,192', change: '+18%', up: true, color: 'text-emerald-600' },
-  { label: 'Unique Visitors', value: '91,430', change: '+12%', up: true, color: 'text-emerald-600' },
-  { label: 'Job Applications', value: '32,840', change: '+22%', up: true, color: 'text-emerald-600' },
-  { label: 'Avg. Session (min)', value: '4.7', change: '-3%', up: false, color: 'text-red-500' },
-  { label: 'Ad Revenue (AED)', value: '18,420', change: '+31%', up: true, color: 'text-emerald-600' },
-  { label: 'Conversion Rate', value: '6.2%', change: '+0.8%', up: true, color: 'text-emerald-600' },
+  { label: 'Total Jobs', value: stats.totalJobs.toString(), note: 'in system', color: 'text-blue-600' },
+  { label: 'Active Jobs', value: stats.activeJobs.toString(), note: `${stats.pendingJobs} pending`, color: 'text-emerald-600' },
+  { label: 'Total Users', value: stats.totalUsers.toString(), note: `${stats.pendingUsers} pending`, color: 'text-emerald-600' },
+  { label: 'Total Employers', value: stats.totalEmployers.toString(), note: `${stats.activeEmployers} active`, color: 'text-purple-600' },
+  { label: 'Job Views', value: stats.totalViews.toLocaleString(), note: 'total across listings', color: 'text-emerald-600' },
+  { label: 'Jobs Posted', value: stats.totalJobsPosted.toString(), note: 'by employers', color: 'text-emerald-600' },
 ];
 
-const JOBS_BY_CATEGORY = [
-  { label: 'IT', count: 1240, pct: 100 },
-  { label: 'Sales', count: 892, pct: 72 },
-  { label: 'Engineering', count: 734, pct: 59 },
-  { label: 'Finance', count: 621, pct: 50 },
-  { label: 'Marketing', count: 512, pct: 41 },
-  { label: 'Healthcare', count: 445, pct: 36 },
-  { label: 'HR', count: 312, pct: 25 },
-  { label: 'Hospitality', count: 289, pct: 23 },
-  { label: 'Design', count: 198, pct: 16 },
-  { label: 'Education', count: 143, pct: 12 },
-];
+// Derived from actual jobs data
+const rawCategories = ADMIN_JOBS.reduce<Record<string, number>>((acc, job) => {
+  acc[job.category] = (acc[job.category] ?? 0) + 1;
+  return acc;
+}, {});
+const maxCatCount = Math.max(...Object.values(rawCategories), 1);
+const JOBS_BY_CATEGORY = Object.entries(rawCategories)
+  .sort((a, b) => b[1] - a[1])
+  .map(([label, count]) => ({ label, count, pct: Math.round((count / maxCatCount) * 100) }));
 
 const REGISTRATIONS_BY_MONTH = [
   { month: 'Jan', seekers: 820, employers: 120 },
@@ -83,15 +83,13 @@ export default function AdminAnalyticsPage() {
         </div>
       </div>
 
-      {/* Overview stats */}
+      {/* Overview stats — derived from actual data */}
       <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
         {OVERVIEW_STATS.map((stat) => (
           <div key={stat.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
             <p className="text-lg font-bold text-gray-800">{stat.value}</p>
             <p className="text-xs text-gray-500 mt-0.5 leading-tight">{stat.label}</p>
-            <p className={`text-xs font-semibold mt-1 ${stat.color}`}>
-              {stat.up ? '▲' : '▼'} {stat.change}
-            </p>
+            <p className={`text-xs font-medium mt-1 ${stat.color}`}>{stat.note}</p>
           </div>
         ))}
       </div>
@@ -100,7 +98,8 @@ export default function AdminAnalyticsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Jobs by category bar chart */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-          <h3 className="font-semibold text-gray-800 mb-4">Jobs by Category</h3>
+          <h3 className="font-semibold text-gray-800 mb-1">Jobs by Category</h3>
+          <p className="text-xs text-gray-400 mb-3">Based on actual listings in the system</p>
           <div className="space-y-2.5">
             {JOBS_BY_CATEGORY.map((item) => (
               <div key={item.label} className="flex items-center gap-3">
@@ -121,6 +120,7 @@ export default function AdminAnalyticsPage() {
         {/* User registrations line (CSS bars by month) */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
           <h3 className="font-semibold text-gray-800 mb-1">User Registrations by Month</h3>
+          <p className="text-xs text-amber-500 mb-1">Illustrative — connect analytics API for live data</p>
           <div className="flex items-center gap-4 mb-4 text-xs">
             <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-[#1A3C6E] inline-block" />Job Seekers</span>
             <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-[#FF6B35] inline-block" />Employers</span>
@@ -151,7 +151,8 @@ export default function AdminAnalyticsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Top keywords */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-          <h3 className="font-semibold text-gray-800 mb-4">Top Searched Keywords</h3>
+          <h3 className="font-semibold text-gray-800 mb-1">Top Searched Keywords</h3>
+          <p className="text-xs text-amber-500 mb-3">Illustrative — connect search analytics for live data</p>
           <div className="space-y-2">
             {TOP_KEYWORDS.map((kw, i) => (
               <div key={kw.keyword} className="flex items-center gap-3">
@@ -175,10 +176,11 @@ export default function AdminAnalyticsPage() {
 
         {/* Revenue summary */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-1">
             <h3 className="font-semibold text-gray-800">Revenue Summary</h3>
             <span className="text-sm font-bold text-[#1A3C6E]">AED {totalRevenue.toLocaleString()}</span>
           </div>
+          <p className="text-xs text-amber-500 mb-3">Illustrative — connect billing API for live data</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>

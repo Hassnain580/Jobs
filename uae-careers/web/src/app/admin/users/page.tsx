@@ -1,33 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { ADMIN_USERS } from '@/lib/admin-data';
 
-type UserRole = 'job_seeker' | 'employer';
+type UserRole = 'job_seeker' | 'employer' | 'admin';
 type UserStatus = 'pending' | 'approved' | 'rejected' | 'banned';
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  role: UserRole;
-  status: UserStatus;
-  registered: string;
-  lastActive: string;
-}
-
-const MOCK_USERS: User[] = [
-  { id: 1, name: 'Ahmed Al Mansouri', email: 'ahmed@email.com', phone: '+971501234567', role: 'job_seeker', status: 'approved', registered: '2026-06-13', lastActive: '2026-06-13' },
-  { id: 2, name: 'Sarah Johnson', email: 'sarah@techcorp.ae', phone: '+971551234567', role: 'employer', status: 'pending', registered: '2026-06-13', lastActive: '2026-06-13' },
-  { id: 3, name: 'Mohammed Al Rashid', email: 'mo@email.com', phone: '+971521234567', role: 'job_seeker', status: 'pending', registered: '2026-06-12', lastActive: '2026-06-12' },
-  { id: 4, name: 'Priya Sharma', email: 'priya@company.com', phone: '+971561234567', role: 'employer', status: 'approved', registered: '2026-06-12', lastActive: '2026-06-13' },
-  { id: 5, name: 'John Williams', email: 'john@email.com', phone: '+971581234567', role: 'job_seeker', status: 'rejected', registered: '2026-06-11', lastActive: '2026-06-11' },
-  { id: 6, name: 'Fatima Al Zaabi', email: 'fatima@email.com', phone: '+971541234567', role: 'job_seeker', status: 'approved', registered: '2026-06-10', lastActive: '2026-06-13' },
-  { id: 7, name: 'Raj Kumar', email: 'raj@gulftech.ae', phone: '+971531234567', role: 'employer', status: 'banned', registered: '2026-06-05', lastActive: '2026-06-08' },
-  { id: 8, name: 'Nora Al Hashimi', email: 'nora@email.com', phone: '+971591234567', role: 'job_seeker', status: 'approved', registered: '2026-06-09', lastActive: '2026-06-12' },
-  { id: 9, name: 'David Chen', email: 'david@horizons.ae', phone: '+971501111111', role: 'employer', status: 'pending', registered: '2026-06-08', lastActive: '2026-06-08' },
-  { id: 10, name: 'Layla Hassan', email: 'layla@email.com', phone: '+971552222222', role: 'job_seeker', status: 'approved', registered: '2026-06-07', lastActive: '2026-06-11' },
-];
 
 const STATUS_CONFIG: Record<UserStatus, { label: string; classes: string }> = {
   pending:  { label: 'Pending',  classes: 'bg-amber-100 text-amber-700' },
@@ -39,12 +16,13 @@ const STATUS_CONFIG: Record<UserStatus, { label: string; classes: string }> = {
 const ROLE_CONFIG: Record<UserRole, { label: string; classes: string }> = {
   job_seeker: { label: 'Job Seeker', classes: 'bg-blue-100 text-blue-700' },
   employer:   { label: 'Employer',   classes: 'bg-purple-100 text-purple-700' },
+  admin:      { label: 'Admin',      classes: 'bg-red-100 text-red-700' },
 };
 
 const PAGE_SIZE = 6;
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<User[]>(MOCK_USERS);
+  const [users, setUsers] = useState(ADMIN_USERS);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('All');
   const [statusFilter, setStatusFilter] = useState<string>('All');
@@ -61,7 +39,7 @@ export default function AdminUsersPage() {
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  const updateStatus = (id: number, status: UserStatus) =>
+  const updateStatus = (id: number, status: 'approved' | 'rejected' | 'banned' | 'pending') =>
     setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, status } : u)));
 
   const deleteUser = (id: number) => {

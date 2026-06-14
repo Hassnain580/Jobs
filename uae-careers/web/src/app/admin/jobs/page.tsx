@@ -2,30 +2,12 @@
 
 import { useState } from 'react';
 import { X } from 'lucide-react';
+import { ADMIN_JOBS, type AdminJob } from '@/lib/admin-data';
 
 type JobStatus = 'pending' | 'approved' | 'rejected' | 'expired';
 type JobType = 'full_time' | 'part_time' | 'contract' | 'freelance';
 
-interface Job {
-  id: number;
-  title: string;
-  employer: string;
-  category: string;
-  country: string;
-  city: string;
-  job_type: JobType;
-  salary_min: string;
-  salary_max: string;
-  description: string;
-  apply_method: string;
-  apply_contact: string;
-  is_featured: boolean;
-  is_walk_in: boolean;
-  status: JobStatus;
-  expiry_date: string;
-  created: string;
-  views: number;
-}
+type Job = AdminJob;
 
 function resolveStatus(status: JobStatus, expiry_date: string): JobStatus {
   if (status === 'approved' && expiry_date && new Date(expiry_date) < new Date()) return 'expired';
@@ -56,14 +38,6 @@ const EMPTY_JOB: Omit<Job, 'id' | 'created' | 'views'> = {
   expiry_date: defaultExpiry(),
 };
 
-const MOCK_JOBS: Job[] = [
-  { id: 1, title: 'Senior Software Engineer', employer: 'Tech Corp Dubai', category: 'IT', country: 'UAE', city: 'Dubai', job_type: 'full_time', salary_min: '15000', salary_max: '25000', description: '', apply_method: 'email', apply_contact: 'hr@techcorp.ae', is_featured: true, is_walk_in: false, status: 'pending', expiry_date: '2026-07-12', created: '2026-06-12', views: 0 },
-  { id: 2, title: 'Marketing Manager', employer: 'Global Media UAE', category: 'Marketing', country: 'UAE', city: 'Dubai', job_type: 'full_time', salary_min: '12000', salary_max: '20000', description: '', apply_method: 'email', apply_contact: 'jobs@globalmediauae.com', is_featured: false, is_walk_in: false, status: 'approved', expiry_date: '2026-07-11', created: '2026-06-11', views: 342 },
-  { id: 3, title: 'Financial Analyst', employer: 'Emirates Bank', category: 'Finance', country: 'UAE', city: 'Abu Dhabi', job_type: 'full_time', salary_min: '10000', salary_max: '16000', description: '', apply_method: 'email', apply_contact: 'careers@emiratesbank.ae', is_featured: false, is_walk_in: false, status: 'approved', expiry_date: '2026-05-01', created: '2026-06-11', views: 521 },
-  { id: 4, title: 'HR Coordinator', employer: 'Majid Al Futtaim', category: 'HR', country: 'UAE', city: 'Dubai', job_type: 'full_time', salary_min: '7000', salary_max: '10000', description: '', apply_method: 'email', apply_contact: 'hr@maf.ae', is_featured: false, is_walk_in: false, status: 'rejected', expiry_date: '2026-07-10', created: '2026-06-10', views: 0 },
-  { id: 5, title: 'Sales Executive', employer: 'Noon.com', category: 'Sales', country: 'UAE', city: 'Dubai', job_type: 'full_time', salary_min: '6000', salary_max: '9000', description: '', apply_method: 'link', apply_contact: 'https://noon.com/careers', is_featured: false, is_walk_in: false, status: 'pending', expiry_date: '2026-07-10', created: '2026-06-10', views: 0 },
-  { id: 6, title: 'Civil Engineer', employer: 'Aldar Properties', category: 'Engineering', country: 'UAE', city: 'Abu Dhabi', job_type: 'contract', salary_min: '10000', salary_max: '18000', description: '', apply_method: 'email', apply_contact: 'recruitment@aldar.com', is_featured: false, is_walk_in: false, status: 'approved', expiry_date: '2026-07-09', created: '2026-06-09', views: 789 },
-];
 
 const STATUS_CONFIG: Record<JobStatus, { label: string; classes: string }> = {
   pending:  { label: 'Pending',  classes: 'bg-amber-100 text-amber-700' },
@@ -234,7 +208,7 @@ function JobModal({ initial, onSave, onClose, title }: JobFormProps) {
 }
 
 export default function AdminJobsPage() {
-  const [jobs, setJobs] = useState<Job[]>(MOCK_JOBS);
+  const [jobs, setJobs] = useState<Job[]>(ADMIN_JOBS);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('All');
   const [categoryFilter, setCategoryFilter] = useState('All');
