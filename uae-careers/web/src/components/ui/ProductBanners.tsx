@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { ExternalLink } from 'lucide-react';
 import type { ProductBanner } from '@/types';
 
@@ -5,17 +6,24 @@ interface ProductBannersProps {
   banners: ProductBanner[];
 }
 
+function isExternal(url: string) {
+  return url.startsWith('http://') || url.startsWith('https://');
+}
+
 export default function ProductBanners({ banners }: ProductBannersProps) {
   if (!banners || banners.length === 0) return null;
 
   return (
     <div className="flex flex-col sm:flex-row gap-4">
-      {banners.map((banner) => (
-        <a
+      {banners.map((banner) => {
+        const external = isExternal(banner.url);
+        const Wrapper = external ? 'a' : Link;
+        const extraProps = external ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+        return (
+        <Wrapper
           key={banner.id}
           href={banner.url}
-          target="_blank"
-          rel="noopener noreferrer"
+          {...extraProps}
           className="flex items-center gap-3 flex-1 border border-gray-200 rounded-xl p-4 hover:shadow-md hover:border-[#1A3C6E] transition-all group bg-white"
         >
           {banner.image ? (
@@ -39,8 +47,9 @@ export default function ProductBanners({ banners }: ProductBannersProps) {
             <p className="text-xs text-gray-500 line-clamp-2 mt-0.5">{banner.description}</p>
           </div>
           <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-[#FF6B35] flex-shrink-0" />
-        </a>
-      ))}
+        </Wrapper>
+        );
+      })}
     </div>
   );
 }

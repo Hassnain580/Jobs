@@ -96,9 +96,9 @@ async function getJob(slug: string): Promise<Job | null> {
 }
 
 const MOCK_BANNERS: ProductBanner[] = [
-  { id: 1, name: 'CV Builder Pro', description: 'Create a professional CV in minutes — ATS-optimized templates for UAE jobs.', url: '#', image: undefined },
-  { id: 2, name: 'Interview Prep', description: 'Practice 500+ UAE interview questions with AI coaching.', url: '#', image: undefined },
-  { id: 3, name: 'LinkedIn Optimizer', description: 'Get 3× more recruiter views with our UAE-focused LinkedIn audit.', url: '#', image: undefined },
+  { id: 1, name: 'CV Builder Pro', description: 'Create a professional CV in minutes — ATS-optimized templates for UAE jobs.', url: '/cv-builder', image: undefined },
+  { id: 2, name: 'Interview Prep', description: 'Practice 500+ UAE interview questions with AI coaching.', url: '/cv-builder/builder', image: undefined },
+  { id: 3, name: 'LinkedIn Optimizer', description: 'Get 3× more recruiter views with our UAE-focused LinkedIn audit.', url: '/cv-builder/builder', image: undefined },
 ];
 
 const RELATED_JOBS: Job[] = Array.from({ length: 3 }, (_, i) => ({
