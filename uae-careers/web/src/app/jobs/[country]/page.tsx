@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import {
   MapPin, Briefcase, Clock, DollarSign, AlertTriangle,
   Share2, ExternalLink, MessageCircle, CalendarDays, Building2, X, Loader2,
@@ -13,6 +13,7 @@ import FraudNotice from '@/components/ui/FraudNotice';
 import JobCard from '@/components/ui/JobCard';
 import { formatSalary, timeAgo } from '@/lib/utils';
 import type { Job } from '@/types';
+import DOMPurify from 'isomorphic-dompurify';
 
 const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz1J0M0KO115tNi-KztLszF5y-dZpj-j37YUYWLcHWALfhkRL5570wU8IRu8QkkT9DXkw/exec';
 
@@ -272,8 +273,9 @@ function ApplyModal({ job, onClose }: { job: Job; onClose: () => void }) {
 }
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
-export default function JobDetailPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default function JobDetailPage() {
+  const params = useParams();
+  const slug = typeof params.country === 'string' ? params.country : Array.isArray(params.country) ? params.country[0] : '';
   const job = JOB_BY_SLUG.get(slug) ?? null;
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -381,14 +383,14 @@ export default function JobDetailPage({ params }: { params: { slug: string } }) 
               {/* Description */}
               <section className="bg-white rounded-xl border border-gray-200 p-6">
                 <h2 className="text-lg font-bold text-gray-900 mb-4">Job Description</h2>
-                <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: job.description }} />
+                <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(job.description) }} />
               </section>
 
               {/* Responsibilities */}
               {job.responsibilities && (
                 <section className="bg-white rounded-xl border border-gray-200 p-6">
                   <h2 className="text-lg font-bold text-gray-900 mb-4">Responsibilities</h2>
-                  <div className="prose prose-sm max-w-none text-gray-700" dangerouslySetInnerHTML={{ __html: job.responsibilities }} />
+                  <div className="prose prose-sm max-w-none text-gray-700" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(job.responsibilities) }} />
                 </section>
               )}
 
@@ -396,7 +398,7 @@ export default function JobDetailPage({ params }: { params: { slug: string } }) 
               {job.requirements && (
                 <section className="bg-white rounded-xl border border-gray-200 p-6">
                   <h2 className="text-lg font-bold text-gray-900 mb-4">Requirements</h2>
-                  <div className="prose prose-sm max-w-none text-gray-700" dangerouslySetInnerHTML={{ __html: job.requirements }} />
+                  <div className="prose prose-sm max-w-none text-gray-700" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(job.requirements) }} />
                 </section>
               )}
 

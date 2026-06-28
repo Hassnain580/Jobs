@@ -41,7 +41,6 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       // Replace with real API call
-      console.log('Email login', data);
       await new Promise((r) => setTimeout(r, 1000));
       router.push('/dashboard');
     } finally {
@@ -52,7 +51,6 @@ export default function LoginPage() {
   async function onPhoneSubmit(data: OtpPhoneForm) {
     setIsLoading(true);
     try {
-      console.log('Send OTP to', data.phone);
       await new Promise((r) => setTimeout(r, 800));
       setOtpStep('code');
     } finally {
@@ -63,7 +61,6 @@ export default function LoginPage() {
   async function onCodeSubmit(data: OtpCodeForm) {
     setIsLoading(true);
     try {
-      console.log('Verify OTP', data.code);
       await new Promise((r) => setTimeout(r, 800));
       router.push('/dashboard');
     } finally {

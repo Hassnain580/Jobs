@@ -87,7 +87,6 @@ export default function PostJobPage() {
   async function onFinalSubmit() {
     setIsSubmitting(true);
     try {
-      console.log('Submitting job:', formData);
       await new Promise((r) => setTimeout(r, 1500));
       router.push('/employer/dashboard');
     } finally {

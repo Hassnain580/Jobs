@@ -41,7 +41,6 @@ export default function RegisterPage() {
   async function onSeekerSubmit(data: SeekerForm) {
     setIsLoading(true);
     try {
-      console.log('Seeker register', data);
       await new Promise((r) => setTimeout(r, 1000));
       router.push('/dashboard');
     } finally {
@@ -52,7 +51,6 @@ export default function RegisterPage() {
   async function onEmployerSubmit(data: EmployerForm) {
     setIsLoading(true);
     try {
-      console.log('Employer register', data);
       await new Promise((r) => setTimeout(r, 1000));
       router.push('/employer/dashboard');
     } finally {
