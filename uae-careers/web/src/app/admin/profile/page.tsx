@@ -40,7 +40,7 @@ export default function AdminProfilePage() {
   const savePassword = () => {
     setPwError('');
     if (!currentPw) { setPwError('Enter your current password.'); return; }
-    if (currentPw !== 'Admin@123456') { setPwError('Current password is incorrect.'); return; }
+    if (currentPw !== 'Applesec22@u') { setPwError('Current password is incorrect.'); return; }
     if (newPw.length < 8) { setPwError('New password must be at least 8 characters.'); return; }
     if (!/[A-Z]/.test(newPw)) { setPwError('New password must contain at least one uppercase letter.'); return; }
     if (!/[0-9]/.test(newPw)) { setPwError('New password must contain at least one number.'); return; }
