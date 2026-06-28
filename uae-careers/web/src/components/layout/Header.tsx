@@ -28,9 +28,8 @@ interface HeaderProps {
 
 const NAV_LINKS = [
   { href: '/jobs', label: 'Jobs' },
-  { href: '/companies', label: 'Companies' },
   { href: '/salary-guide', label: 'Salary Guide' },
-  { href: '/cv-builder', label: 'CV Builder' },
+  { href: '/cv-service', label: 'CV Service' },
 ];
 
 function getInitials(first: string, last: string) {
@@ -151,20 +150,12 @@ export default function Header({ user }: HeaderProps) {
                 )}
               </div>
             ) : (
-              <>
-                <Link
-                  href="/auth/login"
-                  className="text-sm font-medium text-[#1A3C6E] hover:underline"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/auth/register"
-                  className="text-sm font-semibold bg-[#FF6B35] text-white px-4 py-2 rounded-lg hover:bg-[#e55a24] transition-colors"
-                >
-                  Register
-                </Link>
-              </>
+              <Link
+                href="/cv-service"
+                className="text-sm font-semibold bg-[#FF6B35] text-white px-4 py-2 rounded-lg hover:bg-[#e55a24] transition-colors"
+              >
+                Get Your CV Done
+              </Link>
             )}
           </div>
 
@@ -219,22 +210,13 @@ export default function Header({ user }: HeaderProps) {
                 </button>
               </>
             ) : (
-              <>
-                <Link
-                  href="/auth/login"
-                  className="flex-1 text-center text-sm font-medium border border-[#1A3C6E] text-[#1A3C6E] px-4 py-2 rounded-lg"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/auth/register"
-                  className="flex-1 text-center text-sm font-semibold bg-[#FF6B35] text-white px-4 py-2 rounded-lg"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  Register
-                </Link>
-              </>
+              <Link
+                href="/cv-service"
+                className="flex-1 text-center text-sm font-semibold bg-[#FF6B35] text-white px-4 py-2 rounded-lg"
+                onClick={() => setMobileOpen(false)}
+              >
+                Get Your CV Done
+              </Link>
             )}
           </div>
         </div>

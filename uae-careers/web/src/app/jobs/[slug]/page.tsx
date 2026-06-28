@@ -1,19 +1,22 @@
-import type { Metadata } from 'next';
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   MapPin, Briefcase, Clock, DollarSign, AlertTriangle,
-  Share2, Bookmark, ExternalLink, MessageCircle,
-  CalendarDays, Building2,
+  Share2, ExternalLink, MessageCircle, CalendarDays, Building2, X, Loader2,
 } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import FraudNotice from '@/components/ui/FraudNotice';
-import ProductBanners from '@/components/ui/ProductBanners';
 import JobCard from '@/components/ui/JobCard';
 import { formatSalary, timeAgo } from '@/lib/utils';
-import type { Job, ProductBanner } from '@/types';
+import type { Job } from '@/types';
 
-// Mock job catalogue — same source as jobs listing page
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz1J0M0KO115tNi-KztLszF5y-dZpj-j37YUYWLcHWALfhkRL5570wU8IRu8QkkT9DXkw/exec';
+
+// Mock job catalogue keyed by slug
 const JOB_TITLES = [
   'Senior Software Engineer', 'Marketing Manager', 'Civil Engineer', 'Registered Nurse',
   'HR Business Partner', 'Financial Analyst', 'IT Support Specialist', 'Sales Executive',
@@ -50,7 +53,7 @@ const DESCRIPTIONS = [
   `<p>Join a flagship infrastructure project in the UAE. You will oversee civil works, liaise with consultants and contractors, and ensure delivery on time and to specification.</p>`,
   `<p>Provide compassionate, evidence-based nursing care in a state-of-the-art UAE hospital. You will work alongside a multidisciplinary clinical team serving a diverse patient population.</p>`,
   `<p>Partner with business leaders to align people strategy with company goals. You will own talent acquisition, employee relations, and organisational development initiatives.</p>`,
-  `<p>Deliver high-quality financial analysis to support strategic decision-making across the organisation. You will build models, prepare reports, and present insights to senior leadership.</p>`,
+  `<p>Deliver high-quality financial analysis to support strategic decision-making. You will build models, prepare reports, and present insights to senior leadership.</p>`,
   `<p>Provide first and second-line IT support to a growing UAE organisation. You will troubleshoot hardware, software, and network issues and maintain IT asset records.</p>`,
   `<p>Drive revenue growth by developing new client relationships and managing an existing portfolio across the UAE market.</p>`,
   `<p>Oversee day-to-day operations and drive continuous improvement across our UAE business units. You will manage cross-functional teams and own key KPIs.</p>`,
@@ -78,7 +81,7 @@ const ALL_MOCK_JOBS: Job[] = Array.from({ length: 20 }, (_, i) => ({
   category: { id: (i % 8) + 1, name: CATEGORIES[i] ?? 'General', slug: CATEGORIES[i]?.toLowerCase().replace(/\s+/g, '-') ?? 'general' },
   description: DESCRIPTIONS[i % DESCRIPTIONS.length],
   responsibilities: `<ul><li>Lead and deliver high-impact projects in a fast-paced environment</li><li>Collaborate with cross-functional teams across the UAE and internationally</li><li>Report to senior leadership and contribute to strategic planning</li><li>Mentor junior team members and foster a culture of excellence</li></ul>`,
-  requirements: `<ul><li>Bachelor's degree in a relevant field</li><li>3+ years of relevant experience, preferably in the UAE or GCC</li><li>Strong communication and stakeholder management skills</li><li>Proficiency in relevant tools and technologies</li><li>Valid UAE work authorisation or eligibility to obtain it</li></ul>`,
+  requirements: `<ul><li>Bachelor's degree in a relevant field</li><li>3+ years of relevant experience, preferably in the UAE</li><li>Strong communication and stakeholder management skills</li><li>Valid UAE work authorisation or eligibility to obtain it</li></ul>`,
   important_note: 'UAE Careers connects job seekers directly with employers. We never charge candidates for job applications.',
   apply_method: i % 4 === 0 ? 'walkin' : 'email',
   is_sponsored: i % 5 === 0,
@@ -91,74 +94,198 @@ const ALL_MOCK_JOBS: Job[] = Array.from({ length: 20 }, (_, i) => ({
 
 const JOB_BY_SLUG = new Map(ALL_MOCK_JOBS.map((j) => [j.slug, j]));
 
-async function getJob(slug: string): Promise<Job | null> {
-  return JOB_BY_SLUG.get(slug) ?? null;
-}
-
-const MOCK_BANNERS: ProductBanner[] = [
-  { id: 1, name: 'CV Builder Pro', description: 'Create a professional CV in minutes — ATS-optimized templates for UAE jobs.', url: '/cv-builder', image: undefined },
-  { id: 2, name: 'Interview Prep', description: 'Practice 500+ UAE interview questions with AI coaching.', url: '/cv-builder/builder', image: undefined },
-  { id: 3, name: 'LinkedIn Optimizer', description: 'Get 3× more recruiter views with our UAE-focused LinkedIn audit.', url: '/cv-builder/builder', image: undefined },
-];
-
-const RELATED_JOBS: Job[] = Array.from({ length: 3 }, (_, i) => ({
-  id: 10 + i,
-  slug: `related-job-${i}`,
-  title: ['Full Stack Developer', 'Backend Engineer', 'Cloud Architect'][i],
-  company: { id: 2, name: 'ADNOC', slug: 'adnoc', logo: undefined },
-  location_city: 'Abu Dhabi',
-  location_country: 'UAE',
-  country_code: 'ae',
-  salary_min: 12000,
-  salary_max: 20000,
-  salary_currency: 'AED',
-  job_type: 'full_time',
-  category: { id: 1, name: 'IT', slug: 'it' },
-  description: '',
-  apply_method: 'email',
-  is_sponsored: false,
-  is_featured: false,
-  is_walk_in: false,
-  is_active: true,
-  created_at: new Date(Date.now() - i * 86400000).toISOString(),
-  updated_at: new Date().toISOString(),
-}));
-
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params;
-  const job = await getJob(slug);
-  if (!job) return { title: 'Job Not Found' };
-
-  return {
-    title: `${job.title} at ${job.company.name} — ${job.location_city}, ${job.location_country}`,
-    description: `Apply for ${job.title} at ${job.company.name} in ${job.location_city}. ${formatSalary(job.salary_min, job.salary_max, job.salary_currency)}.`,
-    openGraph: {
-      title: `${job.title} — ${job.company.name}`,
-      description: `${job.location_city}, ${job.location_country} | ${formatSalary(job.salary_min, job.salary_max, job.salary_currency)}`,
-    },
-  };
-}
+const RELATED_JOBS: Job[] = ALL_MOCK_JOBS.slice(0, 3);
 
 const JOB_TYPE_LABELS: Record<string, string> = {
   full_time: 'Full Time', part_time: 'Part Time', contract: 'Contract',
   internship: 'Internship', freelance: 'Freelance',
 };
 
-export default async function JobDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-  const job = await getJob(slug);
+const COUNTRY_CODES = [
+  { code: '+971', label: '🇦🇪 +971' },
+  { code: '+966', label: '🇸🇦 +966' },
+  { code: '+91', label: '🇮🇳 +91' },
+  { code: '+92', label: '🇵🇰 +92' },
+  { code: '+63', label: '🇵🇭 +63' },
+  { code: '+880', label: '🇧🇩 +880' },
+  { code: '+44', label: '🇬🇧 +44' },
+  { code: '+1', label: '🇺🇸 +1' },
+];
+
+// ─── Apply Modal ───────────────────────────────────────────────────────────────
+function ApplyModal({ job, onClose }: { job: Job; onClose: () => void }) {
+  const router = useRouter();
+  const [form, setForm] = useState({
+    name: '', email: '', countryCode: '+971', phone: '',
+    experience: '', visaStatus: '', whatsappOptIn: true,
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+
+  function set(field: string, value: string | boolean) {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => { const e = { ...prev }; delete e[field]; return e; });
+  }
+
+  function validate() {
+    const e: Record<string, string> = {};
+    if (!form.name.trim()) e.name = 'Full name is required';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Valid email is required';
+    if (form.phone.replace(/\D/g, '').length < 7) e.phone = 'Valid phone number is required';
+    if (!form.experience) e.experience = 'Please select your experience';
+    if (!form.visaStatus) e.visaStatus = 'Please select your visa status';
+    return e;
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const errs = validate();
+    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+    setLoading(true);
+    setSubmitError('');
+    try {
+      await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'application',
+          jobId: job.id,
+          jobTitle: job.title,
+          company: job.company.name,
+          name: form.name,
+          email: form.email,
+          phone: form.countryCode + form.phone,
+          experience: form.experience,
+          visaStatus: form.visaStatus,
+          whatsappOptIn: form.whatsappOptIn,
+        }),
+      });
+      router.push('/thank-you');
+    } catch {
+      setSubmitError('Something went wrong. Please try again or email ask@uaecareer.ae');
+      setLoading(false);
+    }
+  }
+
+  const fieldCls = (field: string) =>
+    `w-full rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1A3C6E] ${errors[field] ? 'border-red-400 bg-red-50' : 'border-gray-200'}`;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      <div className="relative bg-white w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl shadow-2xl overflow-y-auto max-h-[95vh]">
+        {/* Header */}
+        <div className="flex items-start justify-between p-5 border-b border-gray-100">
+          <div>
+            <h2 className="font-bold text-lg text-gray-900">Apply Now</h2>
+            <p className="text-sm text-gray-500 mt-0.5">{job.title} · {job.company.name}</p>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+            <X className="w-5 h-5 text-gray-500" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-5 space-y-4" noValidate>
+          {/* Full Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name <span className="text-red-500">*</span></label>
+            <input type="text" value={form.name} onChange={(e) => set('name', e.target.value)} placeholder="e.g. Ahmed Al Mansouri" className={fieldCls('name')} />
+            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email <span className="text-red-500">*</span></label>
+            <input type="email" value={form.email} onChange={(e) => set('email', e.target.value)} placeholder="you@example.com" className={fieldCls('email')} />
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Phone <span className="text-red-500">*</span></label>
+            <div className={`flex rounded-xl overflow-hidden border ${errors.phone ? 'border-red-400 bg-red-50' : 'border-gray-200'} focus-within:ring-2 focus-within:ring-[#1A3C6E]`}>
+              <select value={form.countryCode} onChange={(e) => set('countryCode', e.target.value)} className="bg-gray-50 text-sm px-3 border-r border-gray-200 focus:outline-none py-3">
+                {COUNTRY_CODES.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
+              </select>
+              <input type="tel" value={form.phone} onChange={(e) => set('phone', e.target.value)} placeholder="555 123 4567" className="flex-1 px-3 py-3 text-sm focus:outline-none bg-transparent" />
+            </div>
+            {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+          </div>
+
+          {/* WhatsApp opt-in */}
+          <label className="flex items-start gap-3 cursor-pointer bg-green-50 rounded-xl p-3 border border-green-200">
+            <input type="checkbox" checked={form.whatsappOptIn} onChange={(e) => set('whatsappOptIn', e.target.checked)} className="mt-0.5 w-4 h-4 accent-[#25D366]" />
+            <div>
+              <span className="text-sm font-medium text-gray-800">📲 Send me daily UAE jobs on WhatsApp</span>
+              <p className="text-xs text-gray-500 mt-0.5">Get fresh job alerts every morning — free</p>
+            </div>
+          </label>
+
+          {/* Experience */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Years of Experience <span className="text-red-500">*</span></label>
+            <select value={form.experience} onChange={(e) => set('experience', e.target.value)} className={fieldCls('experience')}>
+              <option value="">Select experience level</option>
+              <option value="Fresher (0-1 years)">Fresher (0–1 years)</option>
+              <option value="1-3 years">1–3 years</option>
+              <option value="3-5 years">3–5 years</option>
+              <option value="5-10 years">5–10 years</option>
+              <option value="10+ years">10+ years</option>
+            </select>
+            {errors.experience && <p className="text-red-500 text-xs mt-1">{errors.experience}</p>}
+          </div>
+
+          {/* Visa Status */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Current Visa Status <span className="text-red-500">*</span></label>
+            <select value={form.visaStatus} onChange={(e) => set('visaStatus', e.target.value)} className={fieldCls('visaStatus')}>
+              <option value="">Select visa status</option>
+              <option value="Visit Visa">Visit Visa</option>
+              <option value="Employment Visa">Employment Visa</option>
+              <option value="Husband/Wife/Father Visa">Husband / Wife / Father Visa</option>
+              <option value="Looking for Sponsor">Looking for Sponsor</option>
+              <option value="Outside UAE">Outside UAE</option>
+            </select>
+            {errors.visaStatus && <p className="text-red-500 text-xs mt-1">{errors.visaStatus}</p>}
+          </div>
+
+          {submitError && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">{submitError}</div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-2 bg-[#FF6B35] hover:bg-[#e55a24] text-white font-bold py-3.5 rounded-xl transition-colors disabled:opacity-70 text-base"
+          >
+            {loading ? <><Loader2 className="w-5 h-5 animate-spin" /> Submitting...</> : 'Apply Now'}
+          </button>
+          <p className="text-center text-xs text-gray-400">
+            Your details are sent directly to the employer. We never charge for applications.
+          </p>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ─── Page ──────────────────────────────────────────────────────────────────────
+export default function JobDetailPage({ params }: { params: { slug: string } }) {
+  const { slug } = params;
+  const job = JOB_BY_SLUG.get(slug) ?? null;
+  const [modalOpen, setModalOpen] = useState(false);
 
   if (!job) {
     return (
       <div className="flex flex-col min-h-screen">
         <Header />
-        <main className="flex-1 flex items-center justify-center">
+        <main className="flex-1 flex items-center justify-center p-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Job Not Found</h1>
             <p className="text-gray-500 mb-4">This job may have expired or been removed.</p>
-            <Link href="/jobs" className="text-[#FF6B35] font-medium hover:underline">
-              Browse all jobs →
-            </Link>
+            <Link href="/jobs" className="text-[#FF6B35] font-medium hover:underline">Browse all jobs →</Link>
           </div>
         </main>
         <Footer />
@@ -169,58 +296,17 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
   const salary = formatSalary(job.salary_min, job.salary_max, job.salary_currency);
   const posted = timeAgo(job.created_at);
   const jobType = JOB_TYPE_LABELS[job.job_type] ?? job.job_type;
-  const shareUrl = typeof window !== 'undefined' ? window.location.href : `https://uaecareer.ae/jobs/${slug}`;
-
-  // JSON-LD JobPosting schema
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'JobPosting',
-    title: job.title,
-    description: job.description,
-    datePosted: job.created_at,
-    hiringOrganization: {
-      '@type': 'Organization',
-      name: job.company.name,
-    },
-    jobLocation: {
-      '@type': 'Place',
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: job.location_city,
-        addressCountry: job.country_code.toUpperCase(),
-      },
-    },
-    employmentType: job.job_type.toUpperCase(),
-    ...(job.salary_min && {
-      baseSalary: {
-        '@type': 'MonetaryAmount',
-        currency: job.salary_currency ?? 'AED',
-        value: {
-          '@type': 'QuantitativeValue',
-          minValue: job.salary_min,
-          maxValue: job.salary_max ?? job.salary_min,
-          unitText: 'MONTH',
-        },
-      },
-    }),
-  };
+  const shareText = `${job.title} at ${job.company.name} — https://uaecareer.ae/jobs/${slug}`;
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Header />
 
-      {/* JSON-LD */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {modalOpen && <ApplyModal job={job} onClose={() => setModalOpen(false)} />}
 
       <main className="flex-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Fraud notice */}
-          <div className="mb-6">
-            <FraudNotice />
-          </div>
+          <div className="mb-6"><FraudNotice /></div>
 
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Main column */}
@@ -228,67 +314,41 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
               {/* Job header card */}
               <div className="bg-white rounded-xl border border-gray-200 p-6">
                 <div className="flex items-start gap-4">
-                  {job.company.logo ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={job.company.logo} alt={job.company.name} className="w-16 h-16 rounded-xl object-contain border border-gray-100" />
-                  ) : (
-                    <div className="w-16 h-16 rounded-xl bg-[#1A3C6E] flex items-center justify-center flex-shrink-0">
-                      <span className="text-white text-lg font-bold">
-                        {job.company.name.slice(0, 2).toUpperCase()}
-                      </span>
-                    </div>
-                  )}
+                  <div className="w-16 h-16 rounded-xl bg-[#1A3C6E] flex items-center justify-center flex-shrink-0">
+                    <span className="text-white text-lg font-bold">{job.company.name.slice(0, 2).toUpperCase()}</span>
+                  </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap gap-2 mb-2">
-                      {job.is_walk_in && (
-                        <span className="text-xs font-semibold bg-green-100 text-green-700 px-2.5 py-1 rounded-full">Walk-in Interview</span>
-                      )}
-                      {job.is_featured && (
-                        <span className="text-xs font-semibold bg-[#FFB400] text-white px-2.5 py-1 rounded-full">Featured</span>
-                      )}
+                      {job.is_walk_in && <span className="text-xs font-semibold bg-green-100 text-green-700 px-2.5 py-1 rounded-full">Walk-in Interview</span>}
+                      {job.is_featured && <span className="text-xs font-semibold bg-[#FFB400] text-white px-2.5 py-1 rounded-full">Featured</span>}
                     </div>
                     <h1 className="text-2xl font-bold text-gray-900 leading-tight">{job.title}</h1>
                     <p className="text-[#1A3C6E] font-medium mt-1">{job.company.name}</p>
                   </div>
                 </div>
 
-                {/* Meta row */}
+                {/* Meta */}
                 <div className="mt-5 flex flex-wrap gap-4 text-sm text-gray-600">
-                  <span className="flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 text-gray-400" />
-                    🇦🇪 {job.location_city}, {job.location_country}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <DollarSign className="w-4 h-4 text-gray-400" />
-                    <strong className="text-gray-900">{salary}</strong>
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Briefcase className="w-4 h-4 text-gray-400" />
-                    {jobType}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Clock className="w-4 h-4 text-gray-400" />
-                    {posted}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Building2 className="w-4 h-4 text-gray-400" />
-                    {job.category.name}
-                  </span>
-                  {job.experience_level && (
-                    <span className="flex items-center gap-1.5">
-                      <CalendarDays className="w-4 h-4 text-gray-400" />
-                      {job.experience_level} experience
-                    </span>
-                  )}
+                  <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4 text-gray-400" />🇦🇪 {job.location_city}, {job.location_country}</span>
+                  {salary && <span className="flex items-center gap-1.5"><DollarSign className="w-4 h-4 text-gray-400" /><strong className="text-gray-900">{salary}</strong></span>}
+                  <span className="flex items-center gap-1.5"><Briefcase className="w-4 h-4 text-gray-400" />{jobType}</span>
+                  <span className="flex items-center gap-1.5"><Clock className="w-4 h-4 text-gray-400" />{posted}</span>
+                  <span className="flex items-center gap-1.5"><Building2 className="w-4 h-4 text-gray-400" />{job.category.name}</span>
+                  {job.experience_level && <span className="flex items-center gap-1.5"><CalendarDays className="w-4 h-4 text-gray-400" />{job.experience_level} experience</span>}
                 </div>
 
-                {/* Action buttons */}
+                {/* Actions */}
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <ApplyButton job={job} />
-                  <button className="flex items-center gap-2 border border-gray-200 text-gray-700 font-medium px-5 py-2.5 rounded-xl hover:bg-gray-50 transition-colors text-sm">
-                    <Bookmark className="w-4 h-4" /> Save Job
+                  <button
+                    onClick={() => setModalOpen(true)}
+                    className="flex items-center gap-2 bg-[#FF6B35] hover:bg-[#e55a24] text-white font-semibold px-6 py-2.5 rounded-xl transition-colors text-sm"
+                  >
+                    Apply Now
                   </button>
-                  <button className="flex items-center gap-2 border border-gray-200 text-gray-700 font-medium px-5 py-2.5 rounded-xl hover:bg-gray-50 transition-colors text-sm">
+                  <button
+                    onClick={() => { if (navigator.share) { navigator.share({ title: job.title, text: shareText }); } }}
+                    className="flex items-center gap-2 border border-gray-200 text-gray-700 font-medium px-5 py-2.5 rounded-xl hover:bg-gray-50 transition-colors text-sm"
+                  >
                     <Share2 className="w-4 h-4" /> Share
                   </button>
                 </div>
@@ -296,31 +356,16 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
                 {/* Share links */}
                 <div className="mt-4 flex items-center gap-3 text-xs text-gray-500">
                   <span>Share:</span>
-                  <a
-                    href={`https://wa.me/?text=${encodeURIComponent(`${job.title} at ${job.company.name} — ${shareUrl}`)}`}
-                    target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-green-600 hover:underline"
-                  >
+                  <a href={`https://wa.me/?text=${encodeURIComponent(shareText)}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-green-600 hover:underline">
                     <MessageCircle className="w-3.5 h-3.5" /> WhatsApp
                   </a>
-                  <a
-                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
-                    target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-blue-600 hover:underline"
-                  >
-                    <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> LinkedIn
-                  </a>
-                  <a
-                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${job.title} at ${job.company.name}`)}&url=${encodeURIComponent(shareUrl)}`}
-                    target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-sky-500 hover:underline"
-                  >
-                    <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.743l7.73-8.835L1.254 2.25H8.08l4.254 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg> X
+                  <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://uaecareer.ae/jobs/${slug}`)}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-600 hover:underline">
+                    <ExternalLink className="w-3.5 h-3.5" /> LinkedIn
                   </a>
                 </div>
               </div>
 
-              {/* Important Note — very prominent */}
+              {/* Important Note */}
               {job.important_note && (
                 <div className="bg-amber-50 border-2 border-amber-400 rounded-xl p-5">
                   <div className="flex items-start gap-3">
@@ -336,20 +381,14 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
               {/* Description */}
               <section className="bg-white rounded-xl border border-gray-200 p-6">
                 <h2 className="text-lg font-bold text-gray-900 mb-4">Job Description</h2>
-                <div
-                  className="prose prose-sm max-w-none text-gray-700 leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: job.description }}
-                />
+                <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: job.description }} />
               </section>
 
               {/* Responsibilities */}
               {job.responsibilities && (
                 <section className="bg-white rounded-xl border border-gray-200 p-6">
                   <h2 className="text-lg font-bold text-gray-900 mb-4">Responsibilities</h2>
-                  <div
-                    className="prose prose-sm max-w-none text-gray-700"
-                    dangerouslySetInnerHTML={{ __html: job.responsibilities }}
-                  />
+                  <div className="prose prose-sm max-w-none text-gray-700" dangerouslySetInnerHTML={{ __html: job.responsibilities }} />
                 </section>
               )}
 
@@ -357,43 +396,42 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
               {job.requirements && (
                 <section className="bg-white rounded-xl border border-gray-200 p-6">
                   <h2 className="text-lg font-bold text-gray-900 mb-4">Requirements</h2>
-                  <div
-                    className="prose prose-sm max-w-none text-gray-700"
-                    dangerouslySetInnerHTML={{ __html: job.requirements }}
-                  />
+                  <div className="prose prose-sm max-w-none text-gray-700" dangerouslySetInnerHTML={{ __html: job.requirements }} />
                 </section>
               )}
 
-              {/* Product banners */}
-              <section>
-                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                  Boost Your Application
-                </h3>
-                <ProductBanners banners={MOCK_BANNERS} />
-              </section>
-
-              {/* Fraud notice repeated */}
               <FraudNotice cookieKey="fraud_job_detail" />
             </div>
 
             {/* Sidebar */}
             <aside className="w-full lg:w-72 flex-shrink-0 space-y-5">
-              {/* Quick apply box */}
               <div className="bg-[#1A3C6E] rounded-xl p-5 text-white sticky top-20">
                 <h3 className="font-bold text-lg mb-1">Ready to Apply?</h3>
                 <p className="text-blue-200 text-sm mb-4">
-                  {job.is_walk_in
-                    ? 'This is a walk-in interview — visit the venue directly.'
-                    : 'Submit your application now.'}
+                  {job.is_walk_in ? 'This is a walk-in interview — visit the venue directly.' : 'Submit your application now.'}
                 </p>
-                <ApplyButton job={job} fullWidth />
+                <button
+                  onClick={() => setModalOpen(true)}
+                  className="w-full flex items-center justify-center gap-2 bg-[#FF6B35] hover:bg-[#e55a24] text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
+                >
+                  Apply Now
+                </button>
+              </div>
+
+              {/* CV Service upsell */}
+              <div className="bg-gradient-to-br from-[#1A3C6E]/5 to-[#FF6B35]/5 border border-[#1A3C6E]/20 rounded-xl p-5">
+                <p className="text-sm font-bold text-[#1A3C6E] mb-1">Stand out from the crowd</p>
+                <p className="text-xs text-gray-600 mb-3">Get your CV professionally rewritten to beat ATS and impress recruiters.</p>
+                <Link href="/cv-service" className="block text-center text-xs font-semibold bg-[#1A3C6E] text-white px-4 py-2 rounded-lg hover:bg-[#0d2444] transition-colors">
+                  View CV Service Plans
+                </Link>
               </div>
 
               {/* Related jobs */}
               <div>
                 <h3 className="font-semibold text-gray-900 mb-3">Similar Jobs</h3>
                 <div className="space-y-3">
-                  {RELATED_JOBS.map((rj) => (
+                  {RELATED_JOBS.filter((rj) => rj.slug !== slug).slice(0, 3).map((rj) => (
                     <JobCard key={rj.id} job={rj} />
                   ))}
                 </div>
@@ -405,37 +443,5 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
 
       <Footer />
     </div>
-  );
-}
-
-function ApplyButton({ job, fullWidth }: { job: Job; fullWidth?: boolean }) {
-  const baseClass = `flex items-center justify-center gap-2 font-semibold px-6 py-2.5 rounded-xl transition-colors text-sm ${fullWidth ? 'w-full' : ''}`;
-
-  if (job.apply_method === 'email' && job.apply_email) {
-    return (
-      <a href={`mailto:${job.apply_email}?subject=Application: ${job.title}`} className={`${baseClass} bg-[#FF6B35] text-white hover:bg-[#e55a24]`}>
-        Apply via Email
-      </a>
-    );
-  }
-  if (job.apply_method === 'url' && job.apply_url) {
-    return (
-      <a href={job.apply_url} target="_blank" rel="noopener noreferrer" className={`${baseClass} bg-[#FF6B35] text-white hover:bg-[#e55a24]`}>
-        Apply Now <ExternalLink className="w-4 h-4" />
-      </a>
-    );
-  }
-  if (job.apply_method === 'whatsapp' && job.apply_whatsapp) {
-    return (
-      <a href={`https://wa.me/${job.apply_whatsapp}`} target="_blank" rel="noopener noreferrer" className={`${baseClass} bg-green-600 text-white hover:bg-green-700`}>
-        <MessageCircle className="w-4 h-4" /> Apply on WhatsApp
-      </a>
-    );
-  }
-  // Walk-in
-  return (
-    <button className={`${baseClass} bg-[#FF6B35] text-white hover:bg-[#e55a24]`}>
-      <MapPin className="w-4 h-4" /> Walk-in Interview
-    </button>
   );
 }
