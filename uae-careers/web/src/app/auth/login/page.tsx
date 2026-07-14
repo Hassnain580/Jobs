@@ -33,9 +33,12 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const emailForm = useForm<EmailForm>({ resolver: zodResolver(emailSchema) });
-  const phoneForm = useForm<OtpPhoneForm>({ resolver: zodResolver(otpPhoneSchema) });
-  const codeForm = useForm<OtpCodeForm>({ resolver: zodResolver(otpCodeSchema) });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const emailForm = useForm<EmailForm>({ resolver: zodResolver(emailSchema as any) });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const phoneForm = useForm<OtpPhoneForm>({ resolver: zodResolver(otpPhoneSchema as any) });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const codeForm = useForm<OtpCodeForm>({ resolver: zodResolver(otpCodeSchema as any) });
 
   async function onEmailSubmit(data: EmailForm) {
     setIsLoading(true);

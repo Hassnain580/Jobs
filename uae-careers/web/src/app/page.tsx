@@ -143,7 +143,11 @@ export default function HomePage() {
               onSubmit={(e) => {
                 e.preventDefault();
                 const q = (e.currentTarget.elements.namedItem('q') as HTMLInputElement)?.value ?? '';
-                window.location.href = `/jobs${q ? `?q=${encodeURIComponent(q)}` : ''}`;
+                const city = (e.currentTarget.elements.namedItem('city') as HTMLSelectElement)?.value ?? '';
+                const params = new URLSearchParams();
+                if (q) params.set('q', q);
+                if (city) params.set('city', city);
+                window.location.href = `/jobs${params.toString() ? `?${params.toString()}` : ''}`;
               }}
             >
               <div className="flex-1 relative">

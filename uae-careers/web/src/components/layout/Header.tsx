@@ -28,6 +28,7 @@ interface HeaderProps {
 
 const NAV_LINKS = [
   { href: '/jobs', label: 'Jobs' },
+  { href: '/companies', label: 'Companies' },
   { href: '/salary-guide', label: 'Salary Guide' },
   { href: '/cv-service', label: 'CV Service' },
 ];

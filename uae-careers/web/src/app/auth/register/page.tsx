@@ -35,8 +35,10 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const seekerForm = useForm<SeekerForm>({ resolver: zodResolver(seekerSchema) });
-  const employerForm = useForm<EmployerForm>({ resolver: zodResolver(employerSchema) });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const seekerForm = useForm<SeekerForm>({ resolver: zodResolver(seekerSchema as any) });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const employerForm = useForm<EmployerForm>({ resolver: zodResolver(employerSchema as any) });
 
   async function onSeekerSubmit(data: SeekerForm) {
     setIsLoading(true);

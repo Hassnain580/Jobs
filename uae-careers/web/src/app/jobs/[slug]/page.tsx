@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -272,8 +273,9 @@ function ApplyModal({ job, onClose }: { job: Job; onClose: () => void }) {
 }
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
-export default function JobDetailPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default function JobDetailPage() {
+  const rawParams = useParams();
+  const slug = typeof rawParams.slug === 'string' ? rawParams.slug : Array.isArray(rawParams.slug) ? rawParams.slug[0] : '';
   const job = JOB_BY_SLUG.get(slug) ?? null;
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -346,7 +348,13 @@ export default function JobDetailPage({ params }: { params: { slug: string } }) 
                     Apply Now
                   </button>
                   <button
-                    onClick={() => { if (navigator.share) { navigator.share({ title: job.title, text: shareText }); } }}
+                    onClick={() => {
+                      if (navigator.share) {
+                        navigator.share({ title: job.title, text: shareText });
+                      } else {
+                        navigator.clipboard?.writeText(`https://uaecareer.ae/jobs/${slug}`).then(() => alert('Link copied to clipboard!'));
+                      }
+                    }}
                     className="flex items-center gap-2 border border-gray-200 text-gray-700 font-medium px-5 py-2.5 rounded-xl hover:bg-gray-50 transition-colors text-sm"
                   >
                     <Share2 className="w-4 h-4" /> Share

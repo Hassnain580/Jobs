@@ -20,7 +20,7 @@ const CATEGORIES = [
 
 const SERVICES_LINKS = [
   { label: 'CV Optimization Service', href: '/cv-service' },
-  { label: 'Daily WhatsApp Jobs', href: '/#whatsapp-signup' },
+  { label: 'Daily WhatsApp Jobs', href: 'https://wa.me/971556650797?text=Hi%2C+I%27d+like+to+receive+daily+UAE+job+alerts' },
 ];
 
 const COMPANY_LINKS = [

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { SlidersHorizontal, Search, MessageCircle } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -13,18 +14,42 @@ const EXPERIENCE_LEVELS = ['Entry Level', '1-3 Years', '3-5 Years', '5-10 Years'
 const CATEGORIES = ['IT & Technology', 'Engineering', 'Accounting', 'Medical', 'HR', 'Sales', 'Construction', 'Hospitality'];
 const SORT_OPTIONS = ['Newest First', 'Salary: High to Low', 'Salary: Low to High', 'Most Relevant'];
 
-export default function JobsPage() {
+function JobsContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const [filters, setFilters] = useState({
-    city: '', category: '', jobType: '', experience: '',
-    salaryMin: '', salaryMax: '', walkIn: false,
+    city: searchParams.get('city') || '',
+    category: searchParams.get('category') || '',
+    jobType: '',
+    experience: '',
+    salaryMin: '',
+    salaryMax: '',
+    walkIn: false,
   });
   const [sort, setSort] = useState('Newest First');
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(searchParams.get('q') || '');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const q = searchParams.get('q') || '';
+    const city = searchParams.get('city') || '';
+    const category = searchParams.get('category') || '';
+    setSearch(q);
+    setFilters((prev) => ({ ...prev, city, category }));
+  }, [searchParams]);
 
   const updateFilter = useCallback((key: string, value: string | boolean) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   }, []);
+
+  function handleSearch() {
+    const params = new URLSearchParams();
+    if (search) params.set('q', search);
+    if (filters.city) params.set('city', filters.city);
+    if (filters.category) params.set('category', filters.category);
+    router.push(`/jobs?${params.toString()}`);
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
@@ -41,10 +66,14 @@ export default function JobsPage() {
                 placeholder="Job title, keyword or company"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm text-gray-900 bg-white border-2 border-[#FF6B35] focus:outline-none focus:ring-2 focus:ring-[#FF6B35] placeholder-gray-400"
               />
             </div>
-            <button className="bg-[#FF6B35] hover:bg-[#e55a24] text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
+            <button
+              onClick={handleSearch}
+              className="bg-[#FF6B35] hover:bg-[#e55a24] text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors"
+            >
               Search
             </button>
             <button
@@ -134,7 +163,9 @@ export default function JobsPage() {
                   We&apos;re adding jobs daily. Join our free WhatsApp channel to get notified the moment new jobs go live.
                 </p>
                 <a
-                  href="/#whatsapp-signup"
+                  href="https://wa.me/971556650797?text=Hi%2C+I%27d+like+to+receive+daily+UAE+job+alerts"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 bg-[#25D366] text-white text-sm font-semibold px-6 py-3 rounded-xl hover:bg-[#1da851] transition-colors"
                 >
                   <MessageCircle className="w-4 h-4" /> Get Notified on WhatsApp
@@ -147,6 +178,14 @@ export default function JobsPage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function JobsPage() {
+  return (
+    <Suspense fallback={<div className="flex flex-col min-h-screen bg-gray-50"><div className="flex-1 flex items-center justify-center"><p className="text-gray-400">Loading jobs…</p></div></div>}>
+      <JobsContent />
+    </Suspense>
   );
 }
 

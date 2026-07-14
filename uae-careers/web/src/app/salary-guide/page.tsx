@@ -39,8 +39,8 @@ export default function SalaryGuidePage() {
         </section>
 
         <section className="max-w-4xl mx-auto px-4 py-12">
-          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-            <table className="w-full text-sm">
+          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden overflow-x-auto">
+            <table className="w-full text-sm min-w-[500px]">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
                   <th className="text-left px-6 py-4 font-semibold text-gray-700">Job Role</th>
