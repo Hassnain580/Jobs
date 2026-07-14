@@ -151,12 +151,20 @@ export default function Header({ user }: HeaderProps) {
                 )}
               </div>
             ) : (
-              <Link
-                href="/cv-service"
-                className="text-sm font-semibold bg-[#FF6B35] text-white px-4 py-2 rounded-lg hover:bg-[#e55a24] transition-colors"
-              >
-                Get Your CV Done
-              </Link>
+              <>
+                <Link
+                  href="/auth/login"
+                  className="text-sm font-medium text-gray-600 hover:text-[#1A3C6E] transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/cv-service"
+                  className="text-sm font-semibold bg-[#FF6B35] text-white px-4 py-2 rounded-lg hover:bg-[#e55a24] transition-colors"
+                >
+                  Get Your CV Done
+                </Link>
+              </>
             )}
           </div>
 
@@ -211,13 +219,22 @@ export default function Header({ user }: HeaderProps) {
                 </button>
               </>
             ) : (
-              <Link
-                href="/cv-service"
-                className="flex-1 text-center text-sm font-semibold bg-[#FF6B35] text-white px-4 py-2 rounded-lg"
-                onClick={() => setMobileOpen(false)}
-              >
-                Get Your CV Done
-              </Link>
+              <>
+                <Link
+                  href="/auth/login"
+                  className="flex-1 text-center text-sm font-medium text-[#1A3C6E] border border-[#1A3C6E] px-4 py-2 rounded-lg"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/cv-service"
+                  className="flex-1 text-center text-sm font-semibold bg-[#FF6B35] text-white px-4 py-2 rounded-lg"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  Get Your CV Done
+                </Link>
+              </>
             )}
           </div>
         </div>

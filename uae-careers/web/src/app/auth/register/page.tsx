@@ -33,6 +33,7 @@ export default function RegisterPage() {
   const [role, setRole] = useState<'seeker' | 'employer'>('seeker');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const router = useRouter();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,10 +43,21 @@ export default function RegisterPage() {
 
   async function onSeekerSubmit(data: SeekerForm) {
     setIsLoading(true);
+    setSubmitError('');
     try {
-      console.log('Seeker register', data);
-      await new Promise((r) => setTimeout(r, 1000));
-      router.push('/dashboard');
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...data, role: 'seeker' }),
+      });
+      if (res.ok) {
+        router.push('/dashboard');
+      } else {
+        const json = await res.json().catch(() => ({}));
+        setSubmitError(json.message || 'Registration failed. Please try again.');
+      }
+    } catch {
+      setSubmitError('Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -53,10 +65,21 @@ export default function RegisterPage() {
 
   async function onEmployerSubmit(data: EmployerForm) {
     setIsLoading(true);
+    setSubmitError('');
     try {
-      console.log('Employer register', data);
-      await new Promise((r) => setTimeout(r, 1000));
-      router.push('/employer/dashboard');
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...data, role: 'employer' }),
+      });
+      if (res.ok) {
+        router.push('/employer/dashboard');
+      } else {
+        const json = await res.json().catch(() => ({}));
+        setSubmitError(json.message || 'Registration failed. Please try again.');
+      }
+    } catch {
+      setSubmitError('Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -97,6 +120,11 @@ export default function RegisterPage() {
           {/* Job Seeker form */}
           {role === 'seeker' && (
             <form onSubmit={seekerForm.handleSubmit(onSeekerSubmit)} className="space-y-4">
+              {submitError && (
+                <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">
+                  {submitError}
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">First name</label>
@@ -162,6 +190,11 @@ export default function RegisterPage() {
           {/* Employer form */}
           {role === 'employer' && (
             <form onSubmit={employerForm.handleSubmit(onEmployerSubmit)} className="space-y-4">
+              {submitError && (
+                <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">
+                  {submitError}
+                </div>
+              )}
               <FormField label="Company name" error={employerForm.formState.errors.company_name?.message}>
                 <input type="text" placeholder="Emirates Group" {...employerForm.register('company_name')} className="form-input" />
               </FormField>

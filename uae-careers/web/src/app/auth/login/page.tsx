@@ -31,6 +31,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [otpStep, setOtpStep] = useState<'phone' | 'code'>('phone');
   const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState('');
   const router = useRouter();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,11 +43,20 @@ export default function LoginPage() {
 
   async function onEmailSubmit(data: EmailForm) {
     setIsLoading(true);
+    setLoginError('');
     try {
-      // Replace with real API call
-      console.log('Email login', data);
-      await new Promise((r) => setTimeout(r, 1000));
-      router.push('/dashboard');
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: data.email, password: data.password }),
+      });
+      if (res.ok) {
+        router.push('/dashboard');
+      } else {
+        setLoginError('Invalid email or password. Please try again.');
+      }
+    } catch {
+      setLoginError('Invalid email or password. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -109,6 +119,11 @@ export default function LoginPage() {
           {/* Email/Password tab */}
           {tab === 'email' && (
             <form onSubmit={emailForm.handleSubmit(onEmailSubmit)} className="space-y-4">
+              {loginError && (
+                <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">
+                  {loginError}
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Email address</label>
                 <input
