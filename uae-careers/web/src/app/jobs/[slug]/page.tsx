@@ -408,7 +408,6 @@ export default function JobDetailPage() {
                 </section>
               )}
 
-              <FraudNotice cookieKey="fraud_job_detail" />
             </div>
 
             {/* Sidebar */}

@@ -2,13 +2,22 @@
 
 import { useState, useCallback, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { SlidersHorizontal, Search, MessageCircle } from 'lucide-react';
+import { SlidersHorizontal, Search, MapPin, MessageCircle } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import FraudNotice from '@/components/ui/FraudNotice';
 import { cn } from '@/lib/utils';
 
-const EMIRATES = ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'Ras Al Khaimah', 'Fujairah', 'Umm Al Quwain'];
+// Slugs match what homepage & footer links use (e.g. /jobs?city=abu-dhabi)
+const EMIRATES = [
+  { label: 'Dubai', value: 'dubai' },
+  { label: 'Abu Dhabi', value: 'abu-dhabi' },
+  { label: 'Sharjah', value: 'sharjah' },
+  { label: 'Ajman', value: 'ajman' },
+  { label: 'Ras Al Khaimah', value: 'rak' },
+  { label: 'Fujairah', value: 'fujairah' },
+  { label: 'Umm Al Quwain', value: 'uaq' },
+];
 const JOB_TYPES = ['Full Time', 'Part Time', 'Contract', 'Internship', 'Freelance'];
 const EXPERIENCE_LEVELS = ['Entry Level', '1-3 Years', '3-5 Years', '5-10 Years', '10+ Years'];
 const CATEGORIES = ['IT & Technology', 'Engineering', 'Accounting', 'Medical', 'HR', 'Sales', 'Construction', 'Hospitality'];
@@ -70,6 +79,17 @@ function JobsContent() {
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm text-gray-900 bg-white border-2 border-[#FF6B35] focus:outline-none focus:ring-2 focus:ring-[#FF6B35] placeholder-gray-400"
               />
             </div>
+            <div className="relative">
+              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              <select
+                value={filters.city}
+                onChange={(e) => updateFilter('city', e.target.value)}
+                className="pl-9 pr-8 py-2.5 rounded-xl text-sm text-gray-900 bg-white border-2 border-[#FF6B35] focus:outline-none appearance-none w-full sm:w-40"
+              >
+                <option value="">All Emirates</option>
+                {EMIRATES.map((e) => <option key={e.value} value={e.value}>{e.label}</option>)}
+              </select>
+            </div>
             <button
               onClick={handleSearch}
               className="bg-[#FF6B35] hover:bg-[#e55a24] text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors"
@@ -97,14 +117,22 @@ function JobsContent() {
                 </h3>
 
                 <FilterGroup label="Emirate">
-                  <select className="filter-select w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-[#1A3C6E]" value={filters.city} onChange={(e) => updateFilter('city', e.target.value)}>
+                  <select
+                    className="filter-select w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-[#1A3C6E]"
+                    value={filters.city}
+                    onChange={(e) => updateFilter('city', e.target.value)}
+                  >
                     <option value="">All Emirates</option>
-                    {EMIRATES.map((e) => <option key={e} value={e}>{e}</option>)}
+                    {EMIRATES.map((e) => <option key={e.value} value={e.value}>{e.label}</option>)}
                   </select>
                 </FilterGroup>
 
                 <FilterGroup label="Category">
-                  <select className="filter-select w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-[#1A3C6E]" value={filters.category} onChange={(e) => updateFilter('category', e.target.value)}>
+                  <select
+                    className="filter-select w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-[#1A3C6E]"
+                    value={filters.category}
+                    onChange={(e) => updateFilter('category', e.target.value)}
+                  >
                     <option value="">All Categories</option>
                     {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                   </select>
@@ -114,7 +142,14 @@ function JobsContent() {
                   <div className="space-y-1.5">
                     {JOB_TYPES.map((type) => (
                       <label key={type} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                        <input type="radio" name="jobType" value={type} checked={filters.jobType === type} onChange={(e) => updateFilter('jobType', e.target.value)} className="accent-[#1A3C6E]" />
+                        <input
+                          type="radio"
+                          name="jobType"
+                          value={type}
+                          checked={filters.jobType === type}
+                          onChange={(e) => updateFilter('jobType', e.target.value)}
+                          className="accent-[#1A3C6E]"
+                        />
                         {type}
                       </label>
                     ))}
@@ -122,7 +157,11 @@ function JobsContent() {
                 </FilterGroup>
 
                 <FilterGroup label="Experience">
-                  <select className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-[#1A3C6E]" value={filters.experience} onChange={(e) => updateFilter('experience', e.target.value)}>
+                  <select
+                    className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-[#1A3C6E]"
+                    value={filters.experience}
+                    onChange={(e) => updateFilter('experience', e.target.value)}
+                  >
                     <option value="">Any Level</option>
                     {EXPERIENCE_LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
                   </select>
@@ -130,17 +169,37 @@ function JobsContent() {
 
                 <FilterGroup label="Salary (AED/month)">
                   <div className="flex gap-2">
-                    <input type="number" placeholder="Min" value={filters.salaryMin} onChange={(e) => updateFilter('salaryMin', e.target.value)} className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:border-[#1A3C6E]" />
-                    <input type="number" placeholder="Max" value={filters.salaryMax} onChange={(e) => updateFilter('salaryMax', e.target.value)} className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:border-[#1A3C6E]" />
+                    <input
+                      type="number"
+                      placeholder="Min"
+                      value={filters.salaryMin}
+                      onChange={(e) => updateFilter('salaryMin', e.target.value)}
+                      className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:border-[#1A3C6E]"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Max"
+                      value={filters.salaryMax}
+                      onChange={(e) => updateFilter('salaryMax', e.target.value)}
+                      className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:border-[#1A3C6E]"
+                    />
                   </div>
                 </FilterGroup>
 
                 <label className="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
-                  <input type="checkbox" checked={filters.walkIn} onChange={(e) => updateFilter('walkIn', e.target.checked)} className="w-4 h-4 rounded accent-[#1A3C6E]" />
+                  <input
+                    type="checkbox"
+                    checked={filters.walkIn}
+                    onChange={(e) => updateFilter('walkIn', e.target.checked)}
+                    className="w-4 h-4 rounded accent-[#1A3C6E]"
+                  />
                   Walk-in Interviews Only
                 </label>
 
-                <button onClick={() => setFilters({ city: '', category: '', jobType: '', experience: '', salaryMin: '', salaryMax: '', walkIn: false })} className="w-full text-xs text-gray-500 hover:text-red-500 underline text-left mt-2">
+                <button
+                  onClick={() => setFilters({ city: '', category: '', jobType: '', experience: '', salaryMin: '', salaryMax: '', walkIn: false })}
+                  className="w-full text-xs text-gray-500 hover:text-red-500 underline text-left mt-2"
+                >
                   Clear all filters
                 </button>
               </div>
@@ -150,7 +209,11 @@ function JobsContent() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between mb-4">
                 <p className="text-sm text-gray-600">Showing <strong>0</strong> jobs</p>
-                <select value={sort} onChange={(e) => setSort(e.target.value)} className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#1A3C6E]">
+                <select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value)}
+                  className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#1A3C6E]"
+                >
                   {SORT_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                 </select>
               </div>
